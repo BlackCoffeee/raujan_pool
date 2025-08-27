@@ -1068,6 +1068,493 @@ END //
 DELIMITER ;
 ```
 
+### 5.4 Process Check-in Procedure
+
+```sql
+DELIMITER //
+CREATE PROCEDURE ProcessCheckIn(
+    IN p_booking_id INT,
+    IN p_staff_id INT,
+    IN p_verification_method ENUM('qr_code', 'reference_number', 'phone_search', 'email_search', 'member_card', 'manual'),
+    IN p_equipment_issued JSON,
+    IN p_special_notes TEXT,
+    OUT p_attendance_id INT,
+    OUT p_status_message VARCHAR(255)
+)
+BEGIN
+    DECLARE v_user_id INT;
+    DECLARE v_guest_user_id INT;
+    DECLARE v_booking_date DATE;
+    DECLARE v_session_time ENUM('morning', 'afternoon');
+    DECLARE v_payment_status ENUM('pending', 'paid', 'failed', 'refunded');
+    DECLARE v_existing_attendance INT;
+    DECLARE v_attendance_id INT;
+
+    -- Get booking details
+    SELECT
+        user_id, guest_user_id, session_date, session_time, payment_status
+    INTO v_user_id, v_guest_user_id, v_booking_date, v_session_time, v_payment_status
+    FROM bookings
+    WHERE id = p_booking_id;
+
+    -- Check if booking exists
+    IF v_booking_date IS NULL THEN
+        SET p_status_message = 'Booking not found';
+        SET p_attendance_id = NULL;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Booking not found';
+    END IF;
+
+    -- Check if date is today
+    IF v_booking_date != CURDATE() THEN
+        SET p_status_message = 'Booking is not for today';
+        SET p_attendance_id = NULL;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Booking is not for today';
+    END IF;
+
+    -- Check payment status
+    IF v_payment_status != 'paid' THEN
+        SET p_status_message = 'Payment not confirmed';
+        SET p_attendance_id = NULL;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Payment not confirmed';
+    END IF;
+
+    -- Check for existing attendance (prevent duplicate)
+    SELECT id INTO v_existing_attendance
+    FROM attendance_records
+    WHERE booking_id = p_booking_id
+    AND attendance_status IN ('checked_in', 'checked_out');
+
+    IF v_existing_attendance IS NOT NULL THEN
+        SET p_status_message = 'Already checked in';
+        SET p_attendance_id = NULL;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Already checked in';
+    END IF;
+
+    -- Insert attendance record
+    INSERT INTO attendance_records (
+        booking_id, user_id, guest_user_id, check_in_time, staff_id,
+        verification_method, equipment_issued, special_notes
+    ) VALUES (
+        p_booking_id, v_user_id, v_guest_user_id, NOW(), p_staff_id,
+        p_verification_method, p_equipment_issued, p_special_notes
+    );
+
+    SET v_attendance_id = LAST_INSERT_ID();
+    SET p_attendance_id = v_attendance_id;
+    SET p_status_message = 'Check-in successful';
+
+    -- Update equipment quantities if equipment was issued
+    IF p_equipment_issued IS NOT NULL THEN
+        CALL UpdateEquipmentUsage(p_equipment_issued, p_staff_id, v_attendance_id);
+    END IF;
+
+    -- Update booking status
+    UPDATE bookings
+    SET status = 'checked_in',
+        updated_at = NOW()
+    WHERE id = p_booking_id;
+END //
+DELIMITER ;
+```
+
+### 5.5 Process Check-out Procedure
+
+```sql
+DELIMITER //
+CREATE PROCEDURE ProcessCheckOut(
+    IN p_booking_id INT,
+    IN p_staff_id INT,
+    IN p_return_condition JSON,
+    IN p_notes TEXT,
+    OUT p_status_message VARCHAR(255)
+)
+BEGIN
+    DECLARE v_attendance_id INT;
+    DECLARE v_check_in_time TIMESTAMP;
+    DECLARE v_duration_minutes INT;
+    DECLARE v_equipment_issued JSON;
+
+    -- Get attendance record
+    SELECT id, check_in_time, equipment_issued
+    INTO v_attendance_id, v_check_in_time, v_equipment_issued
+    FROM attendance_records
+    WHERE booking_id = p_booking_id
+    AND attendance_status = 'checked_in';
+
+    IF v_attendance_id IS NULL THEN
+        SET p_status_message = 'No active check-in found';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No active check-in found';
+    END IF;
+
+    -- Calculate duration
+    SET v_duration_minutes = TIMESTAMPDIFF(MINUTE, v_check_in_time, NOW());
+
+    -- Update attendance record
+    UPDATE attendance_records
+    SET check_out_time = NOW(),
+        duration_minutes = v_duration_minutes,
+        attendance_status = 'checked_out',
+        updated_at = NOW()
+    WHERE id = v_attendance_id;
+
+    -- Update booking status
+    UPDATE bookings
+    SET status = 'completed',
+        updated_at = NOW()
+    WHERE id = p_booking_id;
+
+    -- Process equipment returns if any
+    IF v_equipment_issued IS NOT NULL THEN
+        CALL ProcessEquipmentReturns(v_attendance_id, p_return_condition, p_staff_id);
+    END IF;
+
+    SET p_status_message = 'Check-out successful';
+END //
+DELIMITER ;
+```
+
+### 5.6 Detect No-Shows Procedure
+
+```sql
+DELIMITER //
+CREATE PROCEDURE DetectNoShows()
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE v_booking_id INT;
+    DECLARE v_user_id INT;
+    DECLARE v_guest_user_id INT;
+    DECLARE v_session_date DATE;
+    DECLARE v_session_time ENUM('morning', 'afternoon');
+    DECLARE v_no_show_count INT;
+
+    -- Cursor to find unchecked bookings that are past session start time
+    DECLARE no_show_cursor CURSOR FOR
+        SELECT
+            b.id,
+            b.user_id,
+            b.guest_user_id,
+            b.session_date,
+            b.session_time,
+            COALESCE(nsr.no_show_count, 0) as no_show_count
+        FROM bookings b
+        LEFT JOIN no_show_records nsr ON (
+            (b.user_id = nsr.user_id OR (b.user_id IS NULL AND b.guest_user_id = nsr.guest_user_id))
+            AND nsr.session_date < b.session_date
+        )
+        WHERE b.session_date = CURDATE()
+        AND b.status = 'confirmed'
+        AND b.payment_status = 'paid'
+        AND (
+            (b.session_time = 'morning' AND TIME(NOW()) > '06:15:00')
+            OR (b.session_time = 'afternoon' AND TIME(NOW()) > '13:15:00')
+        )
+        AND NOT EXISTS (
+            SELECT 1 FROM attendance_records ar
+            WHERE ar.booking_id = b.id
+        );
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    OPEN no_show_cursor;
+
+    read_loop: LOOP
+        FETCH no_show_cursor INTO v_booking_id, v_user_id, v_guest_user_id, v_session_date, v_session_time, v_no_show_count;
+
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+
+        -- Insert no-show record
+        INSERT INTO no_show_records (
+            booking_id, user_id, guest_user_id, session_date, session_time,
+            no_show_count, refund_policy_applied
+        ) VALUES (
+            v_booking_id, v_user_id, v_guest_user_id, v_session_date, v_session_time,
+            v_no_show_count + 1,
+            CASE
+                WHEN v_no_show_count = 0 THEN 'full_refund'
+                WHEN v_no_show_count = 1 THEN 'partial_refund'
+                ELSE 'no_refund'
+            END
+        );
+
+        -- Update booking status
+        UPDATE bookings
+        SET status = 'no_show',
+            updated_at = NOW()
+        WHERE id = v_booking_id;
+
+        -- Send notification (implement notification logic here)
+        -- INSERT INTO notifications (...)
+
+    END LOOP;
+
+    CLOSE no_show_cursor;
+END //
+DELIMITER ;
+```
+
+### 5.7 Get Attendance Dashboard Data Procedure
+
+```sql
+DELIMITER //
+CREATE PROCEDURE GetAttendanceDashboardData(
+    IN p_date DATE
+)
+BEGIN
+    -- Daily attendance summary
+    SELECT
+        COUNT(*) as total_bookings,
+        SUM(CASE WHEN ar.id IS NOT NULL THEN 1 ELSE 0 END) as checked_in,
+        SUM(CASE WHEN ar.attendance_status = 'checked_out' THEN 1 ELSE 0 END) as checked_out,
+        SUM(CASE WHEN nsr.id IS NOT NULL THEN 1 ELSE 0 END) as no_shows,
+        ROUND(
+            (SUM(CASE WHEN ar.id IS NOT NULL THEN 1 ELSE 0 END) / COUNT(*)) * 100, 2
+        ) as attendance_rate
+    FROM bookings b
+    LEFT JOIN attendance_records ar ON b.id = ar.booking_id
+    LEFT JOIN no_show_records nsr ON b.id = nsr.booking_id
+    WHERE b.session_date = p_date;
+
+    -- Attendance by session
+    SELECT
+        b.session_time,
+        COUNT(*) as total_bookings,
+        SUM(CASE WHEN ar.id IS NOT NULL THEN 1 ELSE 0 END) as checked_in,
+        SUM(CASE WHEN nsr.id IS NOT NULL THEN 1 ELSE 0 END) as no_shows
+    FROM bookings b
+    LEFT JOIN attendance_records ar ON b.id = ar.booking_id
+    LEFT JOIN no_show_records nsr ON b.id = nsr.booking_id
+    WHERE b.session_date = p_date
+    GROUP BY b.session_time;
+
+    -- Staff performance
+    SELECT
+        u.full_name as staff_name,
+        COUNT(ar.id) as check_ins_processed,
+        AVG(ar.duration_minutes) as avg_session_duration
+    FROM attendance_records ar
+    JOIN users u ON ar.staff_id = u.id
+    WHERE DATE(ar.check_in_time) = p_date
+    GROUP BY ar.staff_id, u.full_name
+    ORDER BY check_ins_processed DESC;
+
+    -- Equipment usage
+    SELECT
+        em.equipment_name,
+        em.equipment_type,
+        COUNT(ei.id) as times_issued,
+        SUM(ei.quantity_issued) as total_quantity_issued
+    FROM equipment_issuance ei
+    JOIN equipment_management em ON ei.equipment_id = em.id
+    JOIN attendance_records ar ON ei.attendance_record_id = ar.id
+    WHERE DATE(ar.check_in_time) = p_date
+    GROUP BY em.id, em.equipment_name, em.equipment_type
+    ORDER BY times_issued DESC;
+END //
+DELIMITER ;
+```
+
+### 5.8 Update Equipment Usage Procedure
+
+```sql
+DELIMITER //
+CREATE PROCEDURE UpdateEquipmentUsage(
+    IN p_equipment_issued JSON,
+    IN p_staff_id INT,
+    IN p_attendance_id INT
+)
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE v_equipment_id INT;
+    DECLARE v_quantity INT;
+
+    -- Cursor to process equipment items
+    DECLARE equipment_cursor CURSOR FOR
+        SELECT
+            JSON_EXTRACT(equipment, '$.equipment_id') as equipment_id,
+            JSON_EXTRACT(equipment, '$.quantity') as quantity
+        FROM JSON_TABLE(p_equipment_issued, '$[*]' COLUMNS (
+            equipment JSON PATH '$'
+        )) as equipment_data;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    OPEN equipment_cursor;
+
+    equipment_loop: LOOP
+        FETCH equipment_cursor INTO v_equipment_id, v_quantity;
+
+        IF done THEN
+            LEAVE equipment_loop;
+        END IF;
+
+        -- Insert equipment issuance record
+        INSERT INTO equipment_issuance (
+            attendance_record_id, equipment_id, quantity_issued, issued_by_staff_id
+        ) VALUES (
+            p_attendance_id, v_equipment_id, v_quantity, p_staff_id
+        );
+
+        -- Update equipment availability
+        UPDATE equipment_management
+        SET available_quantity = available_quantity - v_quantity,
+            checked_out_quantity = checked_out_quantity + v_quantity,
+            updated_at = NOW()
+        WHERE id = v_equipment_id;
+
+    END LOOP;
+
+    CLOSE equipment_cursor;
+END //
+DELIMITER ;
+```
+
+### 5.9 Process Equipment Returns Procedure
+
+```sql
+DELIMITER //
+CREATE PROCEDURE ProcessEquipmentReturns(
+    IN p_attendance_id INT,
+    IN p_return_condition JSON,
+    IN p_staff_id INT
+)
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE v_equipment_id INT;
+    DECLARE v_quantity_issued INT;
+    DECLARE v_return_condition ENUM('good', 'damaged', 'lost', 'not_returned');
+
+    -- Cursor to process equipment returns
+    DECLARE return_cursor CURSOR FOR
+        SELECT
+            ei.equipment_id,
+            ei.quantity_issued,
+            JSON_UNQUOTE(JSON_EXTRACT(condition_data, '$.condition')) as return_condition
+        FROM equipment_issuance ei
+        CROSS JOIN JSON_TABLE(p_return_condition, '$[*]' COLUMNS (
+            equipment_id INT PATH '$.equipment_id',
+            condition_data JSON PATH '$'
+        )) as conditions
+        WHERE ei.attendance_record_id = p_attendance_id
+        AND ei.return_time IS NULL;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    OPEN return_cursor;
+
+    return_loop: LOOP
+        FETCH return_cursor INTO v_equipment_id, v_quantity_issued, v_return_condition;
+
+        IF done THEN
+            LEAVE return_loop;
+        END IF;
+
+        -- Update equipment issuance record
+        UPDATE equipment_issuance
+        SET return_time = NOW(),
+            return_condition = v_return_condition,
+            returned_to_staff_id = p_staff_id
+        WHERE attendance_record_id = p_attendance_id
+        AND equipment_id = v_equipment_id;
+
+        -- Update equipment availability based on condition
+        IF v_return_condition IN ('good', 'damaged') THEN
+            UPDATE equipment_management
+            SET available_quantity = available_quantity + v_quantity_issued,
+                checked_out_quantity = checked_out_quantity - v_quantity_issued,
+                updated_at = NOW()
+            WHERE id = v_equipment_id;
+
+            -- If damaged, move to maintenance
+            IF v_return_condition = 'damaged' THEN
+                UPDATE equipment_management
+                SET maintenance_quantity = maintenance_quantity + v_quantity_issued,
+                    available_quantity = available_quantity - v_quantity_issued
+                WHERE id = v_equipment_id;
+            END IF;
+        END IF;
+
+    END LOOP;
+
+    CLOSE return_cursor;
+END //
+DELIMITER ;
+```
+
+### 5.10 Calculate Dynamic Price Procedure
+
+```sql
+DELIMITER //
+CREATE PROCEDURE CalculateBookingPrice(
+    IN p_booking_type VARCHAR(50),
+    IN p_adult_count INT,
+    IN p_child_count INT,
+    IN p_booking_date DATE,
+    IN p_session_time VARCHAR(20),
+    IN p_member_id INT,
+    OUT p_base_amount DECIMAL(10,2),
+    OUT p_discount_amount DECIMAL(10,2),
+    OUT p_final_amount DECIMAL(10,2),
+    OUT p_pricing_config_id INT
+)
+BEGIN
+    DECLARE v_base_price DECIMAL(10,2) DEFAULT 0;
+    DECLARE v_child_price DECIMAL(10,2) DEFAULT 0;
+    DECLARE v_discount_percentage DECIMAL(5,2) DEFAULT 0;
+    DECLARE v_is_member BOOLEAN DEFAULT FALSE;
+    DECLARE v_is_weekend BOOLEAN DEFAULT FALSE;
+
+    -- Check if date is weekend
+    SET v_is_weekend = DAYOFWEEK(p_booking_date) IN (1, 7);
+
+    -- Check if member is active
+    SELECT EXISTS(SELECT 1 FROM members WHERE id = p_member_id AND is_active = TRUE AND membership_end >= CURDATE()) INTO v_is_member;
+
+    -- Get base pricing
+    IF p_booking_type = 'regular' THEN
+        IF v_is_weekend THEN
+            SELECT current_price INTO v_base_price FROM pricing_config
+            WHERE service_type = 'weekend_adult' AND is_active = TRUE LIMIT 1;
+            SELECT current_price INTO v_child_price FROM pricing_config
+            WHERE service_type = 'weekend_child' AND is_active = TRUE LIMIT 1;
+        ELSE
+            SELECT current_price INTO v_base_price FROM pricing_config
+            WHERE service_type = 'weekday_adult' AND is_active = TRUE LIMIT 1;
+            SELECT current_price INTO v_child_price FROM pricing_config
+            WHERE service_type = 'weekday_child' AND is_active = TRUE LIMIT 1;
+        END IF;
+
+        SET p_base_amount = (v_base_price * p_adult_count) + (v_child_price * p_child_count);
+
+    ELSEIF p_booking_type IN ('private_silver', 'private_gold') THEN
+        SELECT current_price INTO v_base_price FROM pricing_config
+        WHERE service_type = p_booking_type AND is_active = TRUE LIMIT 1;
+        SET p_base_amount = v_base_price;
+    END IF;
+
+    -- Apply member discount
+    IF v_is_member THEN
+        SET v_discount_percentage = 10; -- 10% member discount
+        SET p_discount_amount = p_base_amount * (v_discount_percentage / 100);
+    ELSE
+        SET p_discount_amount = 0;
+    END IF;
+
+    SET p_final_amount = p_base_amount - p_discount_amount;
+
+    -- Get pricing config ID
+    SELECT id INTO p_pricing_config_id FROM pricing_config
+    WHERE service_type = CASE
+        WHEN p_booking_type = 'regular' AND v_is_weekend THEN 'weekend_adult'
+        WHEN p_booking_type = 'regular' AND NOT v_is_weekend THEN 'weekday_adult'
+        ELSE p_booking_type
+    END AND is_active = TRUE LIMIT 1;
+
+END //
+DELIMITER ;
+```
+
 ### 5.2 Update Pricing Configuration Procedure
 
 ```sql

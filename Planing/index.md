@@ -426,6 +426,8 @@ Untuk pertanyaan atau klarifikasi terkait dokumen analisa ini, khususnya tentang
 - 📱 **Mobile-first web app dengan PWA support**
 - 🔔 **Push notifications via Firebase FCM**
 - ⚡ **Laravel backend + React/Next.js frontend stack**
+- ⭐ **Rating system bintang 1-5 untuk semua pelayanan**
+- ✅ **Check-in & attendance system dengan staff verification**
 
 ### Core Booking Flow System
 

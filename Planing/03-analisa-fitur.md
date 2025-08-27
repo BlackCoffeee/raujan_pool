@@ -721,36 +721,446 @@ graph TD
 - **Multiple Formats**: SMS, email, PDF receipt
 - **Customizable Content**: Template yang dapat disesuaikan
 
-## 8. Modul Tata Tertib dan Compliance
+## 8. Modul Notifikasi dan Komunikasi
 
-### 8.1 Dynamic Policy Management
+### 8.1 Push Notification System
 
 ```mermaid
 graph TD
-    A[Policy Management] --> B[Rule Creation]
-    B --> C[Policy Distribution]
-    C --> D[Compliance Monitoring]
-    D --> E[Policy Updates]
+    A[Notification Trigger] --> B[Message Preparation]
+    B --> C[Channel Selection]
+    C --> D[Delivery Process]
+    D --> E[Delivery Status]
+    E --> F[Analytics Tracking]
 
-    subgraph "Dynamic Policies"
-        P1[Configurable Rules]
-        P2[Flexible Enforcement]
-        P3[Policy Versioning]
-        P4[Compliance Tracking]
+    subgraph "Notification Types"
+        NT1[Booking Reminders]
+        NT2[Payment Confirmations]
+        NT3[Session Updates]
+        NT4[Promotional Offers]
+        NT5[System Alerts]
+    end
+
+    subgraph "Delivery Channels"
+        DC1[Push Notification]
+        DC2[SMS]
+        DC3[Email]
+        DC4[In-App Message]
     end
 ```
 
-#### 8.1.1 Configurable Compliance Features
+## 9. Rating & Review System
 
-- **Flexible Rule Configuration**: Aturan yang dapat disesuaikan
-- **Dynamic Policy Updates**: Update kebijakan secara real-time
-- **Compliance Monitoring**: Monitoring kepatuhan secara otomatis
-- **Audit Trail**: Jejak audit yang lengkap untuk semua perubahan
-- **Regulatory Updates**: Update otomatis untuk perubahan regulasi
+### 9.1 Rating System Overview
 
-## 9. Admin Configuration Panel
+```mermaid
+graph TD
+    A[User Experience Service] --> B[Rate Booking Experience]
+    A --> C[Rate Cafe Service]
+    A --> D[Rate Staff Service]
+    A --> E[Rate Facility Quality]
+    A --> F[Rate Overall Experience]
 
-### 9.1 Dynamic System Configuration
+    B --> G[Booking Rating Components]
+    G --> H[Ease of Booking Process - 1-5 Stars]
+    G --> I[Calendar Interface - 1-5 Stars]
+    G --> J[Session Availability - 1-5 Stars]
+    G --> K[Payment Process - 1-5 Stars]
+
+    C --> L[Cafe Rating Components]
+    L --> M[Food Quality - 1-5 Stars]
+    L --> N[Service Speed - 1-5 Stars]
+    L --> O[Menu Variety - 1-5 Stars]
+    L --> P[Price Value - 1-5 Stars]
+
+    D --> Q[Staff Rating Components]
+    Q --> R[Staff Friendliness - 1-5 Stars]
+    Q --> S[Check-in Process - 1-5 Stars]
+    Q --> T[Problem Resolution - 1-5 Stars]
+    Q --> U[Communication - 1-5 Stars]
+
+    E --> V[Facility Rating Components]
+    V --> W[Water Quality - 1-5 Stars]
+    V --> X[Pool Cleanliness - 1-5 Stars]
+    V --> Y[Locker Room - 1-5 Stars]
+    V --> Z[Safety Equipment - 1-5 Stars]
+
+    F --> AA[Overall Satisfaction - 1-5 Stars]
+    AA --> BB[Would Recommend - Yes/No]
+    AA --> CC[Will Return - Yes/No]
+    AA --> DD[Additional Comments]
+
+    subgraph "Rating Collection"
+        RC1[Post-Booking Rating]
+        RC2[Post-Cafe Order Rating]
+        RC3[Post-Session Rating]
+        RC4[Periodic Feedback Survey]
+        RC5[Staff Performance Rating]
+    end
+
+    subgraph "Rating Analytics"
+        RA1[Average Ratings per Service]
+        RA2[Rating Trends Over Time]
+        RA3[Low Rating Alerts]
+        RA4[Improvement Suggestions]
+        RA5[Staff Performance Reports]
+    end
+```
+
+### 9.2 Rating Collection Flow
+
+```mermaid
+graph TD
+    A[Service Completed] --> B[Trigger Rating Request]
+    B --> C[User Receives Rating Invitation]
+    C --> D[Rate Different Aspects]
+    D --> E[Submit Rating]
+    E --> F[Store Rating Data]
+    F --> G[Generate Analytics]
+    G --> H[Send Improvement Alerts]
+
+    subgraph "Rating Triggers"
+        RT1[After Booking Completion]
+        RT2[After Cafe Order Delivery]
+        RT3[After Swimming Session]
+        RT4[After Staff Interaction]
+        RT5[Periodic Feedback Request]
+    end
+
+    subgraph "Rating Categories"
+        RC1[Booking Experience - 5 Components]
+        RC2[Cafe Service - 4 Components]
+        RC3[Staff Service - 4 Components]
+        RC4[Facility Quality - 4 Components]
+        RC5[Overall Satisfaction - 3 Components]
+    end
+
+    subgraph "Rating Scale"
+        RS1[⭐ Very Poor - 1 Star]
+        RS2[⭐⭐ Poor - 2 Stars]
+        RS3[⭐⭐⭐ Fair - 3 Stars]
+        RS4[⭐⭐⭐⭐ Good - 4 Stars]
+        RS5[⭐⭐⭐⭐⭐ Excellent - 5 Stars]
+    end
+```
+
+### 9.3 Rating Analytics Dashboard
+
+```mermaid
+graph TD
+    A[Rating Analytics Dashboard] --> B[Service Performance Overview]
+    A --> C[Rating Trends Analysis]
+    A --> D[Staff Performance Metrics]
+    A --> E[Improvement Opportunities]
+    A --> F[Customer Satisfaction Reports]
+
+    B --> G[Average Ratings Display]
+    G --> H[Booking: 4.2/5 ⭐]
+    G --> I[Cafe: 4.1/5 ⭐]
+    G --> J[Staff: 4.5/5 ⭐]
+    G --> K[Facility: 4.3/5 ⭐]
+    G --> L[Overall: 4.3/5 ⭐]
+
+    C --> M[Daily/Monthly Trends]
+    C --> N[Rating Distribution]
+    C --> O[Seasonal Patterns]
+
+    D --> P[Staff Rating Rankings]
+    D --> Q[Individual Performance]
+    D --> R[Training Needs]
+
+    E --> S[Low Rating Analysis]
+    E --> T[Improvement Suggestions]
+    E --> U[Action Item Tracking]
+
+    F --> V[Customer Feedback Summary]
+    F --> W[Negative Review Analysis]
+    F --> X[Positive Review Highlights]
+```
+
+#### 9.1.1 Rating Components Detail
+
+**Booking Experience Rating:**
+
+- **Ease of Booking Process**: Seberapa mudah proses booking
+- **Calendar Interface**: User-friendly interface calendar
+- **Session Availability**: Ketersediaan sesi yang diinginkan
+- **Payment Process**: Kemudahan proses pembayaran
+- **Confirmation System**: Kejelasan konfirmasi booking
+
+**Cafe Service Rating:**
+
+- **Food Quality**: Kualitas makanan dan minuman
+- **Service Speed**: Kecepatan pelayanan
+- **Menu Variety**: Variasi menu yang tersedia
+- **Price Value**: Nilai harga yang sesuai
+
+**Staff Service Rating:**
+
+- **Staff Friendliness**: Keramahan staff
+- **Check-in Process**: Kemudahan proses check-in
+- **Problem Resolution**: Penyelesaian masalah
+- **Communication**: Komunikasi yang jelas
+
+**Facility Quality Rating:**
+
+- **Water Quality**: Kualitas air kolam
+- **Pool Cleanliness**: Kebersihan kolam
+- **Locker Room**: Kondisi ruang ganti
+- **Safety Equipment**: Peralatan keselamatan
+
+**Overall Satisfaction:**
+
+- **Overall Rating**: Rating keseluruhan 1-5 bintang
+- **Would Recommend**: Apakah mau merekomendasikan ke orang lain
+- **Will Return**: Apakah akan kembali lagi
+- **Additional Comments**: Komentar tambahan (opsional)
+
+#### 9.1.2 Rating Collection Features
+
+- **Automatic Rating Prompts**: Rating request otomatis setelah service selesai
+- **In-App Rating**: Rating langsung di aplikasi
+- **SMS/Email Rating**: Rating via SMS atau email
+- **Anonymous Rating Option**: Opsi rating anonim
+- **Multi-language Rating**: Rating dalam berbagai bahasa
+- **Rating Reminder**: Pengingat rating jika belum diisi
+
+#### 9.1.3 Rating Analytics Features
+
+- **Real-time Dashboard**: Dashboard rating real-time
+- **Trend Analysis**: Analisis trend rating over time
+- **Service Comparison**: Perbandingan rating antar service
+- **Staff Performance**: Tracking performa staff individual
+- **Alert System**: Alert untuk rating rendah
+- **Improvement Suggestions**: Saran improvement berdasarkan rating
+- **Customer Insights**: Insight customer behavior
+- **Report Generation**: Generate laporan rating berkala
+
+## 10. Check-in & Attendance System
+
+### 10.1 Check-in Process Overview
+
+```mermaid
+graph TD
+    A[Guest/Member Arrives] --> B[Staff Check-in Process]
+    B --> C[Verify Identification]
+    C --> D[Scan QR Code/Reference]
+    D --> E[Confirm Booking Details]
+    E --> F[Record Attendance]
+    F --> G[Issue Locker/Equipment]
+    G --> H[Guided to Pool Area]
+
+    subgraph "Identification Methods"
+        IM1[QR Code Scan from Booking]
+        IM2[Booking Reference Number]
+        IM3[Member Card/ID]
+        IM4[Phone Number Search]
+        IM5[Email Search]
+        IM6[Guest ID Card]
+    end
+
+    subgraph "Check-in Validation"
+        CV1[Booking Date Matches Today]
+        CV2[Session Time is Valid]
+        CV3[Payment Status is Confirmed]
+        CV4[Guest/Member is Authorized]
+        CV5[No Duplicate Check-in]
+    end
+
+    subgraph "Attendance Tracking"
+        AT1[Check-in Time Stamp]
+        AT2[Check-out Time Stamp]
+        AT3[Duration of Stay]
+        AT4[Staff who Processed]
+        AT5[Equipment Issued]
+        AT6[Special Notes]
+    end
+
+    subgraph "No-Show Handling"
+        NS1[Mark as No-Show]
+        NS2[Send No-Show Notification]
+        NS3[Update Booking Status]
+        NS4[Handle Refund Policy]
+        NS5[Track No-Show Patterns]
+    end
+```
+
+### 10.2 Attendance Management Flow
+
+```mermaid
+graph TD
+    A[Daily Operation Start] --> B[Staff Login to System]
+    B --> C[View Today's Bookings]
+    C --> D[Prepare Check-in Station]
+    D --> E[Wait for Guests/Members]
+
+    E --> F[Guest/Member Arrives]
+    F --> G[Staff Greets & Identifies]
+    G --> H{Verification Method}
+
+    H -->|QR Code| I[Scan QR Code]
+    H -->|Reference| J[Enter Reference Number]
+    H -->|Phone/Email| K[Search by Contact]
+    H -->|Member Card| L[Scan Member Card]
+
+    I --> M[System Validates Booking]
+    J --> M
+    K --> M
+    L --> M
+
+    M --> N{Booking Valid?}
+    N -->|No| O[Show Error Message]
+    N -->|Yes| P[Confirm Check-in]
+
+    O --> Q[Handle Exception]
+    Q --> R[Manual Override/Admin]
+
+    P --> S[Record Check-in Time]
+    S --> T[Issue Pool Pass]
+    T --> U[Guide to Facilities]
+    U --> V[Monitor Pool Usage]
+
+    V --> W[Guest/Member Finishes]
+    W --> X[Check-out Process]
+    X --> Y[Return Equipment]
+    Y --> Z[Record Duration]
+    Z --> AA[Send Feedback Request]
+
+    subgraph "Check-in Staff Interface"
+        CSI1[Today's Bookings List]
+        CSI2[Quick Search Function]
+        CSI3[QR Scanner Integration]
+        CSI4[Manual Entry Form]
+        CSI5[Real-time Status Updates]
+        CSI6[Exception Handling]
+    end
+
+    subgraph "Attendance Analytics"
+        AA1[Daily Attendance Report]
+        AA2[No-Show Rate Analysis]
+        AA3[Peak Hours Identification]
+        AA4[Guest vs Member Patterns]
+        AA5[Staff Performance Metrics]
+    end
+```
+
+### 10.3 No-Show Management System
+
+```mermaid
+graph TD
+    A[Session Start Time] --> B[Check Unchecked Bookings]
+    B --> C[Identify No-Shows]
+    C --> D[Mark as No-Show]
+    D --> E[Update Booking Status]
+    E --> F[Send No-Show Notification]
+    F --> G[Handle Refund/Reschedule]
+
+    subgraph "No-Show Detection"
+        NSD1[15 Minutes After Session Start]
+        NSD2[Automatic Status Update]
+        NSD3[Email/SMS Notification]
+        NSD4[Member Account Update]
+        NSD5[Guest Contact Notification]
+    end
+
+    subgraph "No-Show Consequences"
+        NSC1[Full Refund - First Time]
+        NSC2[Partial Refund - Repeat]
+        NSC3[No Refund - Habitual]
+        NSC4[Account Suspension - Severe]
+        NSC5[Premium Booking Required]
+    end
+
+    subgraph "No-Show Prevention"
+        NSP1[Reminder Notifications]
+        NSP2[Easy Cancellation Policy]
+        NSP3[Flexible Rescheduling]
+        NSP4[Weather Alerts]
+        NSP5[Health Status Updates]
+    end
+```
+
+#### 10.1.1 Check-in Process Detail
+
+**Staff Check-in Interface:**
+
+- **Today's Bookings**: List semua booking hari ini dengan status
+- **Quick Search**: Search berdasarkan nama, phone, email, reference
+- **QR Scanner**: Scan QR code dari booking confirmation
+- **Manual Entry**: Input manual untuk kasus khusus
+- **Real-time Updates**: Update status real-time
+- **Exception Handling**: Override untuk kasus khusus
+
+**Verification Process:**
+
+- **Booking Validation**: Validasi booking date, session, payment
+- **Duplicate Check**: Mencegah double check-in
+- **Authorization Check**: Memastikan guest/member yang benar
+- **Session Validation**: Memastikan waktu sesi masih valid
+- **Payment Confirmation**: Memastikan pembayaran sudah confirmed
+
+**Attendance Recording:**
+
+- **Check-in Time**: Timestamp kedatangan
+- **Check-out Time**: Timestamp pulang (opsional)
+- **Duration**: Lama waktu di kolam
+- **Staff ID**: Petugas yang melakukan check-in
+- **Equipment Issued**: Peralatan yang dipinjamkan
+- **Special Notes**: Catatan khusus jika ada
+
+#### 10.1.2 No-Show Management Features
+
+**Automatic Detection:**
+
+- **Time-based**: 15 menit setelah session start
+- **Status Update**: Otomatis update ke "No-Show"
+- **Notification**: Kirim notifikasi ke customer
+- **Analytics**: Track pattern no-show
+- **Policy Enforcement**: Terapkan kebijakan no-show
+
+**No-Show Policies:**
+
+- **First Time**: Full refund atau reschedule gratis
+- **Second Time**: Partial refund (50%)
+- **Third Time**: No refund, butuh booking premium
+- **Habitual**: Temporary suspension dari sistem
+- **Special Cases**: Exception untuk alasan kesehatan/emergency
+
+**Prevention Strategies:**
+
+- **Reminder System**: SMS/Email reminder 1 jam sebelum
+- **Easy Cancellation**: Kemudahan untuk cancel/reschedule
+- **Weather Alerts**: Notifikasi jika cuaca tidak mendukung
+- **Health Status**: Update status kesehatan member
+- **Incentive System**: Reward untuk yang selalu datang
+
+#### 10.1.3 Attendance Analytics Features
+
+**Daily Reports:**
+
+- **Attendance Rate**: Persentase kehadiran vs booking
+- **No-Show Rate**: Rate no-show per kategori
+- **Peak Hours**: Jam-jam ramai
+- **Staff Performance**: Metrik performa staff check-in
+- **Equipment Usage**: Tracking penggunaan peralatan
+
+**Trend Analysis:**
+
+- **Weekly Patterns**: Pattern kehadiran mingguan
+- **Monthly Trends**: Trend bulanan
+- **Seasonal Analysis**: Analisis musiman
+- **Member vs Guest**: Perbandingan member vs guest
+- **Session Comparison**: Perbandingan antar sesi
+
+**Business Intelligence:**
+
+- **Capacity Optimization**: Optimalisasi kapasitas berdasarkan attendance
+- **Revenue Impact**: Dampak no-show terhadap revenue
+- **Customer Behavior**: Analisis behavior customer
+- **Marketing Insights**: Insight untuk marketing strategy
+- **Operational Efficiency**: Efisiensi operasional
+
+## 11. Modul Integrasi SSO dan Manajemen
 
 ```mermaid
 graph TD
