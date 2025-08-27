@@ -79,6 +79,65 @@ graph TB
             UC43[Manage Staff]
             UC44[Generate Reports]
         end
+
+        subgraph "Dynamic Pricing System"
+            UC45[Configure Dynamic Pricing]
+            UC46[Update Pricing Configuration]
+            UC47[View Pricing History]
+            UC48[Manage Pricing Rules]
+            UC49[Set Seasonal Pricing]
+            UC50[Configure Member Discounts]
+        end
+
+        subgraph "Guest User Management"
+            UC51[Register as Guest]
+            UC52[Convert Guest to Member]
+            UC53[Manage Guest Users]
+            UC54[Guest User Analytics]
+            UC55[Guest Conversion Tracking]
+        end
+
+        subgraph "Google SSO Integration"
+            UC56[Login via Google SSO]
+            UC57[Sign up via Google SSO]
+            UC58[Sync Google Profile]
+            UC59[Configure SSO Settings]
+            UC60[Manage SSO Sessions]
+        end
+
+        subgraph "Booking Proof System"
+            UC61[Generate QR Code]
+            UC62[Generate Booking Reference]
+            UC63[Send Email Confirmation]
+            UC64[Send SMS Confirmation]
+            UC65[Verify Booking Proof]
+            UC66[Generate Digital Receipt]
+            UC67[Manage Proof Templates]
+        end
+
+        subgraph "Notification System"
+            UC68[Send Push Notifications]
+            UC69[Configure Notifications]
+            UC70[Manage Notification Templates]
+            UC71[Schedule Notifications]
+            UC72[Track Notification Delivery]
+        end
+
+        subgraph "Mobile Features"
+            UC73[PWA Installation]
+            UC74[Offline Support]
+            UC75[Mobile-Optimized Interface]
+            UC76[Touch Gestures]
+            UC77[Mobile Payment Integration]
+        end
+
+        subgraph "Advanced Calendar"
+            UC78[Forward-Only Navigation]
+            UC79[Real-time Availability Display]
+            UC80[Date Status Indicators]
+            UC81[Capacity Management]
+            UC82[Session Slot Management]
+        end
     end
 
     A1 -.-> UC1
@@ -107,6 +166,44 @@ graph TB
     A1 -.-> UC42
     A1 -.-> UC43
     A1 -.-> UC44
+    A1 -.-> UC45
+    A1 -.-> UC46
+    A1 -.-> UC47
+    A1 -.-> UC48
+    A1 -.-> UC49
+    A1 -.-> UC50
+    A1 -.-> UC51
+    A1 -.-> UC52
+    A1 -.-> UC53
+    A1 -.-> UC54
+    A1 -.-> UC55
+    A1 -.-> UC56
+    A1 -.-> UC57
+    A1 -.-> UC58
+    A1 -.-> UC59
+    A1 -.-> UC60
+    A1 -.-> UC61
+    A1 -.-> UC62
+    A1 -.-> UC63
+    A1 -.-> UC64
+    A1 -.-> UC65
+    A1 -.-> UC66
+    A1 -.-> UC67
+    A1 -.-> UC68
+    A1 -.-> UC69
+    A1 -.-> UC70
+    A1 -.-> UC71
+    A1 -.-> UC72
+    A1 -.-> UC73
+    A1 -.-> UC74
+    A1 -.-> UC75
+    A1 -.-> UC76
+    A1 -.-> UC77
+    A1 -.-> UC78
+    A1 -.-> UC79
+    A1 -.-> UC80
+    A1 -.-> UC81
+    A1 -.-> UC82
 
     A2 -.-> UC1
     A2 -.-> UC2
