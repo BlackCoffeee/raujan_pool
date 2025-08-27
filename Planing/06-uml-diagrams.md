@@ -24,34 +24,42 @@ graph TB
         end
 
         subgraph "Booking System"
-            UC6[Book Regular Session]
-            UC7[Book Private Class]
-            UC8[Cancel Booking]
-            UC9[Check-in/Check-out]
-            UC10[View Schedule]
-            UC11[Check Availability]
+            UC6[Access Calendar Interface]
+            UC7[Navigate Calendar Forward]
+            UC8[Select Available Date]
+            UC9[View Session Details]
+            UC10[Select Session]
+            UC11[Register as Guest/Member]
+            UC12[Complete Booking]
+            UC13[Receive Confirmation]
+            UC14[Cancel Booking]
+            UC15[Check-in/Check-out]
+            UC16[View Schedule]
+            UC17[Check Real-time Availability]
+            UC18[Book Regular Session]
+            UC19[Book Private Session]
         end
 
         subgraph "Payment System"
-            UC12[Pay Membership]
-            UC13[Pay Regular Booking]
-            UC14[Pay Private Class]
-            UC15[Process Refund]
+            UC20[Pay Membership]
+            UC21[Pay Regular Session]
+            UC22[Pay Private Session]
+            UC23[Process Refund]
         end
 
         subgraph "Cafe Management"
-            UC16[Browse Menu]
-            UC17[Place Order]
-            UC18[Manage Inventory]
-            UC19[Update Stock]
-            UC20[Track Sales]
+            UC24[Browse Menu]
+            UC25[Place Order]
+            UC26[Manage Inventory]
+            UC27[Update Stock]
+            UC28[Track Sales]
         end
 
         subgraph "Reporting"
-            UC21[Generate Member Report]
-            UC22[Generate Booking Report]
-            UC23[Generate Sales Report]
-            UC24[View Analytics]
+            UC29[Generate Member Report]
+            UC30[Generate Booking Report]
+            UC31[Generate Sales Report]
+            UC32[View Analytics]
         end
     end
 
@@ -412,7 +420,72 @@ classDiagram
 
 ## 3. Sequence Diagram
 
-### 3.1 Sequence Diagram Member Registration
+### 3.1 Core Booking Flow Sequence
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant W as Web App
+    participant A as API Gateway
+    participant B as Booking Service
+    participant D as Database
+    participant N as Notification Service
+
+    U->>W: Access web application
+    W->>U: Display landing page
+    U->>W: Click "Reservasi" button
+    W->>A: Request calendar page
+    A->>B: Get current month availability
+    B->>D: Query booking data
+    D-->>B: Return availability data
+    B-->>A: Return calendar data
+    A-->>W: Return calendar response
+    W->>U: Display calendar interface
+
+    Note over U,W: Calendar Navigation
+    U->>W: Navigate to next month
+    W->>A: Request next month data
+    A->>B: Get month availability
+    B->>D: Query month bookings
+    D-->>B: Return month data
+    B-->>A: Return availability
+    A-->>W: Return calendar data
+    W->>U: Update calendar display
+
+    Note over U,W: Date Selection
+    U->>W: Click available date
+    W->>A: Request session details
+    A->>B: Get session availability
+    B->>D: Query session capacity
+    D-->>B: Return session data
+    B-->>A: Return session details
+    A-->>W: Return session info
+    W->>U: Display session modal
+
+    Note over U,W: Session Selection
+    U->>W: Select morning/afternoon session
+    W->>A: Request session booking
+    A->>B: Validate session availability
+    B->>D: Check capacity
+    D-->>B: Return capacity status
+    B-->>A: Return validation result
+    A-->>W: Return session confirmation
+    W->>U: Display registration form
+
+    Note over U,W: User Registration
+    U->>W: Fill registration form
+    W->>A: Submit booking request
+    A->>B: Process booking
+    B->>D: Create booking record
+    D-->>B: Return booking ID
+    B->>N: Send confirmation notifications
+    N-->>B: Confirm notifications sent
+    B-->>A: Return booking confirmation
+    A-->>W: Return booking details
+    W->>U: Display confirmation page
+```
+
+### 3.2 Sequence Diagram Member Registration
 
 ```mermaid
 sequenceDiagram

@@ -54,6 +54,33 @@ gantt
 
 #### Phase 2: Core Features (Weeks 3-6)
 
+**Calendar Interface Development**
+
+- Laravel: Calendar API endpoints, availability management
+  - Create CalendarController dengan endpoints untuk month data
+  - Implement GetCalendarAvailability stored procedure
+  - Build CheckSessionAvailability API
+  - Setup real-time capacity tracking
+- Frontend: Calendar component, date selection, session modal
+  - Build responsive calendar grid component
+  - Implement forward-only navigation (no past months)
+  - Create session selection modal dengan capacity display
+  - Add status indicators (available/partial/full/closed)
+- Database: Calendar availability tables, capacity tracking
+  - Setup calendar_availability table
+  - Create daily_capacity tracking
+  - Implement session_slots management
+  - Setup capacity update triggers
+- Real-time: WebSocket integration for live updates
+  - Laravel WebSocket server setup
+  - Frontend WebSocket client integration
+  - Real-time availability updates
+  - Concurrent booking prevention
+- Testing: Calendar navigation, availability checking
+  - Unit tests untuk calendar API
+  - Integration tests untuk availability logic
+  - E2E tests untuk complete calendar flow
+
 **User Authentication System**
 
 - Laravel: User management, roles, permissions
@@ -64,7 +91,9 @@ gantt
 **Booking System**
 
 - Laravel: Booking CRUD, validation, business logic
-- Frontend: Booking forms, calendar, real-time updates
+- Frontend: Session selection, registration forms
+- Integration: Capacity management, overbooking prevention
+- Testing: Complete booking flow testing
 - PWA: Offline booking capability
 - Testing: Integration tests untuk booking flows
 

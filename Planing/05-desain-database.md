@@ -17,16 +17,24 @@ erDiagram
     CAFE_ORDERS ||--o{ PAYMENTS : has
     CAFE_MENU ||--o{ CAFE_ORDERS : contains
     CAFE_INVENTORY ||--o{ CAFE_MENU : tracks
-    
+
     %% Pricing Configuration Tables
     PRICING_CONFIG ||--o{ BOOKINGS : used_in
     PRICING_RULES ||--o{ PRICING_CONFIG : applies_to
     PRICING_HISTORY ||--o{ PRICING_CONFIG : tracks
-    
+
     %% Authentication & Verification
     VERIFICATION_ATTEMPTS ||--o{ BOOKING_PROOFS : tracks
     AUTHENTICATION_LOGS ||--o{ USERS : logs
-    
+
+    %% Calendar & Availability Management
+    CALENDAR_AVAILABILITY ||--o{ DAILY_CAPACITY : manages
+    DAILY_CAPACITY ||--o{ SESSION_SLOTS : contains
+    SESSION_SLOTS ||--o{ BOOKINGS : reserves
+    NOTIFICATIONS ||--o{ NOTIFICATION_LOGS : tracks
+    NOTIFICATIONS }o--|| USERS : sent_to
+    NOTIFICATIONS }o--|| BOOKINGS : related_to
+
     USERS {
         int id PK
         string username
@@ -42,7 +50,7 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
-    
+
     USER_PROFILES {
         int id PK
         int user_id FK
@@ -61,7 +69,7 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
-    
+
     MEMBERS {
         int id PK
         int user_id FK
@@ -77,7 +85,7 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
-    
+
     GUEST_USERS {
         int id PK
         int user_profile_id FK
@@ -94,7 +102,7 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
-    
+
     BOOKINGS {
         int id PK
         int member_id FK
@@ -115,7 +123,7 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
-    
+
     PAYMENTS {
         int id PK
         int booking_id FK
@@ -126,7 +134,7 @@ erDiagram
         timestamp payment_date
         timestamp created_at
     }
-    
+
     CAFE_MENU {
         int id PK
         string name
@@ -138,7 +146,7 @@ erDiagram
         boolean is_halal
         timestamp created_at
     }
-    
+
     CAFE_ORDERS {
         int id PK
         int member_id FK
@@ -148,7 +156,7 @@ erDiagram
         timestamp order_date
         timestamp created_at
     }
-    
+
     CAFE_INVENTORY {
         int id PK
         int menu_id FK
@@ -157,7 +165,7 @@ erDiagram
         string unit
         timestamp last_updated
     }
-    
+
     %% Dynamic Pricing Tables
     PRICING_CONFIG {
         int id PK
@@ -174,7 +182,7 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
-    
+
     PRICING_RULES {
         int id PK
         string rule_name
@@ -186,7 +194,7 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
-    
+
     PRICING_HISTORY {
         int id PK
         int config_id FK
@@ -196,7 +204,7 @@ erDiagram
         int changed_by FK
         timestamp changed_at
     }
-    
+
     %% SSO Tables
     SSO_SESSIONS {
         int id PK
@@ -211,7 +219,7 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
-    
+
     AUTHENTICATION_LOGS {
         int id PK
         int user_id FK
@@ -223,7 +231,7 @@ erDiagram
         string error_message
         timestamp created_at
     }
-    
+
     %% Guest Proof System Tables
     BOOKING_PROOFS {
         int id PK
@@ -239,7 +247,7 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
-    
+
     VERIFICATION_ATTEMPTS {
         int id PK
         int booking_id FK
@@ -330,7 +338,119 @@ erDiagram
 
 ### 2.1 Dynamic Pricing Tables
 
-#### 2.1.1 PRICING_CONFIG Table
+#### 2.1.1 Calendar Availability Table
+
+```sql
+CREATE TABLE calendar_availability (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    date DATE NOT NULL,
+    is_operational BOOLEAN DEFAULT TRUE,
+    max_daily_capacity INT DEFAULT 20,
+    morning_session_capacity INT DEFAULT 10,
+    afternoon_session_capacity INT DEFAULT 10,
+    special_rules TEXT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    UNIQUE KEY unique_date (date),
+    INDEX idx_date (date),
+    INDEX idx_operational (is_operational)
+);
+```
+
+#### 2.1.2 Daily Capacity Table
+
+```sql
+CREATE TABLE daily_capacity (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    calendar_availability_id INT NOT NULL,
+    date DATE NOT NULL,
+    morning_adults_booked INT DEFAULT 0,
+    morning_children_booked INT DEFAULT 0,
+    afternoon_adults_booked INT DEFAULT 0,
+    afternoon_children_booked INT DEFAULT 0,
+    total_bookings INT DEFAULT 0,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (calendar_availability_id) REFERENCES calendar_availability(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_date_capacity (date),
+    INDEX idx_date (date),
+    INDEX idx_calendar_availability (calendar_availability_id)
+);
+```
+
+#### 2.1.3 Session Slots Table
+
+```sql
+CREATE TABLE session_slots (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    daily_capacity_id INT NOT NULL,
+    session_type ENUM('morning', 'afternoon') NOT NULL,
+    max_adults INT DEFAULT 10,
+    max_children INT DEFAULT 10,
+    current_adults INT DEFAULT 0,
+    current_children INT DEFAULT 0,
+    is_available BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (daily_capacity_id) REFERENCES daily_capacity(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_daily_session (daily_capacity_id, session_type),
+    INDEX idx_daily_capacity (daily_capacity_id),
+    INDEX idx_session_type (session_type),
+    INDEX idx_availability (is_available)
+);
+```
+
+#### 2.1.4 Notifications Table
+
+```sql
+CREATE TABLE notifications (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NULL,
+    booking_id INT NULL,
+    notification_type ENUM('booking_confirmation', 'booking_reminder', 'booking_cancelled', 'session_full', 'promotional') NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    channel ENUM('email', 'sms', 'push', 'in_app') NOT NULL,
+    status ENUM('pending', 'sent', 'delivered', 'failed') DEFAULT 'pending',
+    scheduled_at TIMESTAMP NULL,
+    sent_at TIMESTAMP NULL,
+    delivery_attempts INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE,
+    INDEX idx_user_id (user_id),
+    INDEX idx_booking_id (booking_id),
+    INDEX idx_notification_type (notification_type),
+    INDEX idx_status (status),
+    INDEX idx_scheduled_at (scheduled_at)
+);
+```
+
+#### 2.1.5 Notification Logs Table
+
+```sql
+CREATE TABLE notification_logs (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    notification_id INT NOT NULL,
+    channel ENUM('email', 'sms', 'push', 'in_app') NOT NULL,
+    status ENUM('sent', 'delivered', 'failed', 'bounced') NOT NULL,
+    response_data JSON NULL,
+    error_message TEXT NULL,
+    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (notification_id) REFERENCES notifications(id) ON DELETE CASCADE,
+    INDEX idx_notification_id (notification_id),
+    INDEX idx_status (status),
+    INDEX idx_sent_at (sent_at)
+);
+```
+
+#### 2.1.6 PRICING_CONFIG Table
+
 ```sql
 CREATE TABLE pricing_config (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -346,7 +466,7 @@ CREATE TABLE pricing_config (
     created_by INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
+
     INDEX idx_category (category),
     INDEX idx_service_type (service_type),
     INDEX idx_effective_date (effective_date),
@@ -355,6 +475,7 @@ CREATE TABLE pricing_config (
 ```
 
 #### 2.1.2 PRICING_RULES Table
+
 ```sql
 CREATE TABLE pricing_rules (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -366,7 +487,7 @@ CREATE TABLE pricing_rules (
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
+
     INDEX idx_rule_type (rule_type),
     INDEX idx_priority (priority),
     INDEX idx_is_active (is_active)
@@ -374,6 +495,7 @@ CREATE TABLE pricing_rules (
 ```
 
 #### 2.1.3 PRICING_HISTORY Table
+
 ```sql
 CREATE TABLE pricing_history (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -383,7 +505,7 @@ CREATE TABLE pricing_history (
     change_reason VARCHAR(255),
     changed_by INT NOT NULL,
     changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
+
     FOREIGN KEY (config_id) REFERENCES pricing_config(id) ON DELETE CASCADE,
     FOREIGN KEY (changed_by) REFERENCES users(id),
     INDEX idx_config_id (config_id),
@@ -394,6 +516,7 @@ CREATE TABLE pricing_history (
 ### 2.2 Authentication dan SSO Tables
 
 #### 2.2.1 USERS Table (Updated with SSO Support)
+
 ```sql
 CREATE TABLE users (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -409,7 +532,7 @@ CREATE TABLE users (
     login_count INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
+
     INDEX idx_email (email),
     INDEX idx_auth_provider (auth_provider),
     INDEX idx_auth_provider_id (auth_provider_id),
@@ -418,6 +541,7 @@ CREATE TABLE users (
 ```
 
 #### 2.2.2 USER_PROFILES Table (Enhanced for SSO)
+
 ```sql
 CREATE TABLE user_profiles (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -436,7 +560,7 @@ CREATE TABLE user_profiles (
     last_profile_sync TIMESTAMP NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
+
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     INDEX idx_user_id (user_id),
     INDEX idx_google_profile_id (google_profile_id),
@@ -445,6 +569,7 @@ CREATE TABLE user_profiles (
 ```
 
 #### 2.2.3 SSO_SESSIONS Table
+
 ```sql
 CREATE TABLE sso_sessions (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -458,7 +583,7 @@ CREATE TABLE sso_sessions (
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
+
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     INDEX idx_user_id (user_id),
     INDEX idx_provider (provider),
@@ -468,6 +593,7 @@ CREATE TABLE sso_sessions (
 ```
 
 #### 2.2.4 AUTHENTICATION_LOGS Table
+
 ```sql
 CREATE TABLE authentication_logs (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -479,7 +605,7 @@ CREATE TABLE authentication_logs (
     success BOOLEAN DEFAULT TRUE,
     error_message VARCHAR(255) NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
+
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
     INDEX idx_user_id (user_id),
     INDEX idx_auth_method (auth_method),
@@ -491,6 +617,7 @@ CREATE TABLE authentication_logs (
 ### 2.3 Guest User Management Tables
 
 #### 2.3.1 GUEST_USERS Table (Updated for SSO Conversion)
+
 ```sql
 CREATE TABLE guest_users (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -507,7 +634,7 @@ CREATE TABLE guest_users (
     conversion_date TIMESTAMP NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
+
     FOREIGN KEY (user_profile_id) REFERENCES user_profiles(id) ON DELETE SET NULL,
     FOREIGN KEY (converted_user_id) REFERENCES users(id) ON DELETE SET NULL,
     INDEX idx_phone (phone),
@@ -518,6 +645,7 @@ CREATE TABLE guest_users (
 ```
 
 #### 2.3.2 BOOKING_PROOFS Table
+
 ```sql
 CREATE TABLE booking_proofs (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -532,7 +660,7 @@ CREATE TABLE booking_proofs (
     verified_by INT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
+
     FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE,
     FOREIGN KEY (verified_by) REFERENCES users(id),
     INDEX idx_booking_id (booking_id),
@@ -543,6 +671,7 @@ CREATE TABLE booking_proofs (
 ```
 
 #### 2.3.3 VERIFICATION_ATTEMPTS Table
+
 ```sql
 CREATE TABLE verification_attempts (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -552,7 +681,7 @@ CREATE TABLE verification_attempts (
     user_agent TEXT,
     success BOOLEAN,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
+
     FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE SET NULL,
     INDEX idx_booking_id (booking_id),
     INDEX idx_created_at (created_at),
@@ -563,6 +692,7 @@ CREATE TABLE verification_attempts (
 ### 2.4 Updated Core Tables untuk SSO Support
 
 #### 2.4.1 MEMBERS Table (Updated with Profile Reference)
+
 ```sql
 CREATE TABLE members (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -578,7 +708,7 @@ CREATE TABLE members (
     converted_from_guest_id INT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
+
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (user_profile_id) REFERENCES user_profiles(id) ON DELETE CASCADE,
     FOREIGN KEY (pricing_package_id) REFERENCES pricing_config(id),
@@ -591,6 +721,7 @@ CREATE TABLE members (
 ```
 
 #### 2.4.2 BOOKINGS Table (Updated with Guest Support)
+
 ```sql
 CREATE TABLE bookings (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -612,7 +743,7 @@ CREATE TABLE bookings (
     notes TEXT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
+
     FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE CASCADE,
     FOREIGN KEY (guest_user_id) REFERENCES guest_users(id) ON DELETE CASCADE,
     FOREIGN KEY (pricing_config_id) REFERENCES pricing_config(id),
@@ -713,7 +844,158 @@ GROUP BY pc.category, pc.service_type, DATE_FORMAT(b.created_at, '%Y-%m');
 
 ## 5. Stored Procedures
 
-### 5.1 Calculate Dynamic Price Procedure
+### 5.1 Get Calendar Availability
+
+```sql
+DELIMITER //
+CREATE PROCEDURE GetCalendarAvailability(
+    IN start_date DATE,
+    IN end_date DATE
+)
+BEGIN
+    SELECT
+        ca.date,
+        ca.is_operational,
+        ca.max_daily_capacity,
+        ca.morning_session_capacity,
+        ca.afternoon_session_capacity,
+        dc.morning_adults_booked,
+        dc.morning_children_booked,
+        dc.afternoon_adults_booked,
+        dc.afternoon_children_booked,
+        (ca.morning_session_capacity - dc.morning_adults_booked - dc.morning_children_booked) as morning_available,
+        (ca.afternoon_session_capacity - dc.afternoon_adults_booked - dc.afternoon_children_booked) as afternoon_available,
+        CASE
+            WHEN ca.is_operational = FALSE THEN 'closed'
+            WHEN (dc.morning_adults_booked + dc.morning_children_booked) >= ca.morning_session_capacity
+                 AND (dc.afternoon_adults_booked + dc.afternoon_children_booked) >= ca.afternoon_session_capacity THEN 'full'
+            WHEN (dc.morning_adults_booked + dc.morning_children_booked) >= ca.morning_session_capacity
+                 OR (dc.afternoon_adults_booked + dc.afternoon_children_booked) >= ca.afternoon_session_capacity THEN 'partial'
+            ELSE 'available'
+        END as status
+    FROM calendar_availability ca
+    LEFT JOIN daily_capacity dc ON ca.date = dc.date
+    WHERE ca.date BETWEEN start_date AND end_date
+    ORDER BY ca.date;
+END //
+DELIMITER ;
+```
+
+### 5.2 Check Session Availability
+
+```sql
+DELIMITER //
+CREATE PROCEDURE CheckSessionAvailability(
+    IN booking_date DATE,
+    IN session_type ENUM('morning', 'afternoon'),
+    IN adult_count INT,
+    IN child_count INT,
+    OUT is_available BOOLEAN,
+    OUT available_adults INT,
+    OUT available_children INT
+)
+BEGIN
+    DECLARE max_adults INT DEFAULT 10;
+    DECLARE max_children INT DEFAULT 10;
+    DECLARE current_adults INT DEFAULT 0;
+    DECLARE current_children INT DEFAULT 0;
+
+    -- Get session capacity
+    SELECT
+        CASE
+            WHEN session_type = 'morning' THEN ca.morning_session_capacity / 2
+            ELSE ca.afternoon_session_capacity / 2
+        END,
+        CASE
+            WHEN session_type = 'morning' THEN ca.morning_session_capacity / 2
+            ELSE ca.afternoon_session_capacity / 2
+        END
+    INTO max_adults, max_children
+    FROM calendar_availability ca
+    WHERE ca.date = booking_date AND ca.is_operational = TRUE;
+
+    -- Get current bookings
+    SELECT
+        CASE
+            WHEN session_type = 'morning' THEN dc.morning_adults_booked
+            ELSE dc.afternoon_adults_booked
+        END,
+        CASE
+            WHEN session_type = 'morning' THEN dc.morning_children_booked
+            ELSE dc.afternoon_children_booked
+        END
+    INTO current_adults, current_children
+    FROM daily_capacity dc
+    WHERE dc.date = booking_date;
+
+    -- Calculate available slots
+    SET available_adults = max_adults - current_adults;
+    SET available_children = max_children - current_children;
+
+    -- Check if booking is possible
+    SET is_available = (available_adults >= adult_count AND available_children >= child_count);
+END //
+DELIMITER ;
+```
+
+### 5.3 Update Session Capacity
+
+```sql
+DELIMITER //
+CREATE PROCEDURE UpdateSessionCapacity(
+    IN booking_date DATE,
+    IN session_type ENUM('morning', 'afternoon'),
+    IN adult_count INT,
+    IN child_count INT,
+    IN operation ENUM('add', 'remove')
+)
+BEGIN
+    DECLARE capacity_id INT;
+
+    -- Get or create daily capacity record
+    SELECT id INTO capacity_id FROM daily_capacity WHERE date = booking_date;
+
+    IF capacity_id IS NULL THEN
+        INSERT INTO daily_capacity (calendar_availability_id, date)
+        VALUES ((SELECT id FROM calendar_availability WHERE date = booking_date), booking_date);
+        SET capacity_id = LAST_INSERT_ID();
+    END IF;
+
+    -- Update capacity based on operation
+    IF operation = 'add' THEN
+        IF session_type = 'morning' THEN
+            UPDATE daily_capacity
+            SET morning_adults_booked = morning_adults_booked + adult_count,
+                morning_children_booked = morning_children_booked + child_count,
+                total_bookings = total_bookings + adult_count + child_count
+            WHERE id = capacity_id;
+        ELSE
+            UPDATE daily_capacity
+            SET afternoon_adults_booked = afternoon_adults_booked + adult_count,
+                afternoon_children_booked = afternoon_children_booked + child_count,
+                total_bookings = total_bookings + adult_count + child_count
+            WHERE id = capacity_id;
+        END IF;
+    ELSE
+        IF session_type = 'morning' THEN
+            UPDATE daily_capacity
+            SET morning_adults_booked = GREATEST(0, morning_adults_booked - adult_count),
+                morning_children_booked = GREATEST(0, morning_children_booked - child_count),
+                total_bookings = GREATEST(0, total_bookings - adult_count - child_count)
+            WHERE id = capacity_id;
+        ELSE
+            UPDATE daily_capacity
+            SET afternoon_adults_booked = GREATEST(0, afternoon_adults_booked - adult_count),
+                afternoon_children_booked = GREATEST(0, afternoon_children_booked - child_count),
+                total_bookings = GREATEST(0, total_bookings - adult_count - child_count)
+            WHERE id = capacity_id;
+        END IF;
+    END IF;
+END //
+DELIMITER ;
+```
+
+### 5.4 Calculate Dynamic Price Procedure
 
 ```sql
 DELIMITER //

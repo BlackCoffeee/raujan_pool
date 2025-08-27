@@ -56,33 +56,346 @@ graph TD
 
 ## 2. Modul Reservasi dan Booking
 
-### 2.1 Dynamic Booking System
+### 2.1 Core Booking Flow System
 
 ```mermaid
 graph TD
-    A[Booking Request] --> B[Select Session Type]
-    B --> C[Choose Date & Time]
-    C --> D[Dynamic Price Calculation]
-    D --> E[Member Discount Check]
-    E --> F[Final Price Display]
-    F --> G[Confirm Booking]
+    A[User Akses Web] --> B[Landing Page]
+    B --> C[Klik Tombol Reservasi]
+    C --> D[Booking Calendar Page]
 
-    subgraph "Dynamic Pricing Factors"
-        F1[Base Rate Configuration]
-        F2[Seasonal Adjustments]
-        F3[Time-based Pricing]
-        F4[Capacity-based Pricing]
-        F5[Member Tier Pricing]
+    D --> E[Calendar Interface]
+    E --> F[Month Navigation]
+    F --> G[Date Selection]
+    G --> H[Session View]
+    H --> I[User Registration]
+    I --> J[Booking Confirmation]
+
+    subgraph "Calendar Features"
+        CF1[Current Month Display]
+        CF2[Forward Navigation Only]
+        CF3[No Past Month Access]
+        CF4[Date Status Indicators]
+    end
+
+    subgraph "Status Indicators"
+        SI1[Available Dates - Green]
+        SI2[Full Capacity - Red]
+        SI3[Partial Availability - Orange]
+        SI4[Closed Dates - Gray]
+    end
+
+    subgraph "Session Management"
+        SM1[Morning Session 06:00-12:00]
+        SM2[Afternoon Session 13:00-19:00]
+        SM3[Session Capacity: 10 Adults + 10 Children]
+        SM4[Real-time Availability Check]
+    end
+
+    subgraph "User Registration"
+        UR1[Guest Registration - Quick Form]
+        UR2[Member Login - Existing Account]
+        UR3[Google SSO - One-tap Registration]
+        UR4[Information Collection]
     end
 ```
 
-#### 2.1.1 Configurable Booking Features
+### 2.2 Detailed Calendar Interface
 
-- **Flexible Session Pricing**: Harga sesi dapat diatur berbeda untuk weekday/weekend
-- **Seasonal Rate Adjustments**: Harga dapat disesuaikan berdasarkan musim
-- **Capacity-based Pricing**: Harga dapat berubah berdasarkan kapasitas tersedia
-- **Member Tier Pricing**: Harga berbeda untuk member vs non-member
-- **Promotional Booking Rates**: Harga khusus untuk periode tertentu
+```mermaid
+graph TD
+    A[Calendar Page Load] --> B[Fetch Current Month Data]
+    B --> C[Display Calendar Grid]
+    C --> D[Show Month Navigation]
+
+    D --> E[Month Selector]
+    E --> F{Can Navigate?}
+    F -->|Past Month| G[Disable Navigation]
+    F -->|Current Month| H[Show Current Month]
+    F -->|Future Month| I[Allow Navigation]
+
+    H --> J[Render Calendar Dates]
+    I --> J
+
+    J --> K[Date Status Check]
+    K --> L[Apply Status Indicators]
+    L --> M[Make Dates Clickable]
+
+    M --> N[User Clicks Date]
+    N --> O[Show Session Details]
+    O --> P[Session Availability Check]
+    P --> Q[Display Session Options]
+
+    subgraph "Calendar Month Navigation"
+        CMN1[Previous Month Button - Disabled]
+        CMN2[Current Month Display]
+        CMN3[Next Month Button - Enabled]
+        CMN4[Year Dropdown - Forward Only]
+    end
+
+    subgraph "Date Status Logic"
+        DSL1[Check Daily Capacity]
+        DSL2[Check Session Availability]
+        DSL3[Check Operating Hours]
+        DSL4[Check Special Rules]
+    end
+
+    subgraph "Status Visualization"
+        SV1[Fully Available - Green Circle]
+        SV2[Morning Available - Green M]
+        SV3[Afternoon Available - Green A]
+        SV4[Fully Booked - Red Circle]
+        SV5[Closed - Gray Circle]
+    end
+```
+
+### 2.3 Session Selection Flow
+
+```mermaid
+graph TD
+    A[User Clicks Date] --> B[Show Date Details Modal]
+    B --> C[Display Available Sessions]
+    C --> D[Session Status Check]
+    D --> E{Session Available?}
+
+    E -->|Yes| F[Show Session Details]
+    E -->|No| G[Show Full Status]
+
+    F --> H[Session Information Display]
+    H --> I[Capacity Information]
+    I --> J[Current Booking Count]
+    J --> K[Remaining Slots]
+    K --> L[Select Session Button]
+
+    G --> M[Display Full Message]
+    M --> N[Suggest Alternative Dates]
+    N --> O[Return to Calendar]
+
+    L --> P[Session Selection Confirmation]
+    P --> Q[User Registration Flow]
+
+    subgraph "Session Details Display"
+        SDD1[Session Time: Morning 06:00-12:00]
+        SDD2[Session Time: Afternoon 13:00-19:00]
+        SDD3[Capacity: 10 Adults + 10 Children]
+        SDD4[Current Bookings: X Adults, Y Children]
+        SDD5[Available Slots: A Adults, C Children]
+        SDD6[Price Information]
+    end
+
+    subgraph "Capacity Management"
+        CM1[Real-time Availability Check]
+        CM2[Concurrent Booking Prevention]
+        CM3[Capacity Reservation System]
+        CM4[Overbooking Protection]
+    end
+```
+
+### 2.4 User Registration Flow
+
+```mermaid
+graph TD
+    A[Session Selected] --> B{User Type Check}
+    B -->|Guest| C[Quick Registration Form]
+    B -->|Member| D[Member Login]
+    B -->|New User| E[Registration Options]
+
+    C --> F[Guest Form Fields]
+    F --> G[Name, Phone, Email]
+    G --> H[Emergency Contact]
+    H --> I[Terms Acceptance]
+    I --> J[Create Guest Account]
+
+    D --> K[Member Authentication]
+    K --> L[Verify Membership]
+    L --> M[Check Membership Validity]
+    M --> N[Use Member Data]
+
+    E --> O[Registration Method Choice]
+    O --> P[Traditional Registration]
+    O --> Q[Google SSO Registration]
+
+    P --> R[Manual Form Registration]
+    R --> S[Profile Creation]
+    S --> T[Account Activation]
+
+    Q --> U[Google OAuth Flow]
+    U --> V[Profile Sync]
+    V --> W[Account Creation]
+
+    J --> X[Proceed to Booking]
+    N --> X
+    T --> X
+    W --> X
+
+    subgraph "Guest Registration Form"
+        GRF1[Full Name - Required]
+        GRF2[Phone Number - Required]
+        GRF3[Email Address - Optional]
+        GRF4[Emergency Contact - Required]
+        GRF5[Terms & Conditions - Required]
+        GRF6[Privacy Policy - Required]
+    end
+
+    subgraph "Member Authentication"
+        MA1[Email/Password Login]
+        MA2[Google SSO Login]
+        MA3[Membership Status Check]
+        MA4[Billing Information]
+    end
+```
+
+### 2.5 Booking Confirmation System
+
+```mermaid
+graph TD
+    A[Booking Submission] --> B[System Processing]
+    B --> C[Capacity Final Check]
+    C --> D[Price Calculation]
+    D --> E[Booking Creation]
+    E --> F[Confirmation Generation]
+
+    F --> G[Booking Reference Number]
+    G --> H[QR Code Generation]
+    H --> I[Proof Documents]
+    I --> J[Notification System]
+
+    J --> K[Email Confirmation]
+    J --> L[SMS Confirmation]
+    J --> M[Push Notification]
+
+    subgraph "Booking Validation"
+        BV1[Session Availability Check]
+        BV2[User Information Validation]
+        BV3[Capacity Reservation]
+        BV4[Payment Requirement Check]
+    end
+
+    subgraph "Confirmation Documents"
+        CD1[Booking Reference: RJS-YYYYMMDD-XXXX]
+        CD2[QR Code with Booking Data]
+        CD3[Digital Receipt PDF]
+        CD4[Email Confirmation]
+        CD5[SMS Confirmation]
+    end
+
+    subgraph "Notification Delivery"
+        ND1[Immediate Email Confirmation]
+        ND2[Instant SMS Notification]
+        ND3[Push Notification Alert]
+        ND4[Calendar Integration]
+    end
+```
+
+### 2.6 Real-time Availability System
+
+```mermaid
+graph TD
+    A[Calendar Page Load] --> B[Fetch Availability Data]
+    B --> C[Cache Current Month]
+    C --> D[Display Calendar]
+
+    E[User Interaction] --> F[Real-time Check]
+    F --> G[API Call to Backend]
+    G --> H[Database Query]
+    H --> I[Availability Calculation]
+    I --> J[Update UI]
+
+    K[Concurrent Users] --> L[WebSocket Connection]
+    L --> M[Real-time Updates]
+    M --> N[Push to All Connected Users]
+
+    subgraph "Availability Calculation"
+        AC1[Total Daily Capacity: 20 persons]
+        AC2[Morning Session: 10 Adults + 10 Children]
+        AC3[Afternoon Session: 10 Adults + 10 Children]
+        AC4[Current Bookings Count]
+        AC5[Available Slots Calculation]
+    end
+
+    subgraph "Real-time Updates"
+        RTU1[WebSocket for Live Updates]
+        RTU2[Push Notifications]
+        RTU3[UI Auto-refresh]
+        RTU4[Concurrent Booking Prevention]
+    end
+
+    subgraph "Cache Management"
+        CM1[Redis Cache for Availability]
+        CM2[Cache Invalidation on Booking]
+        CM3[Real-time Cache Updates]
+        CM4[Performance Optimization]
+    end
+```
+
+### 2.7 Capacity Management Features
+
+```mermaid
+graph TD
+    A[Daily Capacity Management] --> B[Session-based Allocation]
+    B --> C[Adult vs Children Slots]
+    C --> D[Real-time Tracking]
+    D --> E[Overbooking Prevention]
+
+    E --> F[Capacity Alerts]
+    F --> G[Full Status Notifications]
+    G --> H[Alternative Suggestions]
+
+    subgraph "Capacity Rules"
+        CR1[Daily Total: 20 persons max]
+        CR2[Morning: 10 Adults + 10 Children]
+        CR3[Afternoon: 10 Adults + 10 Children]
+        CR4[No mixing between sessions]
+        CR5[Real-time availability check]
+    end
+
+    subgraph "Booking Restrictions"
+        BR1[No overbooking allowed]
+        BR2[Session-specific capacity]
+        BR3[Adult/Children slot management]
+        BR4[Concurrent booking prevention]
+        BR5[Time-based restrictions]
+    end
+
+    subgraph "Status Indicators"
+        SI1[Fully Available: Green]
+        SI2[Partial Available: Orange]
+        SI3[Fully Booked: Red]
+        SI4[Closed: Gray]
+        SI5[Maintenance: Yellow]
+    end
+```
+
+#### 2.7.1 Calendar Navigation Features
+
+- **Forward-only Navigation**: User hanya bisa melihat bulan saat ini dan bulan-bulan ke depan
+- **No Past Access**: Tidak bisa mengakses bulan-bulan yang sudah lewat
+- **Current Month Default**: Default menampilkan bulan saat ini
+- **Year Selection**: Dropdown untuk memilih tahun (hanya tahun sekarang dan ke depan)
+
+#### 2.7.2 Date Status Features
+
+- **Available Dates**: Tanggal dengan slot tersedia (hijau)
+- **Full Capacity Dates**: Tanggal yang sudah penuh (merah)
+- **Partial Availability**: Tanggal dengan slot terbatas (orange)
+- **Closed Dates**: Tanggal tutup (abu-abu)
+- **Real-time Updates**: Status update secara real-time
+
+#### 2.7.3 Session Management Features
+
+- **Morning Session**: 06:00-12:00 (10 dewasa + 10 anak)
+- **Afternoon Session**: 13:00-19:00 (10 dewasa + 10 anak)
+- **Session Status**: Tampil full/available per sesi
+- **Capacity Display**: Tampilkan jumlah slot tersisa
+- **Booking Count**: Tampilkan berapa yang sudah booking
+
+#### 2.7.4 User Registration Features
+
+- **Guest Registration**: Quick form untuk user baru
+- **Member Login**: Login untuk member yang sudah ada
+- **Google SSO**: One-tap registration dengan Google
+- **Information Collection**: Nama, telepon, email, emergency contact
+- **Terms Acceptance**: Wajib setuju terms & conditions
 
 ### 2.2 Booking Proof System
 
@@ -94,7 +407,7 @@ graph TD
     D --> E[Send SMS Confirmation]
     E --> F[Send Email Receipt]
     F --> G[Store in Database]
-    
+
     subgraph "Proof Methods"
         P1[Booking Reference: RJS-YYYYMMDD-XXXX]
         P2[QR Code with Booking Data]
@@ -102,7 +415,7 @@ graph TD
         P4[Email Receipt with QR]
         P5[Digital Receipt PDF]
     end
-    
+
     subgraph "Verification Methods"
         V1[QR Code Scanner]
         V2[Reference Number Search]
@@ -112,6 +425,7 @@ graph TD
 ```
 
 #### 2.3.1 Guest Proof Features
+
 - **Unique Reference Number**: Format RJS-YYYYMMDD-XXXX
 - **QR Code Generation**: Contains booking data untuk verification
 - **SMS Confirmation**: Immediate proof via phone
@@ -120,6 +434,7 @@ graph TD
 - **Multiple Verification**: Staff bisa verify dengan berbagai cara
 
 #### 2.3.2 Staff Verification Interface
+
 - **QR Code Scanner**: Fast verification dengan scan
 - **Reference Search**: Lookup booking by reference number
 - **Phone Search**: Search booking by phone number
@@ -135,7 +450,7 @@ graph TD
     C --> D[Custom Duration Options]
     D --> E[Flexible Capacity Setup]
     E --> F[Custom Rate Calculation]
-    
+
     subgraph "Dynamic Private Packages"
         P1[Silver Package - Configurable]
         P2[Gold Package - Configurable]
@@ -147,6 +462,7 @@ graph TD
 ## 3. Modul Mini Cafe
 
 ### 3.1 Dynamic Menu Management
+
 ```mermaid
 graph TD
     A[Menu Management] --> B[Item Creation]
@@ -154,7 +470,7 @@ graph TD
     C --> D[Category Management]
     D --> E[Stock Integration]
     E --> F[Price Optimization]
-    
+
     subgraph "Dynamic Menu Pricing"
         M1[Base Price Configuration]
         M2[Cost-based Pricing]
@@ -165,6 +481,7 @@ graph TD
 ```
 
 #### 3.1.1 Configurable Cafe Features
+
 - **Flexible Menu Pricing**: Harga menu dapat diubah secara real-time
 - **Cost-based Pricing**: Harga otomatis berdasarkan cost + margin
 - **Promotional Menu**: Menu khusus dengan harga promosi
@@ -172,6 +489,7 @@ graph TD
 - **Dynamic Inventory Pricing**: Harga dapat disesuaikan berdasarkan stock
 
 ### 3.2 Order Processing System
+
 ```mermaid
 graph TD
     A[Order Creation] --> B[Menu Selection]
@@ -179,7 +497,7 @@ graph TD
     C --> D[Member Discount Application]
     D --> E[Real-time Total Calculation]
     E --> F[Order Confirmation]
-    
+
     subgraph "Dynamic Order Features"
         O1[Real-time Price Updates]
         O2[Member Pricing Tiers]
@@ -191,6 +509,7 @@ graph TD
 ## 4. Modul Dynamic Pricing Management
 
 ### 4.1 Pricing Configuration System
+
 ```mermaid
 graph TD
     A[Pricing Dashboard] --> B[Base Rate Management]
@@ -199,7 +518,7 @@ graph TD
     D --> E[Seasonal Adjustments]
     E --> F[Promotional Pricing]
     F --> G[Pricing Analytics]
-    
+
     subgraph "Configuration Modules"
         C1[Membership Pricing]
         C2[Session Pricing]
@@ -209,6 +528,7 @@ graph TD
 ```
 
 #### 4.1.1 Dynamic Pricing Features
+
 - **Real-time Price Updates**: Perubahan harga langsung aktif
 - **Scheduled Price Changes**: Harga dapat dijadwalkan untuk perubahan di masa depan
 - **Conditional Pricing Rules**: Harga berdasarkan kondisi tertentu
@@ -216,6 +536,7 @@ graph TD
 - **Price History Tracking**: Riwayat perubahan harga yang lengkap
 
 ### 4.2 Pricing Rule Engine
+
 ```mermaid
 graph TD
     A[Rule Creation] --> B[Define Conditions]
@@ -223,7 +544,7 @@ graph TD
     C --> D[Set Priority]
     D --> E[Test Rules]
     E --> F[Activate Rules]
-    
+
     subgraph "Rule Types"
         R1[Time-based Rules]
         R2[Seasonal Rules]
@@ -234,6 +555,7 @@ graph TD
 ```
 
 #### 4.2.1 Rule Engine Features
+
 - **Flexible Rule Creation**: Admin dapat membuat aturan pricing yang kompleks
 - **Rule Priority Management**: Aturan dengan prioritas tertinggi diterapkan terlebih dahulu
 - **Rule Testing**: Sistem memungkinkan testing aturan sebelum diaktifkan
@@ -243,6 +565,7 @@ graph TD
 ## 5. Modul Pembayaran
 
 ### 5.1 Flexible Payment Processing
+
 ```mermaid
 graph TD
     A[Payment Request] --> B[Dynamic Amount Calculation]
@@ -251,7 +574,7 @@ graph TD
     D --> E[Tax Calculation]
     E --> F[Payment Processing]
     F --> G[Receipt Generation]
-    
+
     subgraph "Dynamic Payment Features"
         P1[Configurable Tax Rates]
         P2[Flexible Discount Rules]
@@ -262,6 +585,7 @@ graph TD
 ```
 
 #### 5.1.1 Configurable Payment Features
+
 - **Dynamic Tax Configuration**: Pajak dapat diatur berdasarkan lokasi/regulasi
 - **Flexible Discount System**: Sistem diskon yang dapat dikonfigurasi
 - **Multiple Payment Gateways**: Integrasi dengan berbagai payment gateway
@@ -277,7 +601,7 @@ graph TD
     C --> D[Email Receipt]
     D --> E[SMS Confirmation]
     E --> F[Download Link]
-    
+
     subgraph "Receipt Components"
         R1[Pool Logo & Header]
         R2[Booking/Payment Details]
@@ -288,6 +612,7 @@ graph TD
 ```
 
 #### 5.2.1 Receipt Features
+
 - **Digital Receipt PDF**: Professional receipt format
 - **QR Code Integration**: QR code untuk easy verification
 - **Multiple Formats**: PDF, email, SMS formats
@@ -297,6 +622,7 @@ graph TD
 ## 6. Modul Laporan dan Analytics
 
 ### 6.1 Dynamic Revenue Analytics
+
 ```mermaid
 graph TD
     A[Analytics Dashboard] --> B[Revenue Analysis]
@@ -304,7 +630,7 @@ graph TD
     C --> D[Package Analytics]
     D --> E[Trend Analysis]
     E --> F[Optimization Recommendations]
-    
+
     subgraph "Dynamic Analytics"
         A1[Real-time Revenue Tracking]
         A2[Pricing Impact Analysis]
@@ -315,6 +641,7 @@ graph TD
 ```
 
 #### 6.1.1 Configurable Reporting Features
+
 - **Custom Report Builder**: Admin dapat membuat laporan custom
 - **Dynamic KPIs**: KPI yang dapat dikonfigurasi sesuai kebutuhan
 - **Automated Insights**: Sistem memberikan insight otomatis
@@ -322,13 +649,14 @@ graph TD
 - **Real-time Dashboards**: Dashboard yang update secara real-time
 
 ### 6.2 Pricing Analytics
+
 ```mermaid
 graph TD
     A[Pricing Analytics] --> B[Price Performance Analysis]
     B --> C[Competitive Analysis]
     C --> D[Demand Elasticity]
     D --> E[Optimization Suggestions]
-    
+
     subgraph "Pricing Insights"
         I1[Price Sensitivity Analysis]
         I2[Optimal Price Points]
@@ -340,13 +668,14 @@ graph TD
 ## 7. Modul Notifikasi
 
 ### 7.1 Dynamic Notification System
+
 ```mermaid
 graph TD
     A[Notification Engine] --> B[Event Detection]
     B --> C[Rule Evaluation]
     C --> D[Message Generation]
     D --> E[Delivery Execution]
-    
+
     subgraph "Dynamic Notifications"
         N1[Price Change Alerts]
         N2[Promotional Notifications]
@@ -358,6 +687,7 @@ graph TD
 ```
 
 #### 7.1.1 Configurable Notification Features
+
 - **Customizable Templates**: Template notifikasi yang dapat disesuaikan
 - **Conditional Notifications**: Notifikasi berdasarkan kondisi tertentu
 - **Scheduled Notifications**: Notifikasi yang dijadwalkan
@@ -365,6 +695,7 @@ graph TD
 - **Notification Analytics**: Analisis efektivitas notifikasi
 
 ### 7.2 Booking Confirmation System
+
 ```mermaid
 graph TD
     A[Booking Confirmed] --> B[Generate Notifications]
@@ -372,7 +703,7 @@ graph TD
     B --> D[Email Receipt]
     B --> E[QR Code Generation]
     E --> F[Add to Receipts]
-    
+
     subgraph "Confirmation Content"
         C1[Booking Reference Number]
         C2[Session Details]
@@ -383,6 +714,7 @@ graph TD
 ```
 
 #### 7.2.1 Confirmation Features
+
 - **Immediate SMS**: Instant confirmation dengan reference number
 - **Detailed Email**: Complete booking details dengan receipt
 - **QR Code**: Easy verification untuk check-in
@@ -392,13 +724,14 @@ graph TD
 ## 8. Modul Tata Tertib dan Compliance
 
 ### 8.1 Dynamic Policy Management
+
 ```mermaid
 graph TD
     A[Policy Management] --> B[Rule Creation]
     B --> C[Policy Distribution]
     C --> D[Compliance Monitoring]
     D --> E[Policy Updates]
-    
+
     subgraph "Dynamic Policies"
         P1[Configurable Rules]
         P2[Flexible Enforcement]
@@ -408,6 +741,7 @@ graph TD
 ```
 
 #### 8.1.1 Configurable Compliance Features
+
 - **Flexible Rule Configuration**: Aturan yang dapat disesuaikan
 - **Dynamic Policy Updates**: Update kebijakan secara real-time
 - **Compliance Monitoring**: Monitoring kepatuhan secara otomatis
@@ -417,6 +751,7 @@ graph TD
 ## 9. Admin Configuration Panel
 
 ### 9.1 Dynamic System Configuration
+
 ```mermaid
 graph TD
     A[Admin Panel] --> B[System Configuration]
@@ -424,7 +759,7 @@ graph TD
     C --> D[Rule Engine Management]
     D --> E[User Management]
     E --> F[Analytics Dashboard]
-    
+
     subgraph "Configuration Modules"
         C1[Global Settings]
         C2[Pricing Configuration]
@@ -437,6 +772,7 @@ graph TD
 ```
 
 #### 9.1.1 Admin Features
+
 - **Centralized Configuration**: Semua konfigurasi di satu tempat
 - **Role-based Access**: Akses berdasarkan role dan permission
 - **Configuration Templates**: Template konfigurasi yang dapat digunakan ulang
@@ -444,6 +780,7 @@ graph TD
 - **Backup and Restore**: Backup dan restore konfigurasi
 
 ### 9.2 SSO Configuration Management
+
 ```mermaid
 graph TD
     A[SSO Management] --> B[Google OAuth Setup]
@@ -451,7 +788,7 @@ graph TD
     C --> D[Redirect URI Setup]
     D --> E[Scopes Configuration]
     E --> F[Token Management]
-    
+
     subgraph "SSO Features"
         S1[Google OAuth 2.0]
         S2[Profile Sync Settings]
@@ -462,6 +799,7 @@ graph TD
 ```
 
 #### 9.2.1 SSO Management Features
+
 - **Google OAuth 2.0 Integration**: Setup dan konfigurasi OAuth
 - **Profile Synchronization**: Sync Google profile dengan local data
 - **Token Management**: Handle token refresh dan validation
@@ -469,13 +807,14 @@ graph TD
 - **User Mapping**: Map Google users dengan local accounts
 
 ### 9.3 Guest User Management
+
 ```mermaid
 graph TD
     A[Guest Management] --> B[Guest Registration Tracking]
     B --> C[Conversion Analytics]
     C --> D[Proof System Management]
     D --> E[Verification Settings]
-    
+
     subgraph "Guest Features"
         G1[Guest Booking Analytics]
         G2[Conversion Rate Tracking]
@@ -487,6 +826,7 @@ graph TD
 ```
 
 #### 9.3.1 Guest Management Features
+
 - **Guest Analytics**: Track guest booking patterns
 - **Conversion Tracking**: Monitor guest to member conversion
 - **SSO Conversion Analytics**: Track Google SSO conversion rates
@@ -495,6 +835,7 @@ graph TD
 - **Security Configuration**: Configure security measures
 
 ### 9.4 Pricing Management Interface
+
 ```json
 {
   "pricing_management": {

@@ -198,17 +198,17 @@ Dokumen ini berisi analisa komprehensif untuk pengembangan sistem manajemen kola
 
 ## Status Dokumen
 
-| Dokumen                   | Status     | Versi | Tanggal Update | Dynamic Pricing | Guest Booking | Google SSO | Laravel Stack |
-| ------------------------- | ---------- | ----- | -------------- | --------------- | ------------- | ---------- | ------------- |
-| 01 - Analisa Kebutuhan    | ✅ Selesai | 1.1   | 26/08/2025     | ✅              | ✅            | ✅         | ✅            |
-| 02 - Analisa Domain       | ✅ Selesai | 1.2   | 26/08/2025     | ✅ Dynamic      | ✅            | ✅         | ✅            |
-| 03 - Analisa Fitur        | ✅ Selesai | 1.4   | 26/08/2025     | ✅ Dynamic      | ✅ Guest      | ✅ SSO     | ✅            |
-| 04 - Arsitektur Sistem    | ✅ Selesai | 1.2   | 26/08/2025     | ✅              | ✅            | ✅         | ✅ Laravel    |
-| 05 - Desain Database      | ✅ Selesai | 1.4   | 26/08/2025     | ✅ Pricing      | ✅ Guest      | ✅ SSO     | ✅            |
-| 06 - UML Diagrams         | ✅ Selesai | 1.1   | 26/08/2025     | ✅              | ✅            | ✅         | ✅            |
-| 07 - UI Design            | ✅ Selesai | 1.1   | 26/08/2025     | ✅              | ✅            | ✅         | ✅            |
-| 08 - Implementasi Testing | ✅ Selesai | 1.2   | 26/08/2025     | ✅              | ✅            | ✅         | ✅ Laravel    |
-| 09 - Risiko dan Mitigasi  | ✅ Selesai | 1.1   | 26/08/2025     | ✅              | ✅            | ✅         | ✅            |
+| Dokumen                   | Status     | Versi | Tanggal Update | Dynamic Pricing | Guest Booking | Google SSO | Laravel Stack | Calendar Flow |
+| ------------------------- | ---------- | ----- | -------------- | --------------- | ------------- | ---------- | ------------- | ------------- |
+| 01 - Analisa Kebutuhan    | ✅ Selesai | 1.1   | 26/08/2025     | ✅              | ✅            | ✅         | ✅            | ✅            |
+| 02 - Analisa Domain       | ✅ Selesai | 1.2   | 26/08/2025     | ✅ Dynamic      | ✅            | ✅         | ✅            | ✅            |
+| 03 - Analisa Fitur        | ✅ Selesai | 1.5   | 26/08/2025     | ✅ Dynamic      | ✅ Guest      | ✅ SSO     | ✅            | ✅ Calendar   |
+| 04 - Arsitektur Sistem    | ✅ Selesai | 1.2   | 26/08/2025     | ✅              | ✅            | ✅         | ✅ Laravel    | ✅            |
+| 05 - Desain Database      | ✅ Selesai | 1.5   | 26/08/2025     | ✅ Pricing      | ✅ Guest      | ✅ SSO     | ✅            | ✅ Calendar   |
+| 06 - UML Diagrams         | ✅ Selesai | 1.2   | 26/08/2025     | ✅              | ✅            | ✅         | ✅            | ✅ Calendar   |
+| 07 - UI Design            | ✅ Selesai | 1.2   | 26/08/2025     | ✅              | ✅            | ✅         | ✅            | ✅ Calendar   |
+| 08 - Implementasi Testing | ✅ Selesai | 1.3   | 26/08/2025     | ✅              | ✅            | ✅         | ✅ Laravel    | ✅ Calendar   |
+| 09 - Risiko dan Mitigasi  | ✅ Selesai | 1.1   | 26/08/2025     | ✅              | ✅            | ✅         | ✅            | ✅            |
 
 ## Komponen Diagram
 
@@ -412,15 +412,45 @@ Untuk pertanyaan atau klarifikasi terkait dokumen analisa ini, khususnya tentang
 
 ---
 
-**Versi**: 1.4  
+**Versi**: 1.5  
 **Tanggal**: 26 Agustus 2025  
-**Status**: Complete dengan Dynamic Pricing, Guest Booking, Google SSO & Mobile-First Web App  
+**Status**: Complete dengan Dynamic Pricing, Guest Booking, Google SSO, Mobile-First Web App & Core Booking Flow  
 **Berdasarkan**: PDF Raujan Pool Syariah  
 **Key Features**:
 
 - ✨ **Semua besaran biaya dapat dikonfigurasi secara dinamis**
 - 🎫 **Sistem bukti booking lengkap untuk guest users**
+- 📅 **Calendar interface dengan forward-only navigation**
+- 🔄 **Real-time availability tracking dan capacity management**
 - 🔐 **Google SSO integration untuk seamless authentication**
 - 📱 **Mobile-first web app dengan PWA support**
 - 🔔 **Push notifications via Firebase FCM**
 - ⚡ **Laravel backend + React/Next.js frontend stack**
+
+### Core Booking Flow System
+
+- **Landing Page** → **Klik Tombol Reservasi** → **Calendar Interface**
+- **Calendar Navigation**: Forward-only (tidak bisa ke bulan lalu)
+- **Date Status**: Visual indicators untuk available/full/partial/closed
+- **Session Selection**: Morning (06:00-12:00) & Afternoon (13:00-19:00)
+- **Capacity Management**: 10 Adults + 10 Children per session
+- **Real-time Availability**: Live updates untuk concurrent users
+- **User Registration**: Guest form, Member login, atau Google SSO
+- **Booking Confirmation**: QR code, reference number, multiple proofs
+
+### Calendar Interface Features
+
+- **Mobile-First Design**: Touch-optimized dengan minimum 44px targets
+- **Forward-only Navigation**: Tidak bisa akses bulan yang sudah lewat
+- **Status Indicators**: Visual coding untuk availability (hijau/orange/merah/abu-abu)
+- **Real-time Updates**: WebSocket untuk live availability changes
+- **Session Details**: Modal dengan capacity information dan booking counts
+- **Responsive Layout**: Optimized untuk mobile, tablet, dan desktop
+
+### Session Management
+
+- **Morning Session**: 06:00-12:00 (10 dewasa + 10 anak)
+- **Afternoon Session**: 13:00-19:00 (10 dewasa + 10 anak)
+- **Capacity Tracking**: Real-time slot availability
+- **Overbooking Prevention**: Concurrent booking protection
+- **Alternative Suggestions**: Jika session full, suggest tanggal lain

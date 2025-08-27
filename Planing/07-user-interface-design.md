@@ -95,117 +95,432 @@ graph TD
     end
 ```
 
-## 2. Mobile Application Design
+## 2. Calendar Interface Design
 
-### 2.1 Main Navigation
-
-```mermaid
-graph TB
-    subgraph "Bottom Tab Navigation"
-        T1[Dashboard]
-        T2[Booking]
-        T3[Cafe]
-        T4[Profile]
-    end
-
-    subgraph "Dashboard Tab"
-        D1[Quick Stats]
-        D2[Upcoming Bookings]
-        D3[Recent Activity]
-        D4[Quick Actions]
-    end
-
-    subgraph "Booking Tab"
-        B1[Book Session]
-        B2[My Bookings]
-        B3[Session Schedule]
-        B4[Booking History]
-    end
-
-    subgraph "Cafe Tab"
-        C1[Browse Menu]
-        C2[My Orders]
-        C3[Cart]
-        C4[Order History]
-    end
-
-    subgraph "Profile Tab"
-        P1[My Profile]
-        P2[Membership]
-        P3[Payment History]
-        P4[Settings]
-    end
-```
-
-### 2.2 Key Screens
-
-#### 2.2.1 Login Screen
+### 2.1 Main Calendar Component
 
 ```mermaid
 graph TD
-    A[Logo Raujan Pool] --> B[Welcome Message]
-    B --> C[Email Input]
-    C --> D[Password Input]
-    D --> E[Login Button]
-    E --> F[Forgot Password Link]
-    F --> G[Register Link]
+    A[Calendar Page] --> B[Header Section]
+    A --> C[Navigation Section]
+    A --> D[Calendar Grid]
+    A --> E[Footer Section]
 
-    subgraph "Design Elements"
-        H[Background: Pool Image]
-        I[Overlay: Semi-transparent]
-        J[Form: White Card]
-        K[Shadows: Subtle]
+    B --> F[Pool Logo & Title]
+    B --> G[Current Month/Year Display]
+    B --> H[Booking Status Legend]
+
+    C --> I[Previous Month Button]
+    C --> J[Next Month Button]
+    C --> K[Year Dropdown]
+
+    D --> L[Day Headers]
+    D --> M[Date Cells]
+    D --> N[Status Indicators]
+
+    subgraph "Calendar Header"
+        CH1[Pool Branding]
+        CH2[Month/Year Display]
+        CH3[Legenda Status]
+    end
+
+    subgraph "Navigation Controls"
+        NC1[Previous Button - Disabled for Past]
+        NC2[Current Month Highlight]
+        NC3[Next Button - Always Enabled]
+        NC4[Year Selector - Forward Only]
+    end
+
+    subgraph "Calendar Grid"
+        CG1[Day Headers: Sun-Sat]
+        CG2[Date Cells with Status]
+        CG3[Clickable Date Areas]
+        CG4[Status Color Coding]
     end
 ```
 
-#### 2.2.2 Booking Screen
+### 2.2 Mobile-First Calendar Design
+
+```json
+{
+  "calendar_layout": {
+    "mobile_breakpoint": "320px - 767px",
+    "tablet_breakpoint": "768px - 1023px",
+    "desktop_breakpoint": "1024px+",
+    "responsive_features": {
+      "mobile": {
+        "grid_layout": "7 columns, compact spacing",
+        "date_cells": "44px x 44px minimum touch target",
+        "navigation": "Swipe gestures + button controls",
+        "modal_sessions": "Full-screen session selection"
+      },
+      "tablet": {
+        "grid_layout": "7 columns, comfortable spacing",
+        "date_cells": "60px x 60px touch targets",
+        "navigation": "Button controls + keyboard shortcuts",
+        "modal_sessions": "Overlay modal for session selection"
+      },
+      "desktop": {
+        "grid_layout": "7 columns, spacious layout",
+        "date_cells": "80px x 80px hover states",
+        "navigation": "Button controls + keyboard shortcuts",
+        "modal_sessions": "Sidebar or modal for sessions"
+      }
+    }
+  },
+  "status_indicators": {
+    "available": {
+      "color": "#10B981",
+      "icon": "circle-check",
+      "label": "Available"
+    },
+    "partial_available": {
+      "color": "#F59E0B",
+      "icon": "clock",
+      "label": "Limited Slots"
+    },
+    "fully_booked": {
+      "color": "#EF4444",
+      "icon": "x-circle",
+      "label": "Full"
+    },
+    "closed": {
+      "color": "#6B7280",
+      "icon": "lock-closed",
+      "label": "Closed"
+    }
+  }
+}
+```
+
+### 2.3 Session Selection Modal
 
 ```mermaid
 graph TD
-    A[Date Picker] --> B[Session Type Selection]
-    B --> C[Time Slot Selection]
-    C --> D[Guest Count]
-    D --> E[Price Calculation]
-    E --> F[Booking Summary]
-    F --> G[Payment Method]
-    G --> H[Confirm Booking]
+    A[Date Clicked] --> B[Session Modal Opens]
+    B --> C[Modal Header]
+    B --> D[Session Options]
+    B --> E[Capacity Display]
+    B --> F[Action Buttons]
 
-    subgraph "Session Types"
-        S1[Regular Session]
-        S2[Private Silver]
-        S3[Private Gold]
+    C --> G[Selected Date Display]
+    C --> H[Close Button]
+
+    D --> I[Morning Session Card]
+    D --> J[Afternoon Session Card]
+
+    I --> K[Session Time: 06:00-12:00]
+    I --> L[Capacity: 10 Adults + 10 Children]
+    I --> M[Current Bookings Display]
+    I --> N[Available Slots]
+    I --> O[Select Button]
+
+    J --> P[Session Time: 13:00-19:00]
+    J --> Q[Capacity: 10 Adults + 10 Children]
+    J --> R[Current Bookings Display]
+    J --> S[Available Slots]
+    J --> T[Select Button]
+
+    E --> U[Total Daily Capacity]
+    E --> V[Remaining Slots]
+    E --> W[Booking Statistics]
+
+    F --> X[Cancel Button]
+    F --> Y[Proceed to Registration]
+
+    subgraph "Session Card Design"
+        SC1[Session Time Header]
+        SC2[Capacity Information]
+        SC3[Current Bookings Count]
+        SC4[Available Slots Display]
+        SC5[Price Information]
+        SC6[Action Button State]
     end
 
-    subgraph "Time Slots"
-        T1[Morning - 08:00-10:30]
-        T2[Afternoon - 14:00-16:30]
+    subgraph "Modal Features"
+        MF1[Responsive Design]
+        MF2[Touch-Friendly Buttons]
+        MF3[Real-time Updates]
+        MF4[Loading States]
+        MF5[Error Handling]
     end
 ```
 
-#### 2.2.3 Cafe Menu Screen
+### 2.4 User Registration Form
 
 ```mermaid
 graph TD
-    A[Category Filter] --> B[Menu Grid]
-    B --> C[Menu Item Card]
-    C --> D[Add to Cart Button]
-    D --> E[Cart Icon]
-    E --> F[Checkout]
+    A[Session Selected] --> B[Registration Form Modal]
+    B --> C[Form Header]
+    B --> D[User Type Selection]
+    B --> E[Form Fields]
+    B --> F[Terms & Conditions]
+    B --> G[Submit Button]
 
-    subgraph "Menu Categories"
-        M1[Food]
-        M2[Beverages]
-        M3[Snacks]
+    D --> H[Guest User]
+    D --> I[Existing Member]
+    D --> J[New Member]
+
+    H --> K[Quick Guest Form]
+    K --> L[Full Name]
+    K --> M[Phone Number]
+    K --> N[Email Address]
+    K --> O[Emergency Contact]
+
+    I --> P[Member Login]
+    P --> Q[Email/Password]
+    P --> R[Google SSO Button]
+
+    J --> S[Registration Options]
+    S --> T[Manual Registration]
+    S --> U[Google SSO Registration]
+
+    F --> V[Terms Checkbox]
+    F --> W[Privacy Policy Checkbox]
+
+    subgraph "Form Validation"
+        FV1[Real-time Field Validation]
+        FV2[Required Field Indicators]
+        FV3[Error Message Display]
+        FV4[Success States]
     end
 
-    subgraph "Menu Item Card"
-        I1[Food Image]
-        I2[Item Name]
-        I3[Description]
-        I4[Price]
-        I5[Add Button]
-        I6[Stock Status]
+    subgraph "User Experience"
+        UE1[Auto-focus First Field]
+        UE2[Progress Indicators]
+        UE3[Form Persistence]
+        UE4[Mobile Keyboard Optimization]
     end
+```
+
+### 2.5 Booking Confirmation Screen
+
+```mermaid
+graph TD
+    A[Booking Success] --> B[Confirmation Page]
+    B --> C[Success Message]
+    B --> D[Booking Details]
+    B --> E[QR Code Display]
+    B --> F[Proof Documents]
+    B --> G[Action Buttons]
+
+    C --> H[Booking Confirmed Icon]
+    C --> I[Reference Number]
+    C --> J[Confirmation Message]
+
+    D --> K[Booking Date & Time]
+    D --> K1[Session Details]
+    D --> K2[User Information]
+    D --> K3[Price Information]
+
+    E --> L[QR Code Image]
+    E --> M[QR Code Instructions]
+    E --> N[Download QR Code]
+
+    F --> O[Email Receipt Link]
+    F --> P[SMS Confirmation Status]
+    F --> Q[Download Receipt PDF]
+
+    G --> R[Add to Calendar]
+    G --> S[Share Booking]
+    G --> T[Return to Home]
+    G --> U[Book Another Session]
+
+    subgraph "Confirmation Features"
+        CF1[Animated Success Icon]
+        CF2[Large QR Code Display]
+        CF3[Downloadable Documents]
+        CF4[Social Sharing Options]
+        CF5[Calendar Integration]
+    end
+
+    subgraph "Mobile Optimization"
+        MO1[Large Touch Targets]
+        MO2[Easy QR Code Scanning]
+        MO3[Quick Share Options]
+        MO4[Offline Access to QR]
+    end
+```
+
+### 2.6 Progressive Web App Features
+
+```json
+{
+  "pwa_features": {
+    "app_manifest": {
+      "name": "Raujan Pool Booking",
+      "short_name": "Raujan Pool",
+      "description": "Book your swimming session at Raujan Pool Syariah",
+      "theme_color": "#2563EB",
+      "background_color": "#FFFFFF",
+      "display": "standalone",
+      "orientation": "portrait",
+      "icons": [
+        {
+          "src": "/icons/icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        },
+        {
+          "src": "/icons/icon-512x512.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ]
+    },
+    "service_worker": {
+      "caching_strategy": "Cache First for static assets",
+      "offline_booking": "Cache booking form for offline use",
+      "push_notifications": "Firebase Cloud Messaging integration",
+      "background_sync": "Sync offline bookings when online"
+    },
+    "mobile_features": {
+      "touch_gestures": "Swipe navigation for calendar",
+      "haptic_feedback": "Vibration on successful booking",
+      "fullscreen_mode": "Hide browser UI for app-like experience",
+      "install_prompt": "Add to home screen prompt"
+    }
+  }
+}
+```
+
+### 2.7 Responsive Design System
+
+```json
+{
+  "design_system": {
+    "color_palette": {
+      "primary": {
+        "main": "#2563EB",
+        "light": "#3B82F6",
+        "dark": "#1D4ED8",
+        "contrast": "#FFFFFF"
+      },
+      "success": {
+        "main": "#10B981",
+        "light": "#34D399",
+        "dark": "#059669"
+      },
+      "warning": {
+        "main": "#F59E0B",
+        "light": "#FBBF24",
+        "dark": "#D97706"
+      },
+      "error": {
+        "main": "#EF4444",
+        "light": "#F87171",
+        "dark": "#DC2626"
+      },
+      "neutral": {
+        "main": "#6B7280",
+        "light": "#9CA3AF",
+        "dark": "#374151"
+      }
+    },
+    "typography": {
+      "font_family": "'Inter', system-ui, sans-serif",
+      "font_sizes": {
+        "xs": "0.75rem",
+        "sm": "0.875rem",
+        "base": "1rem",
+        "lg": "1.125rem",
+        "xl": "1.25rem",
+        "2xl": "1.5rem",
+        "3xl": "1.875rem"
+      },
+      "line_heights": {
+        "tight": "1.25",
+        "normal": "1.5",
+        "relaxed": "1.75"
+      }
+    },
+    "spacing": {
+      "xs": "0.25rem",
+      "sm": "0.5rem",
+      "md": "1rem",
+      "lg": "1.5rem",
+      "xl": "2rem",
+      "2xl": "3rem"
+    },
+    "border_radius": {
+      "sm": "0.25rem",
+      "md": "0.375rem",
+      "lg": "0.5rem",
+      "xl": "0.75rem",
+      "full": "9999px"
+    }
+  }
+}
+```
+
+### 2.8 Loading States and Animations
+
+```json
+{
+  "loading_states": {
+    "calendar_loading": {
+      "skeleton": "Calendar grid skeleton with shimmer",
+      "duration": "0.5s",
+      "message": "Loading availability..."
+    },
+    "session_checking": {
+      "spinner": "Small loading spinner in session card",
+      "duration": "1-2s",
+      "message": "Checking availability..."
+    },
+    "booking_processing": {
+      "progress_bar": "Animated progress bar",
+      "duration": "3-5s",
+      "message": "Processing your booking..."
+    }
+  },
+  "animations": {
+    "calendar_transition": {
+      "type": "slide",
+      "duration": "300ms",
+      "easing": "ease-in-out"
+    },
+    "modal_open": {
+      "type": "fade + scale",
+      "duration": "250ms",
+      "easing": "ease-out"
+    },
+    "success_feedback": {
+      "type": "bounce + fade",
+      "duration": "500ms",
+      "easing": "cubic-bezier(0.68, -0.55, 0.265, 1.55)"
+    }
+  }
+}
+```
+
+### 2.9 Accessibility Features
+
+```json
+{
+  "accessibility": {
+    "keyboard_navigation": {
+      "calendar_navigation": "Arrow keys for month navigation",
+      "date_selection": "Enter/Space for date selection",
+      "modal_interaction": "Tab navigation and Escape to close"
+    },
+    "screen_reader": {
+      "calendar_announcements": "Announce date status changes",
+      "session_information": "Read session details and availability",
+      "booking_confirmation": "Announce booking success and reference"
+    },
+    "visual_indicators": {
+      "focus_states": "Clear focus indicators for all interactive elements",
+      "high_contrast": "High contrast mode support",
+      "color_blind_friendly": "Status indicators with both color and shape"
+    },
+    "mobile_accessibility": {
+      "touch_targets": "Minimum 44px touch targets",
+      "voice_control": "Voice control compatibility",
+      "magnification": "Support for iOS and Android magnification"
+    }
+  }
+}
 ```
 
 ## 3. Web Application Design
