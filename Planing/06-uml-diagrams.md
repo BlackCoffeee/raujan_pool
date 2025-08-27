@@ -209,6 +209,53 @@ graph TB
                     UC137[Generate Financial Reports]
                     UC138[View Analytics Dashboard]
                 end
+
+                subgraph "Comprehensive Reporting System"
+                    UC139[Generate Revenue Reports]
+                    UC140[Generate Expense Reports]
+                    UC141[Generate Profit & Loss Reports]
+                    UC142[Generate Cash Flow Reports]
+                    UC143[Generate Tax Reports]
+                    UC144[Generate Budget Analysis]
+                    UC145[Generate Booking Analytics]
+                    UC146[Generate Member Reports]
+                    UC147[Generate Session Reports]
+                    UC148[Generate Staff Reports]
+                    UC149[Generate Facility Reports]
+                    UC150[Generate Customer Analytics]
+                    UC151[Generate Inventory Reports]
+                    UC152[Generate Promotional Reports]
+                    UC153[Export Reports]
+                    UC154[Schedule Reports]
+                    UC155[Configure Report Templates]
+                    UC156[View Real-time Dashboard]
+                end
+
+                subgraph "System Administration"
+                    UC157[Manage System Configuration]
+                    UC158[Manage User Roles]
+                    UC159[Manage Permissions]
+                    UC160[System Backup]
+                    UC161[System Restore]
+                    UC162[View System Logs]
+                    UC163[Manage API Keys]
+                    UC164[Configure Integrations]
+                    UC165[System Monitoring]
+                    UC166[Performance Optimization]
+                end
+
+                subgraph "Data Management"
+                    UC167[Data Import]
+                    UC168[Data Export]
+                    UC169[Data Validation]
+                    UC170[Data Cleanup]
+                    UC171[Data Migration]
+                    UC172[Data Archival]
+                    UC173[Data Recovery]
+                    UC174[Data Backup]
+                    UC175[Manage Data Retention]
+                    UC176[Data Compliance]
+                end
     end
 
     A1 -.-> UC1
@@ -429,6 +476,57 @@ graph TB
             A1 -.-> UC136
             A1 -.-> UC137
             A1 -.-> UC138
+
+            A1 -.-> UC139
+            A1 -.-> UC140
+            A1 -.-> UC141
+            A1 -.-> UC142
+            A1 -.-> UC143
+            A1 -.-> UC144
+            A1 -.-> UC145
+            A1 -.-> UC146
+            A1 -.-> UC147
+            A1 -.-> UC148
+            A1 -.-> UC149
+            A1 -.-> UC150
+            A1 -.-> UC151
+            A1 -.-> UC152
+            A1 -.-> UC153
+            A1 -.-> UC154
+            A1 -.-> UC155
+            A1 -.-> UC156
+
+            A1 -.-> UC157
+            A1 -.-> UC158
+            A1 -.-> UC159
+            A1 -.-> UC160
+            A1 -.-> UC161
+            A1 -.-> UC162
+            A1 -.-> UC163
+            A1 -.-> UC164
+            A1 -.-> UC165
+            A1 -.-> UC166
+
+            A1 -.-> UC167
+            A1 -.-> UC168
+            A1 -.-> UC169
+            A1 -.-> UC170
+            A1 -.-> UC171
+            A1 -.-> UC172
+            A1 -.-> UC173
+            A1 -.-> UC174
+            A1 -.-> UC175
+            A1 -.-> UC176
+
+            A2 -.-> UC145
+            A2 -.-> UC146
+            A2 -.-> UC147
+            A2 -.-> UC148
+            A2 -.-> UC149
+
+            A3 -.-> UC145
+            A3 -.-> UC151
+            A3 -.-> UC153
 
     %% Custom styling untuk lines dengan warna berbeda
     linkStyle 0,1,2,3,4,5,6,7 stroke:#ff6b6b,stroke-width:3px
