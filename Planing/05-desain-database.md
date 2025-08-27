@@ -610,7 +610,129 @@ changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
 );
 
-````
+#### 2.1.8 Private Pool Bookings Table
+
+```sql
+CREATE TABLE private_pool_bookings (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    customer_id INT NULL,
+    guest_customer_id INT NULL,
+
+    -- Booking Details
+    booking_date DATE NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    duration_minutes INT NOT NULL,
+    bonus_minutes INT DEFAULT 0,
+
+    -- Customer Classification
+    is_new_customer BOOLEAN DEFAULT FALSE,
+    visit_number INT DEFAULT 1,
+    customer_type ENUM('new', 'returning') NOT NULL,
+
+    -- Pricing
+    base_price DECIMAL(10,2) NOT NULL,
+    additional_charge DECIMAL(10,2) DEFAULT 0.00,
+    bonus_discount DECIMAL(10,2) DEFAULT 0.00,
+    total_amount DECIMAL(10,2) NOT NULL,
+
+    -- Status
+    booking_status ENUM('pending', 'confirmed', 'in_progress', 'completed', 'cancelled') DEFAULT 'pending',
+    payment_status ENUM('pending', 'paid', 'refunded') DEFAULT 'pending',
+
+    -- Timestamps
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (customer_id) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (guest_customer_id) REFERENCES guest_users(id) ON DELETE SET NULL,
+
+    INDEX idx_booking_date (booking_date),
+    INDEX idx_customer_id (customer_id),
+    INDEX idx_guest_customer_id (guest_customer_id),
+    INDEX idx_booking_status (booking_status)
+);
+```
+
+#### 2.1.9 Private Pool Pricing Configuration Table
+
+```sql
+CREATE TABLE private_pool_pricing_config (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    config_name VARCHAR(100) NOT NULL,
+
+          -- Duration Settings (Updated: 1 hour 30 minutes standard)
+standard_duration_minutes INT DEFAULT 90, -- 1 hour 30 minutes
+bonus_duration_minutes INT DEFAULT 30,
+
+    -- Pricing Rules
+    base_price DECIMAL(10,2) NOT NULL,
+    additional_charge_percentage DECIMAL(5,2) DEFAULT 0.00,
+    additional_charge_fixed DECIMAL(10,2) DEFAULT 0.00,
+
+    -- Visit Thresholds
+    additional_charge_from_visit INT DEFAULT 2,
+    max_bonus_visits INT DEFAULT 1,
+
+    -- Bonus Rules
+    bonus_discount_percentage DECIMAL(5,2) DEFAULT 0.00,
+    bonus_discount_fixed DECIMAL(10,2) DEFAULT 0.00,
+
+    -- Configuration
+    is_active BOOLEAN DEFAULT TRUE,
+    effective_date DATE NOT NULL,
+    expiry_date DATE NULL,
+    created_by INT NULL,
+    updated_by INT NULL,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
+
+    INDEX idx_config_name (config_name),
+    INDEX idx_effective_date (effective_date),
+    INDEX idx_is_active (is_active)
+);
+```
+
+#### 2.1.10 Customer Visit History Table
+
+```sql
+CREATE TABLE customer_visit_history (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    customer_id INT NULL,
+    guest_customer_id INT NULL,
+    phone_number VARCHAR(20) NOT NULL,
+
+    -- Visit Information
+    total_visits INT DEFAULT 1,
+    first_visit_date DATE NOT NULL,
+    last_visit_date DATE NOT NULL,
+
+    -- Private Pool History
+    private_pool_visits INT DEFAULT 0,
+    total_private_pool_spent DECIMAL(10,2) DEFAULT 0.00,
+
+    -- Customer Classification
+    customer_status ENUM('new', 'returning', 'regular') DEFAULT 'new',
+    loyalty_points INT DEFAULT 0,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (customer_id) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (guest_customer_id) REFERENCES guest_users(id) ON DELETE SET NULL,
+
+    UNIQUE KEY unique_customer_phone (phone_number),
+    INDEX idx_customer_id (customer_id),
+    INDEX idx_guest_customer_id (guest_customer_id),
+    INDEX idx_phone_number (phone_number),
+    INDEX idx_total_visits (total_visits),
+    INDEX idx_customer_status (customer_status)
+);
+```
 
 ### 2.2 Authentication dan SSO Tables
 
@@ -637,7 +759,7 @@ CREATE TABLE users (
     INDEX idx_auth_provider_id (auth_provider_id),
     INDEX idx_is_active (is_active)
 );
-````
+```
 
 #### 2.2.2 USER_PROFILES Table (Enhanced for SSO)
 
@@ -2111,6 +2233,277 @@ BEGIN
     VALUES (p_config_id, v_old_price, p_new_price, p_change_reason, p_updated_by);
 
     COMMIT;
+END //
+DELIMITER ;
+```
+
+### 5.27 Private Pool Booking Procedure
+
+```sql
+DELIMITER //
+CREATE PROCEDURE CreatePrivatePoolBooking(
+    IN p_customer_id INT NULL,
+    IN p_guest_customer_id INT NULL,
+    IN p_phone_number VARCHAR(20),
+    IN p_booking_date DATE,
+    IN p_start_time TIME,
+    IN p_base_price DECIMAL(10,2),
+    OUT p_booking_id INT,
+    OUT p_total_amount DECIMAL(10,2),
+    OUT p_duration_minutes INT,
+    OUT p_bonus_minutes INT,
+    OUT p_is_new_customer BOOLEAN,
+    OUT p_visit_number INT,
+    OUT p_status_message VARCHAR(255)
+)
+BEGIN
+    DECLARE v_customer_exists BOOLEAN DEFAULT FALSE;
+    DECLARE v_visit_count INT DEFAULT 0;
+    DECLARE v_config_id INT;
+    DECLARE v_standard_duration INT;
+    DECLARE v_bonus_duration INT;
+    DECLARE v_additional_charge DECIMAL(10,2) DEFAULT 0.00;
+    DECLARE v_end_time TIME;
+
+          -- Get active pricing configuration (1h 30min standard + 30min bonus)
+      SELECT id, standard_duration_minutes, bonus_duration_minutes
+      INTO v_config_id, v_standard_duration, v_bonus_duration
+      FROM private_pool_pricing_config
+      WHERE is_active = TRUE AND effective_date <= p_booking_date
+      AND (expiry_date IS NULL OR expiry_date >= p_booking_date)
+      ORDER BY effective_date DESC LIMIT 1;
+
+    -- Check if customer exists
+    SELECT EXISTS(SELECT 1 FROM customer_visit_history WHERE phone_number = p_phone_number)
+    INTO v_customer_exists;
+
+    IF v_customer_exists THEN
+        -- Get customer visit count
+        SELECT private_pool_visits + 1 INTO v_visit_count
+        FROM customer_visit_history
+        WHERE phone_number = p_phone_number;
+
+        SET p_is_new_customer = FALSE;
+        SET p_visit_number = v_visit_count;
+
+        -- Calculate additional charge for returning customers
+        IF v_visit_count >= 2 THEN
+            SET v_additional_charge = (p_base_price * 0.15); -- 15% additional charge example
+        END IF;
+    ELSE
+        -- New customer
+        SET p_is_new_customer = TRUE;
+        SET p_visit_number = 1;
+        SET v_bonus_duration = v_bonus_duration; -- Apply bonus for new customers
+    END IF;
+
+    -- Calculate duration and end time
+    SET p_duration_minutes = v_standard_duration + v_bonus_duration;
+    SET p_bonus_minutes = CASE WHEN p_is_new_customer THEN v_bonus_duration ELSE 0 END;
+    SET v_end_time = ADDTIME(p_start_time, SEC_TO_TIME(p_duration_minutes * 60));
+    SET p_total_amount = p_base_price + v_additional_charge;
+
+    -- Insert booking
+    INSERT INTO private_pool_bookings (
+        customer_id, guest_customer_id, booking_date, start_time, end_time,
+        duration_minutes, bonus_minutes, is_new_customer, visit_number,
+        customer_type, base_price, additional_charge, total_amount
+    ) VALUES (
+        p_customer_id, p_guest_customer_id, p_booking_date, p_start_time, v_end_time,
+        p_duration_minutes, p_bonus_minutes, p_is_new_customer, p_visit_number,
+        CASE WHEN p_is_new_customer THEN 'new' ELSE 'returning' END,
+        p_base_price, v_additional_charge, p_total_amount
+    );
+
+    SET p_booking_id = LAST_INSERT_ID();
+
+    -- Update or create customer visit history
+    IF v_customer_exists THEN
+        UPDATE customer_visit_history
+        SET
+            private_pool_visits = private_pool_visits + 1,
+            total_private_pool_spent = total_private_pool_spent + p_total_amount,
+            last_visit_date = p_booking_date,
+            customer_status = CASE
+                WHEN private_pool_visits + 1 >= 5 THEN 'regular'
+                ELSE 'returning'
+            END,
+            updated_at = NOW()
+        WHERE phone_number = p_phone_number;
+    ELSE
+        -- Create new customer history
+        INSERT INTO customer_visit_history (
+            customer_id, guest_customer_id, phone_number, first_visit_date, last_visit_date,
+            private_pool_visits, total_private_pool_spent
+        ) VALUES (
+            p_customer_id, p_guest_customer_id, p_phone_number, p_booking_date, p_booking_date,
+            1, p_total_amount
+        );
+    END IF;
+
+                SET p_status_message = CASE
+                WHEN p_is_new_customer THEN 'New customer booking created with bonus time (2 hours total)'
+                ELSE 'Returning customer booking created (1h 30min)'
+            END;
+END //
+DELIMITER ;
+```
+
+### 5.28 Private Pool Pricing Configuration Procedure
+
+```sql
+DELIMITER //
+CREATE PROCEDURE UpdatePrivatePoolPricing(
+    IN p_config_name VARCHAR(100),
+    IN p_base_price DECIMAL(10,2),
+    IN p_additional_charge_percentage DECIMAL(5,2),
+    IN p_additional_charge_fixed DECIMAL(10,2),
+    IN p_additional_charge_from_visit INT,
+    IN p_standard_duration_minutes INT,
+    IN p_bonus_duration_minutes INT,
+    IN p_max_bonus_visits INT,
+    IN p_admin_id INT,
+    OUT p_status_message VARCHAR(255)
+)
+BEGIN
+    DECLARE v_config_id INT;
+
+    -- Get current active configuration
+    SELECT id INTO v_config_id
+    FROM private_pool_pricing_config
+    WHERE is_active = TRUE
+    ORDER BY effective_date DESC LIMIT 1;
+
+    -- Deactivate current configuration
+    UPDATE private_pool_pricing_config
+    SET is_active = FALSE, updated_at = NOW()
+    WHERE id = v_config_id;
+
+    -- Create new configuration
+    INSERT INTO private_pool_pricing_config (
+        config_name, base_price, additional_charge_percentage, additional_charge_fixed,
+        additional_charge_from_visit, standard_duration_minutes, bonus_duration_minutes,
+        max_bonus_visits, effective_date, created_by
+    ) VALUES (
+        p_config_name, p_base_price, p_additional_charge_percentage, p_additional_charge_fixed,
+        p_additional_charge_from_visit, p_standard_duration_minutes, p_bonus_duration_minutes,
+        p_max_bonus_visits, CURDATE(), p_admin_id
+    );
+
+    SET p_status_message = 'Private pool pricing configuration updated successfully';
+END //
+DELIMITER ;
+```
+
+### 5.29 Get Private Pool Customer History Procedure
+
+```sql
+DELIMITER //
+CREATE PROCEDURE GetPrivatePoolCustomerHistory(
+    IN p_phone_number VARCHAR(20)
+)
+BEGIN
+    -- Customer information
+    SELECT
+        cvh.phone_number,
+        cvh.total_visits,
+        cvh.private_pool_visits,
+        cvh.total_private_pool_spent,
+        cvh.customer_status,
+        cvh.first_visit_date,
+        cvh.last_visit_date,
+        CASE
+            WHEN cvh.customer_status = 'new' THEN 'New Customer (Bonus Available)'
+            WHEN cvh.customer_status = 'returning' THEN 'Returning Customer'
+            ELSE 'Regular Customer'
+        END as customer_type_description
+    FROM customer_visit_history cvh
+    WHERE cvh.phone_number = p_phone_number;
+
+    -- Recent bookings
+    SELECT
+        ppb.booking_date,
+        ppb.start_time,
+        ppb.end_time,
+        ppb.duration_minutes,
+        ppb.bonus_minutes,
+        ppb.total_amount,
+        ppb.booking_status,
+        ppb.payment_status,
+        CASE
+            WHEN ppb.is_new_customer THEN 'New Customer (Bonus Applied)'
+            ELSE CONCAT('Visit #', ppb.visit_number)
+        END as booking_description
+    FROM private_pool_bookings ppb
+    WHERE ppb.customer_id = (SELECT customer_id FROM customer_visit_history WHERE phone_number = p_phone_number)
+       OR ppb.guest_customer_id = (SELECT guest_customer_id FROM customer_visit_history WHERE phone_number = p_phone_number)
+    ORDER BY ppb.booking_date DESC, ppb.start_time DESC
+    LIMIT 10;
+
+    -- Revenue summary
+    SELECT
+        COUNT(*) as total_bookings,
+        SUM(total_amount) as total_spent,
+        AVG(total_amount) as average_booking_value,
+        SUM(bonus_minutes) as total_bonus_time_used,
+        COUNT(CASE WHEN is_new_customer THEN 1 END) as bookings_with_bonus
+    FROM private_pool_bookings ppb
+    WHERE ppb.customer_id = (SELECT customer_id FROM customer_visit_history WHERE phone_number = p_phone_number)
+       OR ppb.guest_customer_id = (SELECT guest_customer_id FROM customer_visit_history WHERE phone_number = p_phone_number);
+END //
+DELIMITER ;
+```
+
+### 5.30 Get Private Pool Analytics Dashboard Procedure
+
+```sql
+DELIMITER //
+CREATE PROCEDURE GetPrivatePoolAnalyticsDashboard(
+    IN p_start_date DATE,
+    IN p_end_date DATE
+)
+BEGIN
+    -- Summary statistics
+    SELECT
+        COUNT(*) as total_bookings,
+        SUM(total_amount) as total_revenue,
+        AVG(total_amount) as average_booking_value,
+        COUNT(CASE WHEN is_new_customer THEN 1 END) as new_customer_bookings,
+        COUNT(CASE WHEN NOT is_new_customer THEN 1 END) as returning_customer_bookings,
+        SUM(bonus_minutes) as total_bonus_time_given
+    FROM private_pool_bookings
+    WHERE booking_date BETWEEN p_start_date AND p_end_date;
+
+    -- Revenue by customer type
+    SELECT
+        customer_type,
+        COUNT(*) as booking_count,
+        SUM(total_amount) as total_revenue,
+        AVG(total_amount) as average_revenue,
+        SUM(bonus_minutes) as bonus_time_given
+    FROM private_pool_bookings
+    WHERE booking_date BETWEEN p_start_date AND p_end_date
+    GROUP BY customer_type;
+
+    -- Visit frequency analysis
+    SELECT
+        visit_number,
+        COUNT(*) as customer_count,
+        AVG(total_amount) as average_spending
+    FROM private_pool_bookings
+    WHERE booking_date BETWEEN p_start_date AND p_end_date
+    GROUP BY visit_number
+    ORDER BY visit_number;
+
+    -- Peak hours analysis
+    SELECT
+        HOUR(start_time) as hour_of_day,
+        COUNT(*) as booking_count,
+        SUM(total_amount) as total_revenue
+    FROM private_pool_bookings
+    WHERE booking_date BETWEEN p_start_date AND p_end_date
+    GROUP BY HOUR(start_time)
+    ORDER BY hour_of_day;
 END //
 DELIMITER ;
 ```

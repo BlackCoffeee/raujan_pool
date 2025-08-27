@@ -2434,7 +2434,364 @@ graph TD
 - **Premium Limit Options**: Option limit premium
 - **Limit Packages**: Paket limit yang berbeda
 
-## 16. System Integration & Architecture Overview
+## 16. Private Pool Rental System
+
+### 16.1 Overview
+
+Sistem sewa kolam renang pribadi dengan aturan waktu dan bonus untuk pelanggan baru. Sistem ini memungkinkan pengguna untuk menyewa kolam pribadi dengan durasi 1 jam 30 menit (standard) atau 2 jam (untuk pelanggan baru dengan bonus) dan memberikan bonus waktu untuk pelanggan baru.
+
+### 16.2 Fitur Utama
+
+#### 16.2.1 Time-Based Rental System
+
+- **Standard Duration**: 1 jam 30 menit untuk semua penyewaan (pelanggan lama)
+- **New Customer Bonus**: 30 menit bonus untuk pelanggan pertama kali
+- **Extended Duration**: Total 2 jam untuk pelanggan baru (1h 30min + 30min bonus)
+- **Timer Management**: Sistem timer untuk tracking durasi penggunaan
+
+#### 16.2.2 Dynamic Additional Charges
+
+- **First Visit**: Harga normal tanpa biaya tambahan
+- **Second Visit+**: Biaya tambahan dinamis yang dapat dikonfigurasi
+- **Configurable Pricing**: Admin dapat mengatur biaya tambahan sesuai kebutuhan
+- **Visit Counter**: Sistem tracking jumlah kunjungan per pelanggan
+
+#### 16.2.3 Customer Classification System
+
+- **New Customer Detection**: Otomatis mendeteksi pelanggan baru
+- **Visit History Tracking**: Tracking riwayat kunjungan pelanggan
+- **Bonus Application**: Otomatis apply bonus untuk pelanggan baru
+- **Customer Database**: Database pelanggan dengan riwayat kunjungan
+
+#### 16.2.4 Booking & Scheduling System
+
+- **Private Pool Availability**: Calendar untuk ketersediaan kolam pribadi
+- **Time Slot Management**: Pengaturan slot waktu penyewaan
+- **Conflict Prevention**: Mencegah double booking
+- **Real-time Availability**: Update real-time ketersediaan kolam
+
+#### 16.2.5 Payment & Receipt System
+
+- **Dynamic Pricing Calculation**: Kalkulasi harga berdasarkan jumlah kunjungan
+- **Additional Charge Display**: Tampilkan biaya tambahan dengan jelas
+- **Receipt Generation**: Generate receipt dengan breakdown biaya
+- **Payment Integration**: Integrasi dengan sistem pembayaran manual
+
+### 16.3 Flow Diagrams
+
+#### 16.3.1 Private Pool Booking Flow
+
+```mermaid
+graph TD
+    A[Customer Access Website] --> B[Select Private Pool Option]
+    B --> C[Check Pool Availability]
+    C --> D[Select Date & Time]
+    D --> E[Enter Customer Information]
+    E --> F[System Check: New Customer?]
+
+    F -->|Yes| G[Apply 30 Min Bonus]
+    F -->|No| H[Standard 1h 30min Duration]
+
+    G --> I[Calculate Price: Normal Rate]
+    H --> J[Calculate Price: Normal + Additional Charge]
+
+    I --> K[Display Price Breakdown]
+    J --> K
+    K --> L[Customer Confirm Booking]
+    L --> M[Process Payment]
+    M --> N[Generate Receipt]
+    N --> O[Send Confirmation]
+    O --> P[Pool Ready for Customer]
+```
+
+#### 16.3.2 Admin Pricing Configuration Flow
+
+```mermaid
+graph TD
+    A[Admin Access Admin Panel] --> B[Navigate to Private Pool Settings]
+    B --> C[View Current Pricing Configuration]
+    C --> D[Update Additional Charge Rates]
+    D --> E[Set Visit Thresholds]
+    E --> F[Configure Bonus Rules]
+    F --> G[Save Configuration]
+    G --> H[System Apply New Rules]
+    H --> I[Notify Staff of Changes]
+    I --> J[Update Customer Communications]
+```
+
+### 16.4 Database Schema
+
+#### 16.4.1 Private Pool Bookings Table
+
+```sql
+CREATE TABLE private_pool_bookings (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    customer_id INT NULL,
+    guest_customer_id INT NULL,
+
+    -- Booking Details
+    booking_date DATE NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    duration_minutes INT NOT NULL,
+    bonus_minutes INT DEFAULT 0,
+
+    -- Customer Classification
+    is_new_customer BOOLEAN DEFAULT FALSE,
+    visit_number INT DEFAULT 1,
+    customer_type ENUM('new', 'returning') NOT NULL,
+
+    -- Pricing
+    base_price DECIMAL(10,2) NOT NULL,
+    additional_charge DECIMAL(10,2) DEFAULT 0.00,
+    bonus_discount DECIMAL(10,2) DEFAULT 0.00,
+    total_amount DECIMAL(10,2) NOT NULL,
+
+    -- Status
+    booking_status ENUM('pending', 'confirmed', 'in_progress', 'completed', 'cancelled') DEFAULT 'pending',
+    payment_status ENUM('pending', 'paid', 'refunded') DEFAULT 'pending',
+
+    -- Timestamps
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (customer_id) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (guest_customer_id) REFERENCES guest_users(id) ON DELETE SET NULL,
+
+    INDEX idx_booking_date (booking_date),
+    INDEX idx_customer_id (customer_id),
+    INDEX idx_guest_customer_id (guest_customer_id),
+    INDEX idx_booking_status (booking_status)
+);
+```
+
+#### 16.4.2 Private Pool Pricing Configuration Table
+
+```sql
+CREATE TABLE private_pool_pricing_config (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    config_name VARCHAR(100) NOT NULL,
+
+    -- Duration Settings
+    standard_duration_minutes INT DEFAULT 63, -- 1 hour 3 minutes
+    bonus_duration_minutes INT DEFAULT 30,
+
+    -- Pricing Rules
+    base_price DECIMAL(10,2) NOT NULL,
+    additional_charge_percentage DECIMAL(5,2) DEFAULT 0.00,
+    additional_charge_fixed DECIMAL(10,2) DEFAULT 0.00,
+
+    -- Visit Thresholds
+    additional_charge_from_visit INT DEFAULT 2,
+    max_bonus_visits INT DEFAULT 1,
+
+    -- Bonus Rules
+    bonus_discount_percentage DECIMAL(5,2) DEFAULT 0.00,
+    bonus_discount_fixed DECIMAL(10,2) DEFAULT 0.00,
+
+    -- Configuration
+    is_active BOOLEAN DEFAULT TRUE,
+    effective_date DATE NOT NULL,
+    expiry_date DATE NULL,
+    created_by INT NULL,
+    updated_by INT NULL,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
+
+    INDEX idx_config_name (config_name),
+    INDEX idx_effective_date (effective_date),
+    INDEX idx_is_active (is_active)
+);
+```
+
+#### 16.4.3 Customer Visit History Table
+
+```sql
+CREATE TABLE customer_visit_history (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    customer_id INT NULL,
+    guest_customer_id INT NULL,
+    phone_number VARCHAR(20) NOT NULL,
+
+    -- Visit Information
+    total_visits INT DEFAULT 1,
+    first_visit_date DATE NOT NULL,
+    last_visit_date DATE NOT NULL,
+
+    -- Private Pool History
+    private_pool_visits INT DEFAULT 0,
+    total_private_pool_spent DECIMAL(10,2) DEFAULT 0.00,
+
+    -- Customer Classification
+    customer_status ENUM('new', 'returning', 'regular') DEFAULT 'new',
+    loyalty_points INT DEFAULT 0,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (customer_id) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (guest_customer_id) REFERENCES guest_users(id) ON DELETE SET NULL,
+
+    UNIQUE KEY unique_customer_phone (phone_number),
+    INDEX idx_customer_id (customer_id),
+    INDEX idx_guest_customer_id (guest_customer_id),
+    INDEX idx_phone_number (phone_number),
+    INDEX idx_total_visits (total_visits),
+    INDEX idx_customer_status (customer_status)
+);
+```
+
+### 16.5 Business Rules
+
+#### 16.5.1 Duration & Bonus Rules
+
+- **Standard Duration**: Setiap penyewaan kolam pribadi adalah 1 jam 30 menit
+- **New Customer Bonus**: Pelanggan baru mendapat bonus 30 menit (total 2 jam)
+- **New Customer Definition**: Pelanggan yang belum pernah menyewa kolam pribadi
+- **Bonus Application**: Bonus otomatis diterapkan untuk kunjungan pertama
+
+#### 16.5.2 Pricing Rules
+
+- **Base Price**: Harga dasar untuk penyewaan kolam pribadi
+- **First Visit**: Harga normal tanpa biaya tambahan
+- **Additional Charges**: Biaya tambahan untuk kunjungan kedua dan seterusnya
+- **Dynamic Pricing**: Biaya tambahan dapat dikonfigurasi admin
+- **Price Calculation**: Base Price + Additional Charge = Total Amount
+
+#### 16.5.3 Booking Rules
+
+- **Availability Check**: Sistem memeriksa ketersediaan kolam pribadi
+- **Time Conflict Prevention**: Mencegah double booking pada waktu yang sama
+- **Advance Booking**: Booking dapat dilakukan maksimal 7 hari ke depan
+- **Cancellation Policy**: Pembatalan maksimal 2 jam sebelum waktu sewa
+
+#### 16.5.4 Customer Management Rules
+
+- **Customer Identification**: Menggunakan nomor telepon sebagai identifier
+- **Visit Tracking**: Sistem tracking jumlah kunjungan per customer
+- **Status Updates**: Update status customer dari new ke returning
+- **History Maintenance**: Menyimpan riwayat kunjungan customer
+
+### 16.6 User Interface Design
+
+#### 16.6.1 Private Pool Booking Interface
+
+- **Pool Availability Calendar**: Calendar dengan slot waktu tersedia
+- **Duration Display**: Tampilkan durasi standar dan bonus
+- **Price Calculator**: Kalkulator harga real-time
+- **Customer Form**: Form input data customer
+- **New Customer Indicator**: Indikator pelanggan baru
+
+#### 16.6.2 Admin Pricing Management Interface
+
+- **Pricing Configuration Panel**: Panel untuk mengatur harga
+- **Additional Charge Settings**: Pengaturan biaya tambahan
+- **Bonus Rules Configuration**: Pengaturan aturan bonus
+- **Visit Threshold Management**: Pengaturan threshold kunjungan
+- **Price History**: Riwayat perubahan harga
+
+#### 16.6.3 Customer History Interface
+
+- **Customer Search**: Pencarian customer berdasarkan nomor telepon
+- **Visit History Display**: Tampilkan riwayat kunjungan customer
+- **Private Pool Usage**: Riwayat penggunaan kolam pribadi
+- **Customer Classification**: Status customer (new/returning)
+- **Revenue Analytics**: Analisis pendapatan per customer
+
+### 16.7 Integration Points
+
+#### 16.7.1 Booking System Integration
+
+- **Calendar Integration**: Integrasi dengan sistem calendar
+- **Payment System**: Integrasi dengan sistem pembayaran manual
+- **Notification System**: Notifikasi konfirmasi booking
+- **Receipt Generation**: Generate receipt otomatis
+
+#### 16.7.2 Customer System Integration
+
+- **Customer Database**: Integrasi dengan database customer
+- **Visit Tracking**: Tracking kunjungan customer
+- **Customer Classification**: Sistem klasifikasi customer
+- **Loyalty System**: Integrasi dengan sistem loyalitas
+
+#### 16.7.3 Admin System Integration
+
+- **Pricing Management**: Integrasi dengan sistem pricing dinamis
+- **Analytics Dashboard**: Dashboard analisis penggunaan
+- **Reporting System**: Sistem laporan keuangan
+- **Configuration Management**: Pengaturan sistem
+
+### 16.8 Notification System
+
+#### 16.8.1 Booking Notifications
+
+- **Booking Confirmation**: Konfirmasi booking dengan detail waktu
+- **Reminder Notifications**: Reminder sebelum waktu sewa
+- **Duration Alerts**: Alert saat durasi hampir habis
+- **Completion Notifications**: Notifikasi selesai sewa
+
+#### 16.8.2 Admin Notifications
+
+- **New Booking Alerts**: Alert booking baru
+- **Pricing Change Notifications**: Notifikasi perubahan harga
+- **Customer Status Updates**: Update status customer
+- **Revenue Reports**: Laporan pendapatan harian
+
+### 16.9 Performance Considerations
+
+#### 16.9.1 Database Performance
+
+- **Indexing Strategy**: Index untuk query booking dan customer
+- **Caching**: Cache pricing configuration
+- **Query Optimization**: Optimasi query untuk booking history
+- **Batch Processing**: Batch processing untuk customer updates
+
+#### 16.9.2 Real-time Features
+
+- **Live Availability**: Update real-time ketersediaan kolam
+- **Dynamic Pricing**: Kalkulasi harga real-time
+- **Timer Management**: Timer real-time untuk durasi sewa
+- **Status Updates**: Update status booking real-time
+
+### 16.10 Monitoring & Analytics
+
+#### 16.10.1 Usage Analytics
+
+- **Pool Utilization**: Analisis penggunaan kolam pribadi
+- **Customer Behavior**: Analisis behavior customer
+- **Revenue Analysis**: Analisis pendapatan kolam pribadi
+- **Peak Hours Analysis**: Analisis jam sibuk
+
+#### 16.10.2 Customer Analytics
+
+- **New vs Returning Customers**: Analisis customer type
+- **Visit Frequency**: Frekuensi kunjungan customer
+- **Revenue per Customer**: Pendapatan per customer
+- **Customer Satisfaction**: Tingkat kepuasan customer
+
+### 16.11 Compliance & Legal
+
+#### 16.11.1 Fair Pricing Policy
+
+- **Transparent Pricing**: Harga yang transparan dan jelas
+- **Dynamic Pricing Disclosure**: Informasi perubahan harga
+- **Bonus Policy**: Kebijakan bonus yang jelas
+- **Customer Communication**: Komunikasi yang jelas dengan customer
+
+### 16.12 Future Enhancements
+
+#### 16.12.1 Advanced Features
+
+- **Loyalty Program**: Program loyalitas untuk customer regular
+- **Package Deals**: Paket sewa kolam pribadi
+- **Seasonal Pricing**: Harga berdasarkan musim
+- **Online Payment**: Integrasi payment gateway online
+
+## 17. System Integration & Architecture Overview
 
 ---
 

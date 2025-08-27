@@ -175,6 +175,19 @@ graph TB
                     UC109[Generate Usage Reports]
                     UC110[Monitor Limit Compliance]
                 end
+
+                subgraph "Private Pool Rental System"
+                    UC111[Book Private Pool]
+                    UC112[Check New Customer Status]
+                    UC113[Apply Time Bonus]
+                    UC114[Calculate Dynamic Pricing]
+                    UC115[Manage Customer History]
+                    UC116[Configure Pricing Rules]
+                    UC117[Track Visit Counter]
+                    UC118[Generate Analytics]
+                    UC119[Process Payment]
+                    UC120[Send Notifications]
+                end
     end
 
     A1 -.-> UC1
@@ -262,6 +275,9 @@ graph TB
             A1 -.-> UC107
             A1 -.-> UC109
             A1 -.-> UC110
+            A1 -.-> UC116
+            A1 -.-> UC118
+            A1 -.-> UC115
 
             A2 -.-> UC1
     A2 -.-> UC2
@@ -289,6 +305,10 @@ graph TB
             A2 -.-> UC106
             A2 -.-> UC107
             A2 -.-> UC110
+            A2 -.-> UC111
+            A2 -.-> UC112
+            A2 -.-> UC115
+            A2 -.-> UC119
 
             A3 -.-> UC26
     A3 -.-> UC27
@@ -320,6 +340,13 @@ graph TB
             A4 -.-> UC104
             A4 -.-> UC105
             A4 -.-> UC108
+            A4 -.> UC111
+            A4 -.-> UC112
+            A4 -.-> UC113
+            A4 -.-> UC114
+            A4 -.-> UC115
+            A4 -.-> UC117
+            A4 -.-> UC119
 
             A5 -.-> UC6
     A5 -.-> UC8
@@ -339,8 +366,13 @@ graph TB
     A5 -.-> UC85
     A5 -.-> UC86
     A5 -.-> UC94
-    A5 -.-> UC95
-    A5 -.-> UC99
+                A5 -.-> UC95
+            A5 -.-> UC99
+            A5 -.-> UC111
+            A5 -.-> UC112
+            A5 -.-> UC113
+            A5 -.-> UC114
+            A5 -.-> UC119
 
     %% Custom styling untuk lines dengan warna berbeda
     linkStyle 0,1,2,3,4,5,6,7 stroke:#ff6b6b,stroke-width:3px
@@ -1164,6 +1196,88 @@ sequenceDiagram
     L->>D: Update daily usage with override
     A->>L: Send override notification
     L-->>M: Override applied notification
+```
+
+### 2.9 Private Pool Rental System Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant C as Customer
+    participant W as Web App
+    participant A as API Gateway
+    participant P as Private Pool Service
+    participant H as Customer History Service
+    participant R as Pricing Service
+    participant D as Database
+
+    Note over C: Customer wants to book private pool
+    Note over W: React/Next.js Frontend
+    Note over A: Laravel API Gateway
+    Note over P: Private Pool Management Service
+    Note over H: Customer History Service
+    Note over R: Dynamic Pricing Service
+    Note over D: MySQL Database
+
+    C->>W: Access private pool booking
+    W->>A: Get pool availability
+    A->>P: Check pool availability
+    P->>D: Fetch availability calendar
+    D-->>P: Available time slots
+    P-->>A: Pool availability data
+    A-->>W: Available slots displayed
+    W-->>C: Select date and time
+
+    C->>W: Enter customer information
+    W->>A: Submit customer details
+    A->>H: Check customer history
+    H->>D: Query customer visit history
+    D-->>H: Customer history data
+    H-->>A: Customer classification (new/returning)
+
+    alt New Customer
+        A->>R: Calculate price with bonus
+        R->>D: Get pricing configuration
+        D-->>R: Pricing config (1h 30min + 30min bonus)
+        R->>A: Price calculation (base price only)
+        A-->>W: Price with 30min bonus time
+        W-->>C: Display price: Base Price (1h 33min total)
+    else Returning Customer
+        A->>R: Calculate price with additional charge
+        R->>D: Get visit count and pricing
+        D-->>R: Visit count and pricing config
+        R->>A: Price calculation (base + additional charge)
+        A-->>W: Price with additional charge
+        W-->>C: Display price: Base Price + Additional Charge
+    end
+
+    C->>W: Confirm booking
+    W->>A: Process private pool booking
+    A->>P: Create booking record
+    P->>D: Insert private pool booking
+    A->>H: Update customer history
+    H->>D: Update visit counter and spending
+    A->>R: Generate receipt
+    R-->>A: Receipt with price breakdown
+    A-->>W: Booking confirmation with receipt
+    W-->>C: Booking confirmed
+
+    Note over A: Admin Pricing Management
+    Note over A: Admin updates pricing configuration
+    A->>R: Update pricing rules
+    R->>D: Update pricing configuration
+    A->>R: Apply new pricing to future bookings
+    R-->>A: New pricing applied
+    A->>H: Send pricing update notifications
+    H-->>C: Pricing change notification
+
+    Note over P: Timer Management
+    Note over P: Track ongoing pool usage
+    P->>D: Start timer for booking
+    P->>D: Monitor duration (1h 30min or 2 hours)
+    P->>H: Update usage statistics
+    H->>D: Update analytics data
+    P-->>C: Time remaining notification
+    P-->>C: Session completion notification
 ```
 
 ### 2.3 Core Booking Flow Sequence Diagram
