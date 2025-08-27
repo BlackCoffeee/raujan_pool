@@ -496,22 +496,121 @@ CREATE TABLE pricing_rules (
 
 #### 2.1.3 PRICING_HISTORY Table
 
+````sql
+
+#### 2.1.4 Member Daily Usage Tracking Table
+
 ```sql
-CREATE TABLE pricing_history (
+CREATE TABLE member_daily_usage_tracking (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    config_id INT NOT NULL,
-    old_price DECIMAL(10,2),
-    new_price DECIMAL(10,2) NOT NULL,
-    change_reason VARCHAR(255),
-    changed_by INT NOT NULL,
-    changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    member_id INT NOT NULL,
+    usage_date DATE NOT NULL,
+    sessions_used INT DEFAULT 0,
+    free_sessions_used INT DEFAULT 0,
+    paid_sessions_used INT DEFAULT 0,
+    total_revenue DECIMAL(10,2) DEFAULT 0.00,
+
+    -- Override Information
+    override_applied BOOLEAN DEFAULT FALSE,
+    override_reason TEXT NULL,
+    override_type ENUM('extend_limit', 'reset_limit', 'custom_limit') NULL,
+    override_limit INT DEFAULT 1,
+
+    -- Session Information
+    last_session_time TIMESTAMP NULL,
+    last_session_type ENUM('free_member', 'paid_additional') NULL,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_member_date (member_id, usage_date),
+    INDEX idx_member_id (member_id),
+    INDEX idx_usage_date (usage_date),
+    INDEX idx_override_applied (override_applied),
+    INDEX idx_last_session_time (last_session_time)
+);
+````
+
+#### 2.1.5 Member Limit Override Table
+
+```sql
+CREATE TABLE member_limit_overrides (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    member_id INT NOT NULL,
+    override_date DATE NOT NULL,
+    override_type ENUM('extend_limit', 'reset_limit', 'custom_limit') NOT NULL,
+    original_limit INT NOT NULL,
+    new_limit INT NOT NULL,
+    override_reason TEXT NOT NULL,
+    overridden_by INT NOT NULL,
+    applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    valid_until TIMESTAMP NULL,
+    is_active BOOLEAN DEFAULT TRUE,
+
+    FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE CASCADE,
+    FOREIGN KEY (overridden_by) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_member_id (member_id),
+    INDEX idx_override_date (override_date),
+    INDEX idx_override_type (override_type),
+    INDEX idx_overridden_by (overridden_by),
+    INDEX idx_applied_at (applied_at)
+);
+```
+
+#### 2.1.6 Member Session History Table
+
+```sql
+CREATE TABLE member_session_history (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    member_id INT NOT NULL,
+    session_date DATE NOT NULL,
+    session_time TIME NOT NULL,
+    session_type ENUM('free_member', 'paid_additional') NOT NULL,
+    booking_id INT NOT NULL,
+    amount_paid DECIMAL(10,2) DEFAULT 0.00,
+
+    -- Override Information
+    override_applied BOOLEAN DEFAULT FALSE,
+    override_id INT NULL,
+
+    -- Session Details
+    session_duration INT DEFAULT 120, -- minutes
+    check_in_time TIMESTAMP NULL,
+    check_out_time TIMESTAMP NULL,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE CASCADE,
+    FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE,
+    FOREIGN KEY (override_id) REFERENCES member_limit_overrides(id) ON DELETE SET NULL,
+    INDEX idx_member_id (member_id),
+    INDEX idx_session_date (session_date),
+    INDEX idx_session_type (session_type),
+    INDEX idx_booking_id (booking_id),
+    INDEX idx_check_in_time (check_in_time)
+);
+```
+
+#### 2.1.7 PRICING_HISTORY Table
+
+CREATE TABLE pricing_history (
+id INT PRIMARY KEY AUTO_INCREMENT,
+config_id INT NOT NULL,
+old_price DECIMAL(10,2),
+new_price DECIMAL(10,2) NOT NULL,
+change_reason VARCHAR(255),
+changed_by INT NOT NULL,
+changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (config_id) REFERENCES pricing_config(id) ON DELETE CASCADE,
     FOREIGN KEY (changed_by) REFERENCES users(id),
     INDEX idx_config_id (config_id),
     INDEX idx_changed_at (changed_at)
+
 );
-```
+
+````
 
 ### 2.2 Authentication dan SSO Tables
 
@@ -538,7 +637,7 @@ CREATE TABLE users (
     INDEX idx_auth_provider_id (auth_provider_id),
     INDEX idx_is_active (is_active)
 );
-```
+````
 
 #### 2.2.2 USER_PROFILES Table (Enhanced for SSO)
 
@@ -1664,7 +1763,249 @@ END //
 DELIMITER ;
 ```
 
-### 5.21 Calculate Dynamic Price Procedure
+### 5.21 Member Daily Limit Check Procedure
+
+```sql
+DELIMITER //
+CREATE PROCEDURE CheckMemberDailyLimit(
+    IN p_member_id INT,
+    IN p_session_date DATE,
+    OUT p_can_book_free BOOLEAN,
+    OUT p_sessions_used INT,
+    OUT p_daily_usage_id INT,
+    OUT p_status_message VARCHAR(255)
+)
+BEGIN
+    DECLARE v_daily_usage_exists BOOLEAN DEFAULT FALSE;
+    DECLARE v_free_sessions_used INT DEFAULT 0;
+    DECLARE v_override_applied BOOLEAN DEFAULT FALSE;
+    DECLARE v_override_limit INT DEFAULT 1;
+
+    -- Check if daily usage record exists
+    SELECT EXISTS(SELECT 1 FROM member_daily_usage WHERE member_id = p_member_id AND usage_date = p_session_date)
+    INTO v_daily_usage_exists;
+
+    IF v_daily_usage_exists THEN
+        -- Get existing daily usage
+        SELECT id, free_sessions_used, override_applied, override_limit
+        INTO p_daily_usage_id, v_free_sessions_used, v_override_applied, v_override_limit
+        FROM member_daily_usage
+        WHERE member_id = p_member_id AND usage_date = p_session_date;
+
+        -- Check override
+        IF v_override_applied THEN
+            SET p_can_book_free = v_free_sessions_used < v_override_limit;
+        ELSE
+            SET p_can_book_free = v_free_sessions_used < 1;
+        END IF;
+
+        SET p_sessions_used = v_free_sessions_used;
+        SET p_status_message = CASE
+            WHEN p_can_book_free THEN 'Can book free session'
+            ELSE 'Daily limit reached, additional session requires payment'
+        END;
+    ELSE
+        -- Create new daily usage record
+        INSERT INTO member_daily_usage (member_id, usage_date, free_sessions_used)
+        VALUES (p_member_id, p_session_date, 0);
+
+        SET p_daily_usage_id = LAST_INSERT_ID();
+        SET p_can_book_free = TRUE;
+        SET p_sessions_used = 0;
+        SET p_status_message = 'First session of the day, free booking available';
+    END IF;
+END //
+DELIMITER ;
+```
+
+### 5.22 Update Member Daily Usage Procedure
+
+```sql
+DELIMITER //
+CREATE PROCEDURE UpdateMemberDailyUsage(
+    IN p_member_id INT,
+    IN p_session_date DATE,
+    IN p_session_type ENUM('free_member', 'paid_additional'),
+    IN p_amount_paid DECIMAL(10,2),
+    OUT p_status_message VARCHAR(255)
+)
+BEGIN
+    DECLARE v_daily_usage_exists BOOLEAN DEFAULT FALSE;
+
+    -- Check if daily usage record exists
+    SELECT EXISTS(SELECT 1 FROM member_daily_usage WHERE member_id = p_member_id AND usage_date = p_session_date)
+    INTO v_daily_usage_exists;
+
+    IF v_daily_usage_exists THEN
+        -- Update existing record
+        UPDATE member_daily_usage
+        SET
+            sessions_used = sessions_used + 1,
+            free_sessions_used = CASE
+                WHEN p_session_type = 'free_member' THEN free_sessions_used + 1
+                ELSE free_sessions_used
+            END,
+            paid_sessions_used = CASE
+                WHEN p_session_type = 'paid_additional' THEN paid_sessions_used + 1
+                ELSE paid_sessions_used
+            END,
+            total_revenue = total_revenue + p_amount_paid,
+            last_session_time = NOW(),
+            last_session_type = p_session_type,
+            updated_at = NOW()
+        WHERE member_id = p_member_id AND usage_date = p_session_date;
+    ELSE
+        -- Create new record
+        INSERT INTO member_daily_usage (
+            member_id, usage_date, sessions_used, free_sessions_used,
+            paid_sessions_used, total_revenue, last_session_time, last_session_type
+        ) VALUES (
+            p_member_id, p_session_date, 1,
+            CASE WHEN p_session_type = 'free_member' THEN 1 ELSE 0 END,
+            CASE WHEN p_session_type = 'paid_additional' THEN 1 ELSE 0 END,
+            p_amount_paid, NOW(), p_session_type
+        );
+    END IF;
+
+    SET p_status_message = 'Daily usage updated successfully';
+END //
+DELIMITER ;
+```
+
+### 5.23 Apply Member Limit Override Procedure
+
+```sql
+DELIMITER //
+CREATE PROCEDURE ApplyMemberLimitOverride(
+    IN p_member_id INT,
+    IN p_override_date DATE,
+    IN p_override_type ENUM('extend_limit', 'reset_limit', 'custom_limit'),
+    IN p_new_limit INT,
+    IN p_override_reason TEXT,
+    IN p_admin_id INT,
+    IN p_valid_until TIMESTAMP NULL,
+    OUT p_status_message VARCHAR(255)
+)
+BEGIN
+    DECLARE v_original_limit INT DEFAULT 1;
+    DECLARE v_daily_usage_exists BOOLEAN DEFAULT FALSE;
+
+    -- Check if member exists
+    IF NOT EXISTS(SELECT 1 FROM members WHERE id = p_member_id) THEN
+        SET p_status_message = 'Member not found';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Member not found';
+    END IF;
+
+    -- Get current daily usage
+    SELECT EXISTS(SELECT 1 FROM member_daily_usage WHERE member_id = p_member_id AND usage_date = p_override_date)
+    INTO v_daily_usage_exists;
+
+    IF v_daily_usage_exists THEN
+        SELECT free_sessions_used INTO v_original_limit
+        FROM member_daily_usage
+        WHERE member_id = p_member_id AND usage_date = p_override_date;
+    END IF;
+
+    -- Insert override record
+    INSERT INTO member_limit_overrides (
+        member_id, override_date, override_type, original_limit, new_limit,
+        override_reason, overridden_by, valid_until
+    ) VALUES (
+        p_member_id, p_override_date, p_override_type, v_original_limit, p_new_limit,
+        p_override_reason, p_admin_id, p_valid_until
+    );
+
+    -- Update daily usage with override
+    IF v_daily_usage_exists THEN
+        UPDATE member_daily_usage
+        SET
+            override_applied = TRUE,
+            override_reason = p_override_reason,
+            override_type = p_override_type,
+            override_limit = p_new_limit,
+            updated_at = NOW()
+        WHERE member_id = p_member_id AND usage_date = p_override_date;
+    ELSE
+        -- Create daily usage record with override
+        INSERT INTO member_daily_usage (
+            member_id, usage_date, override_applied, override_reason,
+            override_type, override_limit
+        ) VALUES (
+            p_member_id, p_override_date, TRUE, p_override_reason,
+            p_override_type, p_new_limit
+        );
+    END IF;
+
+    SET p_status_message = 'Member limit override applied successfully';
+END //
+DELIMITER ;
+```
+
+### 5.24 Get Member Daily Limit Dashboard Data Procedure
+
+```sql
+DELIMITER //
+CREATE PROCEDURE GetMemberDailyLimitDashboardData(
+    IN p_date DATE
+)
+BEGIN
+    -- Daily limit usage summary
+    SELECT
+        COUNT(*) as total_members,
+        SUM(CASE WHEN sessions_used > 0 THEN 1 ELSE 0 END) as active_members,
+        SUM(free_sessions_used) as total_free_sessions,
+        SUM(paid_sessions_used) as total_paid_sessions,
+        SUM(total_revenue) as total_additional_revenue,
+        SUM(CASE WHEN override_applied THEN 1 ELSE 0 END) as overrides_applied
+    FROM member_daily_usage
+    WHERE usage_date = p_date;
+
+    -- Member usage breakdown
+    SELECT
+        m.member_code,
+        u.full_name,
+        mdu.sessions_used,
+        mdu.free_sessions_used,
+        mdu.paid_sessions_used,
+        mdu.total_revenue,
+        mdu.override_applied,
+        mdu.last_session_time
+    FROM member_daily_usage mdu
+    JOIN members m ON mdu.member_id = m.id
+    JOIN users u ON m.user_id = u.id
+    WHERE mdu.usage_date = p_date
+    ORDER BY mdu.sessions_used DESC;
+
+    -- Override history for the date
+    SELECT
+        m.member_code,
+        u.full_name,
+        mlo.override_type,
+        mlo.original_limit,
+        mlo.new_limit,
+        mlo.override_reason,
+        admin.full_name as overridden_by_admin,
+        mlo.applied_at
+    FROM member_limit_overrides mlo
+    JOIN members m ON mlo.member_id = m.id
+    JOIN users u ON m.user_id = u.id
+    JOIN users admin ON mlo.overridden_by = admin.id
+    WHERE mlo.override_date = p_date
+    ORDER BY mlo.applied_at DESC;
+
+    -- Revenue analysis
+    SELECT
+        COUNT(*) as members_with_additional_sessions,
+        SUM(paid_sessions_used) as total_additional_sessions,
+        SUM(total_revenue) as total_additional_revenue,
+        AVG(total_revenue) as avg_additional_revenue_per_member
+    FROM member_daily_usage
+    WHERE usage_date = p_date AND paid_sessions_used > 0;
+END //
+DELIMITER ;
+```
+
+### 5.25 Calculate Dynamic Price Procedure
 
 ```sql
 DELIMITER //
@@ -1814,7 +2155,7 @@ DELIMITER ;
 
 ---
 
-**Versi**: 1.2  
+**Versi**: 1.6  
 **Tanggal**: 26 Agustus 2025  
-**Status**: Updated dengan dynamic pricing system  
+**Status**: Complete dengan Dynamic Pricing, Guest Booking, Google SSO, Mobile-First Web App, Core Booking Flow, Manual Payment, Dynamic Member Quota & Member Daily Swimming Limit  
 **Berdasarkan**: PDF Raujan Pool Syariah

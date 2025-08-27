@@ -198,17 +198,17 @@ Dokumen ini berisi analisa komprehensif untuk pengembangan sistem manajemen kola
 
 ## Status Dokumen
 
-| Dokumen                   | Status     | Versi | Tanggal Update | Dynamic Pricing | Guest Booking | Google SSO | Laravel Stack | Calendar Flow |
-| ------------------------- | ---------- | ----- | -------------- | --------------- | ------------- | ---------- | ------------- | ------------- |
-| 01 - Analisa Kebutuhan    | ✅ Selesai | 1.1   | 26/08/2025     | ✅              | ✅            | ✅         | ✅            | ✅            |
-| 02 - Analisa Domain       | ✅ Selesai | 1.2   | 26/08/2025     | ✅ Dynamic      | ✅            | ✅         | ✅            | ✅            |
-| 03 - Analisa Fitur        | ✅ Selesai | 1.5   | 26/08/2025     | ✅ Dynamic      | ✅ Guest      | ✅ SSO     | ✅            | ✅ Calendar   |
-| 04 - Arsitektur Sistem    | ✅ Selesai | 1.2   | 26/08/2025     | ✅              | ✅            | ✅         | ✅ Laravel    | ✅            |
-| 05 - Desain Database      | ✅ Selesai | 1.5   | 26/08/2025     | ✅ Pricing      | ✅ Guest      | ✅ SSO     | ✅            | ✅ Calendar   |
-| 06 - UML Diagrams         | ✅ Selesai | 1.2   | 26/08/2025     | ✅              | ✅            | ✅         | ✅            | ✅ Calendar   |
-| 07 - UI Design            | ✅ Selesai | 1.2   | 26/08/2025     | ✅              | ✅            | ✅         | ✅            | ✅ Calendar   |
-| 08 - Implementasi Testing | ✅ Selesai | 1.3   | 26/08/2025     | ✅              | ✅            | ✅         | ✅ Laravel    | ✅ Calendar   |
-| 09 - Risiko dan Mitigasi  | ✅ Selesai | 1.1   | 26/08/2025     | ✅              | ✅            | ✅         | ✅            | ✅            |
+| Dokumen                   | Status     | Versi | Tanggal Update | Dynamic Pricing | Guest Booking | Google SSO | Laravel Stack | Calendar Flow | Daily Limit    |
+| ------------------------- | ---------- | ----- | -------------- | --------------- | ------------- | ---------- | ------------- | ------------- | -------------- |
+| 01 - Analisa Kebutuhan    | ✅ Selesai | 1.2   | 26/08/2025     | ✅              | ✅            | ✅         | ✅            | ✅            | ✅             |
+| 02 - Analisa Domain       | ✅ Selesai | 1.3   | 26/08/2025     | ✅ Dynamic      | ✅            | ✅         | ✅            | ✅            | ✅             |
+| 03 - Analisa Fitur        | ✅ Selesai | 1.6   | 26/08/2025     | ✅ Dynamic      | ✅ Guest      | ✅ SSO     | ✅            | ✅ Calendar   | ✅ Daily Limit |
+| 04 - Arsitektur Sistem    | ✅ Selesai | 1.3   | 26/08/2025     | ✅              | ✅            | ✅         | ✅ Laravel    | ✅            | ✅             |
+| 05 - Desain Database      | ✅ Selesai | 1.6   | 26/08/2025     | ✅ Pricing      | ✅ Guest      | ✅ SSO     | ✅            | ✅ Calendar   | ✅ Daily Limit |
+| 06 - UML Diagrams         | ✅ Selesai | 1.3   | 26/08/2025     | ✅              | ✅            | ✅         | ✅            | ✅ Calendar   | ✅ Daily Limit |
+| 07 - UI Design            | ✅ Selesai | 1.3   | 26/08/2025     | ✅              | ✅            | ✅         | ✅            | ✅ Calendar   | ✅             |
+| 08 - Implementasi Testing | ✅ Selesai | 1.4   | 26/08/2025     | ✅              | ✅            | ✅         | ✅ Laravel    | ✅ Calendar   | ✅             |
+| 09 - Risiko dan Mitigasi  | ✅ Selesai | 1.2   | 26/08/2025     | ✅              | ✅            | ✅         | ✅            | ✅            | ✅             |
 
 ## Komponen Diagram
 
@@ -388,6 +388,36 @@ Setelah dokumen analisa komprehensif ini selesai dengan **Dynamic Pricing System
 - Performance optimization
 - Advanced offline capabilities
 
+## Member Daily Swimming Limit Implementation Priority
+
+### Phase 1: Core Limit System
+
+- Daily usage tracking database
+- Limit checking logic
+- Booking validation system
+- Member session history tracking
+
+### Phase 2: Payment Integration
+
+- Additional session pricing
+- Manual payment integration
+- Revenue tracking
+- Payment confirmation flow
+
+### Phase 3: Admin Features
+
+- Limit override system
+- Usage analytics dashboard
+- Reporting tools
+- Admin notification system
+
+### Phase 4: Advanced Features
+
+- Automatic daily reset
+- Usage pattern analysis
+- Member behavior insights
+- Revenue optimization tools
+
 ## Bukti Booking untuk Guest Users
 
 ### Multiple Proof Methods
@@ -412,9 +442,9 @@ Untuk pertanyaan atau klarifikasi terkait dokumen analisa ini, khususnya tentang
 
 ---
 
-**Versi**: 1.6  
+**Versi**: 1.7  
 **Tanggal**: 26 Agustus 2025  
-**Status**: Complete dengan Dynamic Pricing, Guest Booking, Google SSO, Mobile-First Web App, Core Booking Flow, Manual Payment & Dynamic Member Quota  
+**Status**: Complete dengan Dynamic Pricing, Guest Booking, Google SSO, Mobile-First Web App, Core Booking Flow, Manual Payment, Dynamic Member Quota & Member Daily Swimming Limit  
 **Berdasarkan**: PDF Raujan Pool Syariah  
 **Key Features**:
 
@@ -431,6 +461,7 @@ Untuk pertanyaan atau klarifikasi terkait dokumen analisa ini, khususnya tentang
 - 🎁 **Promotional pricing system dengan flexible campaigns**
 - 💳 **Manual payment system dengan transfer bank & admin verification**
 - 👥 **Dynamic member quota management dengan sistem antrian**
+- 🏊‍♂️ **Member daily swimming limit (1x/hari gratis, additional session berbayar)**
 
 ### Core Booking Flow System
 

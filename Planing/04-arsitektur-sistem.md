@@ -519,9 +519,9 @@ graph TD
 
 ---
 
-**Versi**: 1.2  
+**Versi**: 1.3  
 **Tanggal**: 26 Agustus 2025  
-**Status**: Updated dengan Laravel + React/Next.js Stack  
+**Status**: Complete dengan Dynamic Pricing, Guest Booking, Google SSO, Mobile-First Web App, Core Booking Flow, Manual Payment, Dynamic Member Quota & Member Daily Swimming Limit  
 **Berdasarkan**: PDF Raujan Pool Syariah  
 **Key Features**:
 
@@ -529,3 +529,4 @@ graph TD
 - 📱 **Mobile-First Web App** dengan PWA support
 - 🔔 **Push Notifications** via Firebase FCM
 - ⚡ **Performance Optimized** untuk mobile users
+- 🏊‍♂️ **Member Daily Swimming Limit Architecture**

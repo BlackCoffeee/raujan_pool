@@ -152,18 +152,29 @@ graph TB
             UC92[Track Payment History]
         end
 
-        subgraph "Dynamic Member Quota Management"
-            UC93[Configure Member Quota]
-            UC94[Join Member Queue]
-            UC95[Monitor Queue Position]
-            UC96[Process Member Expiry]
-            UC97[Send Expiry Warnings]
-            UC98[Auto-Promote Queue]
-            UC99[Confirm Promotion Offer]
-            UC100[Update Quota Settings]
-            UC101[Track Quota History]
-            UC102[View Quota Dashboard]
-        end
+                        subgraph "Dynamic Member Quota Management"
+                    UC93[Configure Member Quota]
+                    UC94[Join Member Queue]
+                    UC95[Monitor Queue Position]
+                    UC96[Process Member Expiry]
+                    UC97[Send Expiry Warnings]
+                    UC98[Auto-Promote Queue]
+                    UC99[Confirm Promotion Offer]
+                    UC100[Update Quota Settings]
+                    UC101[Track Quota History]
+                    UC102[View Quota Dashboard]
+                end
+
+                subgraph "Member Daily Swimming Limit"
+                    UC103[Check Daily Limit]
+                    UC104[Book Free Session]
+                    UC105[Book Additional Paid Session]
+                    UC106[Apply Limit Override]
+                    UC107[Track Daily Usage]
+                    UC108[View Usage History]
+                    UC109[Generate Usage Reports]
+                    UC110[Monitor Limit Compliance]
+                end
     end
 
     A1 -.-> UC1
@@ -244,11 +255,15 @@ graph TB
     A1 -.-> UC96
     A1 -.-> UC97
     A1 -.-> UC98
-    A1 -.-> UC100
-    A1 -.-> UC101
-    A1 -.-> UC102
+                A1 -.-> UC100
+            A1 -.> UC101
+            A1 -.-> UC102
+            A1 -.-> UC106
+            A1 -.-> UC107
+            A1 -.-> UC109
+            A1 -.-> UC110
 
-    A2 -.-> UC1
+            A2 -.-> UC1
     A2 -.-> UC2
     A2 -.-> UC9
     A2 -.-> UC11
@@ -263,9 +278,19 @@ graph TB
     A2 -.-> UC87
     A2 -.-> UC88
     A2 -.-> UC89
-    A2 -.-> UC90
+                A2 -.-> UC90
+            A2 -.-> UC93
+            A2 -.-> UC96
+            A2 -.-> UC97
+            A2 -.> UC98
+            A2 -.-> UC100
+            A2 -.-> UC101
+            A2 -.-> UC102
+            A2 -.-> UC106
+            A2 -.-> UC107
+            A2 -.-> UC110
 
-    A3 -.-> UC26
+            A3 -.-> UC26
     A3 -.-> UC27
     A3 -.-> UC28
     A3 -.-> UC40
@@ -290,9 +315,13 @@ graph TB
     A4 -.-> UC5
     A4 -.-> UC94
     A4 -.-> UC95
-    A4 -.-> UC99
+                A4 -.-> UC99
+            A4 -.-> UC103
+            A4 -.-> UC104
+            A4 -.-> UC105
+            A4 -.-> UC108
 
-    A5 -.-> UC6
+            A5 -.-> UC6
     A5 -.-> UC8
     A5 -.-> UC10
     A5 -.-> UC11
@@ -1062,6 +1091,81 @@ sequenceDiagram
     N-->>U: Quota change notification
 ```
 
+### 2.8 Member Daily Swimming Limit Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant M as Member
+    participant W as Web App
+    participant A as API Gateway
+    participant L as Limit Service
+    participant B as Booking Service
+    participant P as Payment Service
+    participant D as Database
+
+    Note over M: Member wants to book session
+    Note over W: React/Next.js Frontend
+    Note over A: Laravel API Gateway
+    Note over L: Daily Limit Service
+    Note over B: Booking Management Service
+    Note over P: Payment Processing Service
+    Note over D: MySQL Database
+
+    M->>W: Request to book session
+    W->>A: Check daily limit for member
+    A->>L: Get member daily usage
+    L->>D: Fetch daily usage record
+    D-->>L: Daily usage data
+    L-->>A: Daily limit status
+    A-->>W: Can book free session?
+
+    alt Can Book Free Session
+        W-->>M: Free session available
+        M->>W: Confirm free booking
+        W->>A: Create free session booking
+        A->>B: Process free booking
+        B->>D: Insert booking record
+        A->>L: Update daily usage
+        L->>D: Update free sessions used
+        A-->>W: Booking confirmed (free)
+        W-->>M: Free session booked successfully
+    else Daily Limit Reached
+        W-->>M: Daily limit reached, additional session requires payment
+        M->>W: Confirm paid booking
+        W->>A: Create paid session booking
+        A->>B: Process paid booking
+        A->>P: Calculate additional session price
+        P->>D: Get pricing configuration
+        P-->>A: Additional session price
+        A-->>W: Payment required for additional session
+        W-->>M: Payment form displayed
+
+        alt Member Completes Payment
+            M->>W: Complete payment
+            W->>A: Process payment
+            A->>P: Process manual payment
+            P->>D: Update payment record
+            A->>L: Update daily usage
+            L->>D: Update paid sessions used
+            A-->>W: Payment confirmed, booking created
+            W-->>M: Additional session booked successfully
+        end
+    end
+
+    Note over L: Daily Limit Reset (Midnight)
+    Note over L: Reset all member daily usage
+    L->>D: Reset daily usage counters
+    L->>D: Archive daily usage history
+
+    Note over A: Admin Override System
+    Note over A: Admin applies limit override
+    A->>L: Apply member limit override
+    L->>D: Insert override record
+    L->>D: Update daily usage with override
+    A->>L: Send override notification
+    L-->>M: Override applied notification
+```
+
 ### 2.3 Core Booking Flow Sequence Diagram
 
 ## 4. Activity Diagram
@@ -1286,6 +1390,7 @@ graph TB
 
 ---
 
-**Versi**: 1.1  
+**Versi**: 1.3  
 **Tanggal**: 26 Agustus 2025  
-**Status**: Updated berdasarkan PDF Raujan Pool Syariah
+**Status**: Complete dengan Dynamic Pricing, Guest Booking, Google SSO, Mobile-First Web App, Core Booking Flow, Manual Payment, Dynamic Member Quota & Member Daily Swimming Limit  
+**Berdasarkan**: PDF Raujan Pool Syariah

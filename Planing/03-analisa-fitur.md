@@ -2153,4 +2153,292 @@ graph TD
 - **Smart Notifications**: Notifikasi yang smart
 - **Behavioral Analysis**: Analisis behavior user
 
-## 15. System Integration & Architecture Overview
+## 15. Member Daily Swimming Limit
+
+### 15.1 Overview
+
+Sistem pembatasan berenang harian untuk member yang memastikan setiap member hanya dapat berenang 1 kali per hari dalam 1 sesi sebagai bagian dari paket member. Jika member ingin berenang lebih dari 1 kali per hari, akan dikenakan biaya normal sesuai harga non-member.
+
+### 15.2 Fitur Utama
+
+#### 15.2.1 Daily Swimming Limit Enforcement
+
+- **One Session Per Day Rule**: Member hanya dapat berenang 1 kali per hari dalam 1 sesi
+- **Session Validation**: Validasi saat booking apakah member sudah berenang hari itu
+- **Limit Tracking**: Tracking penggunaan daily limit member
+- **Cross-Session Prevention**: Mencegah booking di sesi lain pada hari yang sama
+
+#### 15.2.2 Multiple Sessions Handling
+
+- **Additional Session Booking**: Member dapat booking sesi tambahan dengan biaya normal
+- **Normal Rate Application**: Biaya dikenakan sesuai harga non-member
+- **Session Type Differentiation**: Membedakan sesi gratis (member) vs berbayar
+- **Payment Processing**: Proses pembayaran untuk sesi tambahan
+
+#### 15.2.3 Limit Reset System
+
+- **Daily Reset**: Limit direset setiap hari pukul 00:00
+- **Session Date Tracking**: Tracking berdasarkan tanggal sesi
+- **Rollover Prevention**: Tidak ada rollover limit ke hari berikutnya
+- **Calendar Day Basis**: Berdasarkan hari kalender, bukan 24 jam
+
+#### 15.2.4 Admin Override
+
+- **Manual Override**: Admin dapat override daily limit untuk kasus khusus
+- **Override Tracking**: Tracking semua override yang dilakukan admin
+- **Override Reasons**: Catatan alasan override limit
+- **Audit Trail**: Audit trail lengkap untuk semua override
+
+#### 15.2.5 Reporting & Analytics
+
+- **Daily Usage Reports**: Report penggunaan daily limit member
+- **Limit Violation Tracking**: Tracking pelanggaran daily limit
+- **Revenue Analytics**: Analisis pendapatan dari sesi tambahan member
+- **Member Behavior Analytics**: Analisis pola booking member
+
+### 15.3 Daily Limit Flow Management
+
+#### 15.3.1 Member Booking Flow with Daily Limit
+
+```mermaid
+graph TD
+    A[Member Login] --> B[Select Date & Session]
+    B --> C{Check Daily Limit}
+    C -->|First Session Today| D[Free Member Session]
+    C -->|Already Swam Today| E[Additional Session Booking]
+    D --> F[Complete Free Booking]
+    E --> G[Show Normal Pricing]
+    G --> H{Confirm Payment?}
+    H -->|Yes| I[Process Normal Payment]
+    H -->|No| J[Cancel Booking]
+    I --> K[Complete Paid Booking]
+    F --> L[Member Session Active]
+    K --> M[Paid Session Active]
+    L --> N[Daily Limit Marked as Used]
+    M --> O[Daily Limit Already Used]
+```
+
+#### 15.3.2 Admin Override Flow
+
+```mermaid
+graph TD
+    A[Admin Login] --> B[Access Member Management]
+    B --> C[Select Member]
+    C --> D[View Daily Limit Status]
+    D --> E{Override Required?}
+    E -->|Yes| F[Request Override]
+    E -->|No| G[View Normal Status]
+    F --> H[Enter Override Reason]
+    H --> I[Apply Override]
+    I --> J[Update Daily Limit]
+    J --> K[Log Override Action]
+    K --> L[Notify Member]
+    L --> M[Override Complete]
+    G --> N[Continue Normal Process]
+```
+
+### 15.4 Database Schema
+
+#### 15.4.1 Member Daily Usage Tracking Table
+
+```sql
+-- Tracking penggunaan daily limit member per hari
+```
+
+**Key Fields:**
+
+- `member_id`: ID member yang menggunakan limit
+- `usage_date`: Tanggal penggunaan (YYYY-MM-DD)
+- `sessions_used`: Jumlah sesi yang sudah digunakan (max 1 untuk gratis)
+- `free_sessions_used`: Jumlah sesi gratis yang digunakan
+- `paid_sessions_used`: Jumlah sesi berbayar yang digunakan
+- `total_revenue`: Total pendapatan dari sesi berbayar
+- `last_session_time`: Waktu sesi terakhir pada hari tersebut
+- `override_applied`: Flag apakah ada override admin
+- `override_reason`: Alasan override jika ada
+
+#### 15.4.2 Member Limit Override Table
+
+```sql
+-- Tracking semua override daily limit yang dilakukan admin
+```
+
+**Key Fields:**
+
+- `member_id`: ID member yang di-override
+- `override_date`: Tanggal override
+- `override_type`: Jenis override (extend_limit, reset_limit, custom_limit)
+- `original_limit`: Limit asli sebelum override
+- `new_limit`: Limit baru setelah override
+- `override_reason`: Alasan override
+- `overridden_by`: Admin yang melakukan override
+- `valid_until`: Sampai kapan override berlaku
+
+#### 15.4.3 Member Session History Table
+
+```sql
+-- History lengkap sesi member dengan status gratis/berbayar
+```
+
+**Key Fields:**
+
+- `member_id`: ID member
+- `booking_id`: ID booking terkait
+- `session_date`: Tanggal sesi
+- `session_time`: Waktu sesi (morning/afternoon)
+- `session_type`: Jenis sesi (free_member, paid_additional)
+- `amount_paid`: Jumlah yang dibayar (0 untuk sesi gratis)
+- `payment_method`: Metode pembayaran
+- `daily_limit_applied`: Flag apakah daily limit diterapkan
+
+### 15.5 Business Rules
+
+#### 15.5.1 Daily Limit Rules
+
+- **One Free Session Per Day**: Member mendapat 1 sesi gratis per hari
+- **Date-Based Reset**: Limit direset setiap hari pukul 00:00
+- **Session-Based Counting**: Berdasarkan sesi, bukan durasi
+- **No Rollover**: Limit tidak dapat dibawa ke hari berikutnya
+- **Immediate Application**: Limit diterapkan saat booking
+
+#### 15.5.2 Additional Session Rules
+
+- **Normal Rate**: Sesi tambahan dikenakan harga non-member
+- **No Member Discount**: Tidak ada diskon member untuk sesi tambahan
+- **Standard Payment**: Pembayaran melalui metode normal
+- **Same Day Only**: Hanya berlaku untuk hari yang sama
+
+#### 15.5.3 Admin Override Rules
+
+- **Admin Authorization**: Hanya admin yang dapat override
+- **Reason Required**: Wajib memberikan alasan override
+- **Audit Trail**: Semua override harus dicatat
+- **Temporary Effect**: Override berlaku terbatas
+- **Member Notification**: Member harus dinotifikasi jika di-override
+
+#### 15.5.4 Validation Rules
+
+- **Real-time Check**: Validasi limit saat booking
+- **Concurrent Prevention**: Mencegah booking concurrent
+- **Payment Verification**: Verifikasi pembayaran untuk sesi tambahan
+- **Date Validation**: Validasi tanggal sesi
+
+### 15.6 User Interface Design
+
+#### 15.6.1 Member Booking Interface
+
+- **Daily Limit Status**: Display status limit hari ini
+- **Session Availability**: Tampilkan sesi yang tersedia
+- **Price Display**: Tampilkan harga (gratis vs normal)
+- **Limit Warning**: Warning jika limit sudah digunakan
+- **Additional Session Option**: Option untuk booking sesi tambahan
+
+#### 15.6.2 Admin Daily Limit Management
+
+- **Member Limit Dashboard**: Dashboard untuk manage limit member
+- **Override Interface**: Interface untuk override limit
+- **Usage Reports**: Report penggunaan limit member
+- **Daily Summary**: Summary penggunaan limit per hari
+
+#### 15.6.3 Payment Interface for Additional Sessions
+
+- **Normal Rate Display**: Tampilkan harga normal
+- **Payment Options**: Pilihan metode pembayaran
+- **Session Summary**: Summary sesi yang akan dibooking
+- **Confirmation Screen**: Screen konfirmasi pembayaran
+
+### 15.7 Integration Points
+
+#### 15.7.1 Booking System Integration
+
+- **Limit Validation**: Integrasi dengan sistem booking
+- **Session Type Marking**: Marking sesi sebagai gratis/berbayar
+- **Payment Processing**: Integrasi dengan payment system
+- **Calendar Integration**: Integrasi dengan calendar interface
+
+#### 15.7.2 Member System Integration
+
+- **Member Validation**: Validasi status member
+- **Membership Benefits**: Apply membership benefits
+- **Member History**: Integrasi dengan member history
+- **Profile Integration**: Integrasi dengan member profile
+
+#### 15.7.3 Payment System Integration
+
+- **Additional Session Payment**: Payment untuk sesi tambahan
+- **Payment Tracking**: Tracking pembayaran sesi tambahan
+- **Receipt Generation**: Generate receipt untuk sesi berbayar
+- **Payment History**: Integrasi dengan payment history
+
+### 15.8 Notification System
+
+#### 15.8.1 Daily Limit Notifications
+
+- **Limit Used Notification**: Notifikasi ketika limit digunakan
+- **Limit Reset Notification**: Notifikasi reset limit harian
+- **Additional Session Reminder**: Reminder untuk sesi tambahan
+- **Override Notification**: Notifikasi override admin
+
+#### 15.8.2 Payment Notifications
+
+- **Additional Session Payment**: Notifikasi pembayaran sesi tambahan
+- **Payment Confirmation**: Konfirmasi pembayaran berhasil
+- **Payment Receipt**: Receipt untuk sesi berbayar
+
+### 15.9 Performance Considerations
+
+#### 15.9.1 Database Performance
+
+- **Indexing Strategy**: Index untuk query daily limit
+- **Caching**: Cache status daily limit member
+- **Batch Processing**: Batch processing untuk reset harian
+- **Query Optimization**: Optimize query untuk limit checking
+
+#### 15.9.2 Real-time Updates
+
+- **Live Limit Status**: Real-time update status limit
+- **Concurrent Booking Protection**: Proteksi booking concurrent
+- **Instant Validation**: Validasi instan saat booking
+
+### 15.10 Monitoring & Analytics
+
+#### 15.10.1 Daily Limit Analytics
+
+- **Limit Usage Patterns**: Analisis pola penggunaan limit
+- **Additional Session Revenue**: Analisis pendapatan sesi tambahan
+- **Override Analysis**: Analisis penggunaan override admin
+- **Member Behavior**: Analisis behavior member
+
+#### 15.10.2 Revenue Impact Analysis
+
+- **Additional Session Revenue**: Pendapatan dari sesi tambahan
+- **Member vs Non-Member Revenue**: Perbandingan revenue
+- **Daily Revenue Patterns**: Pattern pendapatan harian
+- **Limit Impact on Revenue**: Dampak limit terhadap revenue
+
+### 15.11 Compliance & Legal
+
+#### 15.11.1 Fair Use Policy
+
+- **Clear Limits**: Limit yang jelas dan transparan
+- **Consistent Application**: Penerapan yang konsisten
+- **Override Documentation**: Dokumentasi override yang lengkap
+- **Member Communication**: Komunikasi yang jelas dengan member
+
+### 15.12 Future Enhancements
+
+#### 15.12.1 Advanced Limit Features
+
+- **Flexible Limit Rules**: Rules limit yang lebih fleksibel
+- **Seasonal Limits**: Limit berdasarkan musim/kebutuhan
+- **Premium Limit Options**: Option limit premium
+- **Limit Packages**: Paket limit yang berbeda
+
+## 16. System Integration & Architecture Overview
+
+---
+
+**Versi**: 1.6  
+**Tanggal**: 26 Agustus 2025  
+**Status**: Complete dengan Dynamic Pricing, Guest Booking, Google SSO, Mobile-First Web App, Core Booking Flow, Manual Payment, Dynamic Member Quota & Member Daily Swimming Limit  
+**Berdasarkan**: PDF Raujan Pool Syariah
