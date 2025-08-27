@@ -1534,6 +1534,836 @@ graph TD
     Q --> R[Order Complete]
 ```
 
+### 4.4 Activity Diagram Rating System
+
+```mermaid
+graph TD
+    A[User Completes Service] --> B[Trigger Rating Request]
+    B --> C[Display Rating Form]
+    C --> D[Rate Booking Experience]
+    D --> E[Rate Cafe Service]
+    E --> F[Rate Staff Service]
+    F --> G[Rate Facility Quality]
+    G --> H[Rate Overall Satisfaction]
+    H --> I[Add Comments]
+    I --> J[Submit Rating]
+    J --> K{Submit Success?}
+    K -->|No| L[Show Error Message]
+    L --> C
+    K -->|Yes| M[Store Rating Data]
+    M --> N[Update Analytics]
+    N --> O[Send Feedback Notification]
+    O --> P[Rating Complete]
+
+    %% Custom styling
+    classDef start-end fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
+    classDef process fill:#4ecdc4,stroke:#333,stroke-width:2px,color:#fff
+    classDef decision fill:#ffeaa7,stroke:#333,stroke-width:2px,color:#000
+    classDef success fill:#96ceb4,stroke:#333,stroke-width:2px,color:#fff
+    classDef failure fill:#ff7675,stroke:#333,stroke-width:2px,color:#fff
+
+    A:::start-end
+    B:::process
+    C:::process
+    D:::process
+    E:::process
+    F:::process
+    G:::process
+    H:::process
+    I:::process
+    J:::process
+    K:::decision
+    L:::failure
+    M:::success
+    N:::success
+    O:::success
+    P:::start-end
+```
+
+### 4.5 Activity Diagram Check-in Process
+
+```mermaid
+graph TD
+    A[Customer Arrives] --> B[Staff Access Check-in System]
+    B --> C[Display Today's Bookings]
+    C --> D[Request Identification]
+    D --> E{Identification Type?}
+    E -->|QR Code| F[Scan QR Code]
+    E -->|Reference Number| G[Enter Reference Number]
+    E -->|Phone/Email| H[Search by Phone/Email]
+    E -->|Member Card| I[Scan Member Card]
+    F --> J[Verify Booking Details]
+    G --> J
+    H --> J
+    I --> J
+    J --> K{Booking Valid?}
+    K -->|No| L[Show Error - No Booking]
+    L --> M[End Process]
+    K -->|Yes| N{Already Checked In?}
+    N -->|Yes| O[Show Error - Already Checked In]
+    O --> M
+    N -->|No| P[Process Check-in]
+    P --> Q[Record Attendance]
+    Q --> R[Issue Equipment]
+    R --> S[Send Confirmation]
+    S --> T[Check-in Complete]
+
+    %% Custom styling
+    classDef start-end fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
+    classDef process fill:#4ecdc4,stroke:#333,stroke-width:2px,color:#fff
+    classDef decision fill:#ffeaa7,stroke:#333,stroke-width:2px,color:#000
+    classDef success fill:#96ceb4,stroke:#333,stroke-width:2px,color:#fff
+    classDef failure fill:#ff7675,stroke:#333,stroke-width:2px,color:#fff
+
+    A:::start-end
+    B:::process
+    C:::process
+    D:::process
+    E:::decision
+    F:::process
+    G:::process
+    H:::process
+    I:::process
+    J:::process
+    K:::decision
+    L:::failure
+    M:::start-end
+    N:::decision
+    O:::failure
+    P:::success
+    Q:::success
+    R:::success
+    S:::success
+    T:::start-end
+```
+
+### 4.6 Activity Diagram Promotional Pricing
+
+```mermaid
+graph TD
+    A[User Makes Booking] --> B[Select Booking Options]
+    B --> C[Calculate Base Price]
+    C --> D[Check Active Promotions]
+    D --> E{Any Promotions Available?}
+    E -->|No| F[Apply Base Price]
+    E -->|Yes| G[Evaluate User Eligibility]
+    G --> H{User Eligible?}
+    H -->|No| F
+    H -->|Yes| I[Select Best Promotion]
+    I --> J[Apply Promotional Pricing]
+    J --> K[Display Promotional Price]
+    K --> L[User Confirms Booking]
+    L --> M[Store Promotion Usage]
+    M --> N[Send Promotion Confirmation]
+    N --> O[Promotional Booking Complete]
+    F --> P[Standard Booking Complete]
+
+    %% Custom styling
+    classDef start-end fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
+    classDef process fill:#4ecdc4,stroke:#333,stroke-width:2px,color:#fff
+    classDef decision fill:#ffeaa7,stroke:#333,stroke-width:2px,color:#000
+    classDef success fill:#96ceb4,stroke:#333,stroke-width:2px,color:#fff
+    classDef promo fill:#ff9ff3,stroke:#333,stroke-width:2px,color:#fff
+
+    A:::start-end
+    B:::process
+    C:::process
+    D:::process
+    E:::decision
+    F:::success
+    G:::process
+    H:::decision
+    I:::promo
+    J:::promo
+    K:::promo
+    L:::process
+    M:::process
+    N:::promo
+    O:::start-end
+    P:::start-end
+```
+
+### 4.7 Activity Diagram Manual Payment
+
+```mermaid
+graph TD
+    A[User Selects Manual Payment] --> B[Display Payment Instructions]
+    B --> C[Show Bank Account Details]
+    C --> D[User Makes Transfer]
+    D --> E[User Uploads Payment Proof]
+    E --> F[Submit Payment Proof]
+    F --> G{Proof Format Valid?}
+    G -->|No| H[Show Format Error]
+    H --> E
+    G -->|Yes| I[Store Payment Proof]
+    I --> J[Set Payment Status: Pending]
+    J --> K[Admin Reviews Payment]
+    K --> L{Payment Valid?}
+    L -->|No| M[Reject Payment]
+    M --> N[Notify User - Payment Rejected]
+    N --> O[User Uploads New Proof]
+    O --> E
+    L -->|Yes| P[Approve Payment]
+    P --> Q[Update Booking Status]
+    Q --> R[Send Payment Confirmation]
+    R --> S[Manual Payment Complete]
+
+    %% Custom styling
+    classDef start-end fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
+    classDef process fill:#4ecdc4,stroke:#333,stroke-width:2px,color:#fff
+    classDef decision fill:#ffeaa7,stroke:#333,stroke-width:2px,color:#000
+    classDef success fill:#96ceb4,stroke:#333,stroke-width:2px,color:#fff
+    classDef failure fill:#ff7675,stroke:#333,stroke-width:2px,color:#fff
+
+    A:::start-end
+    B:::process
+    C:::process
+    D:::process
+    E:::process
+    F:::process
+    G:::decision
+    H:::failure
+    I:::success
+    J:::success
+    K:::process
+    L:::decision
+    M:::failure
+    N:::failure
+    O:::process
+    P:::success
+    Q:::success
+    R:::success
+    S:::start-end
+```
+
+### 4.8 Activity Diagram Dynamic Member Quota
+
+```mermaid
+graph TD
+    A[User Requests Member Registration] --> B[Check Current Quota]
+    B --> C{Quota Available?}
+    C -->|Yes| D[Proceed with Registration]
+    C -->|No| E[Offer Queue Position]
+    E --> F{User Accepts Queue?}
+    F -->|No| G[Registration Cancelled]
+    F -->|Yes| H[Add to Member Queue]
+    H --> I[Send Queue Confirmation]
+    I --> J[Notify Queue Position]
+
+    %% Member Expiry Process
+    K[Daily Expiry Check] --> L[Find Expiring Members]
+    L --> M[Send 3-Day Warning]
+    M --> N{Membership Expired?}
+    N -->|No| O[Continue Active]
+    N -->|Yes| P[Grace Period - 3 Days]
+    P --> Q{Grace Period Ended?}
+    Q -->|No| R[Send Warning]
+    R --> P
+    Q -->|Yes| S[Deactivate Member]
+    S --> T[Check Queue for Promotion]
+    T --> U{Queue Available?}
+    U -->|No| V[Quota Remains Open]
+    U -->|Yes| W[Promote First in Queue]
+    W --> X{Send Promotion Offer}
+    X --> Y{User Accepts?}
+    Y -->|No| Z[Offer to Next in Queue]
+    Z --> W
+    Y -->|Yes| AA[Activate New Member]
+    AA --> BB[Member Quota Updated]
+
+    %% Custom styling
+    classDef start-end fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
+    classDef process fill:#4ecdc4,stroke:#333,stroke-width:2px,color:#fff
+    classDef decision fill:#ffeaa7,stroke:#333,stroke-width:2px,color:#000
+    classDef success fill:#96ceb4,stroke:#333,stroke-width:2px,color:#fff
+    classDef failure fill:#ff7675,stroke:#333,stroke-width:2px,color:#fff
+    classDef queue fill:#74b9ff,stroke:#333,stroke-width:2px,color:#fff
+
+    A:::start-end
+    B:::process
+    C:::decision
+    D:::success
+    E:::process
+    F:::decision
+    G:::failure
+    H:::queue
+    I:::queue
+    J:::queue
+    K:::process
+    L:::process
+    M:::process
+    N:::decision
+    O:::success
+    P:::process
+    Q:::decision
+    R:::process
+    S:::process
+    T:::process
+    U:::decision
+    V:::success
+    W:::queue
+    X:::process
+    Y:::decision
+    Z:::process
+    AA:::success
+    BB:::success
+```
+
+### 4.9 Activity Diagram Member Daily Swimming Limit
+
+```mermaid
+graph TD
+    A[Member Requests Booking] --> B[Check Daily Usage]
+    B --> C{Used Free Session Today?}
+    C -->|No| D[Allow Free Session]
+    D --> E[Create Free Booking]
+    E --> F[Update Daily Usage]
+    F --> G[Free Session Booked]
+    C -->|Yes| H[Require Additional Payment]
+    H --> I[Calculate Additional Price]
+    I --> J[Display Payment Required]
+    J --> K{Member Completes Payment?}
+    K -->|No| L[Booking Cancelled]
+    K -->|Yes| M[Process Additional Payment]
+    M --> N[Create Paid Booking]
+    N --> O[Update Daily Usage]
+    O --> P[Additional Session Booked]
+
+    %% Daily Reset Process
+    Q[Midnight Reset] --> R[Reset All Member Counters]
+    R --> S[Archive Daily Usage]
+    S --> T[Daily Reset Complete]
+
+    %% Admin Override
+    U[Admin Override Request] --> V[Validate Override]
+    V --> W{Override Valid?}
+    W -->|No| X[Override Denied]
+    W -->|Yes| Y[Apply Override]
+    Y --> Z[Update Member Usage]
+    Z --> AA[Send Override Notification]
+    AA --> BB[Override Complete]
+
+    %% Custom styling
+    classDef start-end fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
+    classDef process fill:#4ecdc4,stroke:#333,stroke-width:2px,color:#fff
+    classDef decision fill:#ffeaa7,stroke:#333,stroke-width:2px,color:#000
+    classDef success fill:#96ceb4,stroke:#333,stroke-width:2px,color:#fff
+    classDef failure fill:#ff7675,stroke:#333,stroke-width:2px,color:#fff
+    classDef paid fill:#fd79a8,stroke:#333,stroke-width:2px,color:#fff
+
+    A:::start-end
+    B:::process
+    C:::decision
+    D:::success
+    E:::success
+    F:::success
+    G:::start-end
+    H:::process
+    I:::process
+    J:::process
+    K:::decision
+    L:::failure
+    M:::paid
+    N:::paid
+    O:::paid
+    P:::start-end
+    Q:::process
+    R:::process
+    S:::process
+    T:::start-end
+    U:::process
+    V:::process
+    W:::decision
+    X:::failure
+    Y:::success
+    Z:::success
+    AA:::success
+    BB:::start-end
+```
+
+### 4.10 Activity Diagram Private Pool Rental
+
+```mermaid
+graph TD
+    A[Customer Requests Private Pool] --> B[Check Pool Availability]
+    B --> C[Select Date and Time]
+    C --> D[Enter Customer Details]
+    D --> E[Check Customer History]
+    E --> F{Customer Type?}
+    F -->|New Customer| G[Calculate Base Price + 30min Bonus]
+    F -->|Returning Customer| H[Calculate Base Price + Additional Charge]
+    G --> I[Display Price: Base Price (2 hours total)]
+    H --> J[Display Price: Base Price + Additional Charge]
+    I --> K[Customer Confirms Booking]
+    J --> K
+    K --> L[Process Payment]
+    L --> M{Payment Success?}
+    M -->|No| N[Booking Failed]
+    M -->|Yes| O[Create Private Booking]
+    O --> P[Start Timer Management]
+    P --> Q[Update Customer History]
+    Q --> R[Send Booking Confirmation]
+    R --> S[Private Pool Booking Complete]
+    N --> T[Booking Failed]
+
+    %% Timer Management
+    U[Timer Start] --> V[Monitor Duration]
+    V --> W{Time Remaining?}
+    W -->|Yes| X[Send Time Warning]
+    X --> V
+    W -->|No| Y[Send Session Complete]
+    Y --> Z[Timer Complete]
+
+    %% Custom styling
+    classDef start-end fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
+    classDef process fill:#4ecdc4,stroke:#333,stroke-width:2px,color:#fff
+    classDef decision fill:#ffeaa7,stroke:#333,stroke-width:2px,color:#000
+    classDef success fill:#96ceb4,stroke:#333,stroke-width:2px,color:#fff
+    classDef failure fill:#ff7675,stroke:#333,stroke-width:2px,color:#fff
+    classDef new-customer fill:#00cec9,stroke:#333,stroke-width:2px,color:#fff
+    classDef returning-customer fill:#fd79a8,stroke:#333,stroke-width:2px,color:#fff
+
+    A:::start-end
+    B:::process
+    C:::process
+    D:::process
+    E:::process
+    F:::decision
+    G:::new-customer
+    H:::returning-customer
+    I:::new-customer
+    J:::returning-customer
+    K:::process
+    L:::process
+    M:::decision
+    N:::failure
+    O:::success
+    P:::success
+    Q:::success
+    R:::success
+    S:::start-end
+    T:::start-end
+    U:::process
+    V:::process
+    W:::decision
+    X:::process
+    Y:::process
+    Z:::start-end
+```
+
+### 4.11 Activity Diagram Cafe System with Barcode
+
+```mermaid
+graph TD
+    A[Customer at Pool Area] --> B[Scan Barcode/QR Code]
+    B --> C[Redirect to Menu System]
+    C --> D[Display Available Menu]
+    D --> E[Browse Menu Items]
+    E --> F[Check Item Availability]
+    F --> G{Item Available?}
+    G -->|No| H[Show Unavailable Status]
+    G -->|Yes| I[Add Item to Cart]
+    H --> E
+    I --> J[Set Quantity]
+    J --> K[Add Special Notes]
+    K --> L[Continue Shopping]
+    L --> E
+    L --> M[Review Cart]
+    M --> N[Cart Summary with Total]
+    N --> O[Proceed to Payment]
+    O --> P[Create Payment Request]
+    P --> Q[Show Payment Instructions]
+    Q --> R[Upload Payment Proof]
+    R --> S[Submit Order]
+    S --> T[Create Kitchen Order]
+    T --> U[Send Order Notification]
+    U --> V[Order Confirmation]
+
+    %% Admin Payment Verification
+    W[Admin Reviews Payment] --> X{Payment Valid?}
+    X -->|No| Y[Reject Payment]
+    Y --> Z[Notify Customer - Rejected]
+    Z --> AA[Customer Uploads New Proof]
+    AA --> S
+    X -->|Yes| BB[Confirm Payment]
+    BB --> CC[Notify Kitchen]
+    CC --> DD[Start Food Preparation]
+
+    %% Kitchen Process
+    DD --> EE[Prepare Food Items]
+    EE --> FF[Update Status: Preparing]
+    FF --> GG[Food Ready]
+    GG --> HH[Update Status: Ready]
+    HH --> II[Assign Delivery]
+    II --> JJ[Deliver to Customer]
+    JJ --> KK[Customer Confirms Reception]
+    KK --> LL[Update Status: Delivered]
+    LL --> MM[Cafe Order Complete]
+
+    %% Custom styling
+    classDef start-end fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
+    classDef process fill:#4ecdc4,stroke:#333,stroke-width:2px,color:#fff
+    classDef decision fill:#ffeaa7,stroke:#333,stroke-width:2px,color:#000
+    classDef success fill:#96ceb4,stroke:#333,stroke-width:2px,color:#fff
+    classDef failure fill:#ff7675,stroke:#333,stroke-width:2px,color:#fff
+    classDef kitchen fill:#a8e6cf,stroke:#333,stroke-width:2px,color:#fff
+    classDef delivery fill:#ffd3b6,stroke:#333,stroke-width:2px,color:#fff
+
+    A:::start-end
+    B:::process
+    C:::process
+    D:::process
+    E:::process
+    F:::process
+    G:::decision
+    H:::failure
+    I:::success
+    J:::success
+    K:::success
+    L:::success
+    M:::success
+    N:::success
+    O:::success
+    P:::success
+    Q:::success
+    R:::success
+    S:::success
+    T:::kitchen
+    U:::success
+    V:::success
+    W:::process
+    X:::decision
+    Y:::failure
+    Z:::failure
+    AA:::process
+    BB:::success
+    CC:::kitchen
+    DD:::kitchen
+    EE:::kitchen
+    FF:::kitchen
+    GG:::kitchen
+    HH:::kitchen
+    II:::delivery
+    JJ:::delivery
+    KK:::delivery
+    LL:::delivery
+    MM:::start-end
+```
+
+### 4.12 Activity Diagram Dynamic Menu Management
+
+```mermaid
+graph TD
+    A[Admin Access Menu Management] --> B[Choose Action]
+    B --> C{Action Type?}
+    C -->|Create Menu| D[Open Menu Creation Form]
+    C -->|Edit Menu| E[Select Existing Menu]
+    C -->|Manage Stock| F[Access Stock Management]
+    C -->|View Analytics| G[Open Analytics Dashboard]
+
+    %% Menu Creation Flow
+    D --> H[Fill Menu Details]
+    H --> I[Upload Menu Image]
+    I --> J[Set Base Cost]
+    J --> K[Set Selling Price]
+    K --> L[Calculate Margin]
+    L --> M[Configure Stock Settings]
+    M --> N[Set Menu Categories]
+    N --> O[Add Cooking Instructions]
+    O --> P[Set Allergen Info]
+    P --> Q[Save Menu]
+    Q --> R[Generate Menu Barcode]
+    R --> S[Create Inventory Record]
+    S --> T[Menu Created Successfully]
+
+    %% Menu Edit Flow
+    E --> U[Load Menu Details]
+    U --> V[Update Menu Information]
+    V --> W[Update Pricing]
+    W --> X[Update Stock Settings]
+    X --> Y[Save Changes]
+    Y --> Z[Menu Updated Successfully]
+
+    %% Stock Management Flow
+    F --> AA[View Current Stock]
+    AA --> BB[Check Low Stock Alerts]
+    BB --> CC{Stock Actions?}
+    CC -->|Update Stock| DD[Record Stock Transaction]
+    CC -->|Set Alerts| EE[Configure Stock Alerts]
+    CC -->|View History| FF[Display Stock History]
+    DD --> GG[Update Inventory]
+    GG --> HH[Stock Updated Successfully]
+    EE --> II[Alerts Configured]
+    FF --> JJ[History Displayed]
+
+    %% Analytics Flow
+    G --> KK[Load Menu Performance Data]
+    KK --> LL[Display Sales Analytics]
+    LL --> MM[Show Margin Analysis]
+    MM --> NN[Display Top Performers]
+    NN --> OO[Show Low Stock Items]
+    OO --> PP[Analytics Dashboard Complete]
+
+    %% Custom styling
+    classDef start-end fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
+    classDef process fill:#4ecdc4,stroke:#333,stroke-width:2px,color:#fff
+    classDef decision fill:#ffeaa7,stroke:#333,stroke-width:2px,color:#000
+    classDef success fill:#96ceb4,stroke:#333,stroke-width:2px,color:#fff
+    classDef failure fill:#ff7675,stroke:#333,stroke-width:2px,color:#fff
+    classDef barcode fill:#74b9ff,stroke:#333,stroke-width:2px,color:#fff
+    classDef stock fill:#fd79a8,stroke:#333,stroke-width:2px,color:#fff
+    classDef analytics fill:#00cec9,stroke:#333,stroke-width:2px,color:#fff
+
+    A:::start-end
+    B:::process
+    C:::decision
+    D:::success
+    E:::success
+    F:::stock
+    G:::analytics
+    H:::process
+    I:::process
+    J:::process
+    K:::process
+    L:::process
+    M:::process
+    N:::process
+    O:::process
+    P:::process
+    Q:::success
+    R:::barcode
+    S:::success
+    T:::start-end
+    U:::process
+    V:::process
+    W:::process
+    X:::process
+    Y:::success
+    Z:::start-end
+    AA:::stock
+    BB:::stock
+    CC:::decision
+    DD:::stock
+    EE:::stock
+    FF:::stock
+    GG:::success
+    HH:::start-end
+    II:::start-end
+    JJ:::start-end
+    KK:::analytics
+    LL:::analytics
+    MM:::analytics
+    NN:::analytics
+    OO:::analytics
+    PP:::start-end
+```
+
+### 4.13 Activity Diagram Barcode Generation & Download
+
+```mermaid
+graph TD
+    A[Menu Creation/Update] --> B[Trigger Barcode Generation]
+    B --> C[Generate Unique Barcode Value]
+    C --> D[Generate QR Code]
+    D --> E[Generate Barcode Image]
+    E --> F[Store Barcode Data]
+    F --> G[Barcode Generated Successfully]
+
+    %% Barcode Download Flow
+    H[Admin Requests Barcode Download] --> I{Download Type?}
+    I -->|Single Menu| J[Select Menu]
+    I -->|Bulk Export| K[Select Category/Filter]
+
+    J --> L[Generate Barcode File]
+    K --> M[Generate Bulk Barcode File]
+    L --> N[Create Download Package]
+    M --> N
+    N --> O[Include Menu Details]
+    O --> P[Format as PDF/PNG]
+    P --> Q[Provide Download Link]
+    Q --> R[Barcode Downloaded Successfully]
+
+    %% Barcode Management
+    S[Admin Manages Barcodes] --> T{Management Action?}
+    T -->|Activate| U[Set Barcode Active]
+    T -->|Deactivate| V[Set Barcode Inactive]
+    T -->|Regenerate| W[Generate New Barcode]
+    T -->|Preview| X[Show Barcode Preview]
+
+    U --> Y[Barcode Activated]
+    V --> Z[Barcode Deactivated]
+    W --> B
+    X --> AA[Display Preview]
+
+    %% Custom styling
+    classDef start-end fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
+    classDef process fill:#4ecdc4,stroke:#333,stroke-width:2px,color:#fff
+    classDef decision fill:#ffeaa7,stroke:#333,stroke-width:2px,color:#000
+    classDef success fill:#96ceb4,stroke:#333,stroke-width:2px,color:#fff
+    classDef barcode fill:#74b9ff,stroke:#333,stroke-width:2px,color:#fff
+    classDef download fill:#fd79a8,stroke:#333,stroke-width:2px,color:#fff
+
+    A:::start-end
+    B:::barcode
+    C:::barcode
+    D:::barcode
+    E:::barcode
+    F:::barcode
+    G:::start-end
+    H:::process
+    I:::decision
+    J:::download
+    K:::download
+    L:::download
+    M:::download
+    N:::download
+    O:::download
+    P:::download
+    Q:::download
+    R:::start-end
+    S:::process
+    T:::decision
+    U:::barcode
+    V:::barcode
+    W:::barcode
+    X:::download
+    Y:::success
+    Z:::success
+    AA:::start-end
+```
+
+### 4.14 Activity Diagram Comprehensive Reporting
+
+```mermaid
+graph TD
+    A[Admin Access Reporting System] --> B[Select Report Type]
+    B --> C{Report Category?}
+    C -->|Financial| D[Financial Reports Dashboard]
+    C -->|Operational| E[Operational Reports Dashboard]
+    C -->|Customer| F[Customer Analytics Dashboard]
+    C -->|Inventory| G[Inventory Reports Dashboard]
+    C -->|Promotional| H[Promotional Reports Dashboard]
+
+    %% Financial Reports Flow
+    D --> I[Select Financial Report]
+    I --> J{Report Type?}
+    J -->|Revenue| K[Generate Revenue Report]
+    J -->|Expense| L[Generate Expense Report]
+    J -->|Profit Loss| M[Generate P&L Statement]
+    J -->|Cash Flow| N[Generate Cash Flow Report]
+    J -->|Tax| O[Generate Tax Report]
+    J -->|Budget| P[Generate Budget Analysis]
+
+    K --> Q[Apply Date Filters]
+    L --> Q
+    M --> Q
+    N --> Q
+    O --> Q
+    P --> Q
+    Q --> R[Generate Report Data]
+    R --> S[Apply Formatting]
+    S --> T[Display Report]
+    T --> U{Export Required?}
+    U -->|Yes| V[Export to PDF/Excel/CSV]
+    U -->|No| W[View Online]
+    V --> X[Report Exported Successfully]
+    W --> Y[Report Viewed Online]
+
+    %% Operational Reports Flow
+    E --> Z[Select Operational Report]
+    Z --> AA{Report Type?}
+    AA -->|Booking| BB[Generate Booking Analytics]
+    AA -->|Member| CC[Generate Member Reports]
+    AA -->|Session| DD[Generate Session Reports]
+    AA -->|Staff| EE[Generate Staff Reports]
+    AA -->|Facility| FF[Generate Facility Reports]
+
+    BB --> GG[Apply Filters]
+    CC --> GG
+    DD --> GG
+    EE --> GG
+    FF --> GG
+    GG --> HH[Generate Report Data]
+    HH --> II[Display Operational Report]
+    II --> JJ[Operational Report Complete]
+
+    %% Customer Analytics Flow
+    F --> KK[Select Customer Analytics]
+    KK --> LL{Analytics Type?}
+    LL -->|Behavior| MM[Generate Behavior Analysis]
+    LL -->|Retention| NN[Generate Retention Report]
+    LL -->|Satisfaction| OO[Generate Satisfaction Report]
+    LL -->|Demographics| PP[Generate Demographics Report]
+    LL -->|Peak Hours| QQ[Generate Peak Hours Analysis]
+
+    MM --> RR[Apply Customer Filters]
+    NN --> RR
+    OO --> RR
+    PP --> RR
+    QQ --> RR
+    RR --> SS[Generate Analytics Data]
+    SS --> TT[Display Customer Analytics]
+    TT --> UU[Customer Analytics Complete]
+
+    %% Custom styling
+    classDef start-end fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
+    classDef process fill:#4ecdc4,stroke:#333,stroke-width:2px,color:#fff
+    classDef decision fill:#ffeaa7,stroke:#333,stroke-width:2px,color:#000
+    classDef success fill:#96ceb4,stroke:#333,stroke-width:2px,color:#fff
+    classDef financial fill:#74b9ff,stroke:#333,stroke-width:2px,color:#fff
+    classDef operational fill:#fd79a8,stroke:#333,stroke-width:2px,color:#fff
+    classDef customer fill:#00cec9,stroke:#333,stroke-width:2px,color:#fff
+    classDef export fill:#a8e6cf,stroke:#333,stroke-width:2px,color:#fff
+
+    A:::start-end
+    B:::process
+    C:::decision
+    D:::financial
+    E:::operational
+    F:::customer
+    G:::process
+    H:::process
+    I:::financial
+    J:::decision
+    K:::financial
+    L:::financial
+    M:::financial
+    N:::financial
+    O:::financial
+    P:::financial
+    Q:::process
+    R:::process
+    S:::process
+    T:::financial
+    U:::decision
+    V:::export
+    W:::financial
+    X:::start-end
+    Y:::start-end
+    Z:::operational
+    AA:::decision
+    BB:::operational
+    CC:::operational
+    DD:::operational
+    EE:::operational
+    FF:::operational
+    GG:::process
+    HH:::process
+    II:::operational
+    JJ:::start-end
+    KK:::customer
+    LL:::decision
+    MM:::customer
+    NN:::customer
+    OO:::customer
+    PP:::customer
+    QQ:::customer
+    RR:::process
+    SS:::process
+    TT:::customer
+    UU:::start-end
+```
+
 ## 5. State Diagram
 
 ### 5.1 State Diagram Booking Status
@@ -1654,3 +2484,353 @@ graph TB
 **Tanggal**: 26 Agustus 2025  
 **Status**: Complete dengan Dynamic Pricing, Guest Booking, Google SSO, Mobile-First Web App, Core Booking Flow, Manual Payment, Dynamic Member Quota & Member Daily Swimming Limit  
 **Berdasarkan**: PDF Raujan Pool Syariah
+
+### 2.10 Manual Payment System Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant W as Web App
+    participant A as API Gateway
+    participant P as Payment Service
+    participant B as Bank Config
+    participant D as Database
+    participant N as Notification Service
+
+    Note over U: User selects manual payment
+    Note over W: React/Next.js Frontend
+    Note over A: Laravel API Gateway
+    Note over P: Manual Payment Service
+    Note over B: Bank Account Configuration
+    Note over D: MySQL Database
+    Note over N: FCM Push Service
+
+    U->>W: Select manual payment method
+    W->>A: Request payment instructions
+    A->>P: Get payment instructions
+    P->>B: Get bank account details
+    B-->>P: Bank account information
+    P-->>A: Payment instructions
+    A-->>W: Display payment instructions
+    W-->>U: Show bank account details
+
+    U->>W: Upload payment proof
+    W->>A: Submit payment proof
+    A->>P: Process payment proof upload
+    P->>D: Store payment proof
+    P->>D: Set payment status: pending
+    P-->>A: Payment proof stored
+    A-->>W: Payment proof uploaded
+    W-->>U: Payment proof confirmation
+
+    Note over A: Admin Payment Verification
+    Note over A: Admin reviews payment proof
+    A->>P: Request payment verification
+    P->>D: Get payment proof data
+    D-->>P: Payment proof details
+    P->>P: Validate payment proof
+    P-->>A: Payment verification result
+
+    alt Payment Valid
+        A->>P: Approve payment
+        P->>D: Update payment status: approved
+        A->>N: Send payment confirmation
+        N-->>U: Payment approved notification
+        A->>D: Update booking status
+        A-->>W: Payment approved
+        W-->>U: Booking confirmed
+    else Payment Invalid
+        A->>P: Reject payment
+        P->>D: Update payment status: rejected
+        A->>N: Send payment rejection
+        N-->>U: Payment rejected notification
+        A-->>W: Payment rejected
+        W-->>U: Re-upload payment proof
+    end
+
+    Note over P: Payment History Tracking
+    Note over P: Track all payment attempts
+    P->>D: Log payment verification
+    P->>D: Store verification details
+    P->>P: Generate payment report
+```
+
+### 2.11 Dynamic Menu Management Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant A as Admin
+    participant W as Web App
+    participant M as Menu Service
+    participant I as Inventory Service
+    participant B as Barcode Service
+    participant D as Database
+    participant N as Notification Service
+
+    Note over A: Admin manages menu
+    Note over W: React/Next.js Admin Interface
+    Note over M: Menu Management Service
+    Note over I: Inventory Management Service
+    Note over B: Barcode Generation Service
+    Note over D: MySQL Database
+    Note over N: FCM Push Service
+
+    A->>W: Access menu management
+    W->>M: Get menu list
+    M->>D: Fetch menu data
+    D-->>M: Menu information
+    M-->>W: Menu list
+    W-->>A: Display menu management
+
+    A->>W: Create new menu
+    W->>M: Submit menu details
+    M->>D: Validate menu data
+    D-->>M: Validation result
+    M->>M: Calculate margin
+    M->>D: Store menu data
+    M->>I: Initialize inventory record
+    I->>D: Create inventory entry
+    M->>B: Generate barcode
+    B->>D: Store barcode data
+    M-->>W: Menu created successfully
+    W-->>A: Menu creation complete
+
+    Note over A: Menu Update Process
+    A->>W: Edit existing menu
+    W->>M: Get menu details
+    M->>D: Fetch menu information
+    D-->>M: Menu details
+    M-->>W: Menu data for editing
+    W-->>A: Show edit form
+
+    A->>W: Update menu information
+    W->>M: Submit updated data
+    M->>D: Update menu record
+    M->>M: Recalculate margin
+    M->>I: Update inventory settings
+    I->>D: Update inventory data
+    M-->>W: Menu updated successfully
+    W-->>A: Menu update complete
+
+    Note over A: Stock Management
+    A->>W: Access stock management
+    W->>I: Get current stock levels
+    I->>D: Fetch inventory data
+    D-->>I: Stock information
+    I-->>W: Stock levels
+    W-->>A: Display stock management
+
+    A->>W: Update stock levels
+    W->>I: Submit stock changes
+    I->>D: Update inventory records
+    I->>D: Log stock transaction
+    I->>M: Update menu availability
+    M->>D: Update menu status
+    I->>N: Send stock alerts
+    N-->>A: Stock update notification
+    I-->>W: Stock updated successfully
+    W-->>A: Stock management complete
+
+    Note over A: Menu Analytics
+    A->>W: Access menu analytics
+    W->>M: Get menu performance data
+    M->>D: Fetch analytics data
+    D-->>M: Analytics information
+    M-->>W: Menu analytics
+    W-->>A: Display analytics dashboard
+```
+
+### 2.12 Barcode Generation & Download Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant A as Admin
+    participant W as Web App
+    participant M as Menu Service
+    participant B as Barcode Service
+    participant G as QR Code Service
+    participant F as File Service
+    participant D as Database
+
+    Note over A: Admin manages barcodes
+    Note over W: React/Next.js Admin Interface
+    Note over M: Menu Management Service
+    Note over B: Barcode Generation Service
+    Note over G: QR Code Generation Service
+    Note over F: File Storage Service
+    Note over D: MySQL Database
+
+    Note over M,B: Auto-Generation Process
+    M->>D: Menu created/updated
+    D-->>M: Menu data
+    M->>B: Trigger barcode generation
+    B->>B: Generate unique barcode value
+    B->>G: Generate QR code
+    G-->>B: QR code data
+    B->>F: Store barcode image
+    F-->>B: Barcode image URL
+    B->>D: Store barcode information
+    B-->>M: Barcode generated successfully
+
+    Note over A: Single Barcode Download
+    A->>W: Request barcode download
+    W->>M: Get menu barcode info
+    M->>D: Fetch barcode data
+    D-->>M: Barcode information
+    M-->>W: Barcode details
+    W-->>A: Display barcode preview
+
+    A->>W: Download barcode
+    W->>B: Generate download package
+    B->>F: Create barcode file
+    F-->>B: File created
+    B->>B: Package barcode data
+    B-->>W: Download link
+    W-->>A: Provide download
+
+    Note over A: Bulk Barcode Export
+    A->>W: Request bulk export
+    W->>M: Get bulk barcode data
+    M->>D: Fetch all barcode data
+    D-->>M: All barcode information
+    M-->>W: Bulk barcode data
+    W-->>A: Bulk export options
+
+    A->>W: Select export format
+    W->>B: Generate bulk export
+    B->>F: Create bulk file
+    F-->>B: Bulk file created
+    B->>B: Package all barcodes
+    B-->>W: Bulk download link
+    W-->>A: Provide bulk download
+
+    Note over A: Barcode Management
+    A->>W: Manage barcode status
+    W->>B: Update barcode status
+    B->>D: Update barcode record
+    B-->>W: Status updated
+    W-->>A: Barcode management complete
+
+    A->>W: Regenerate barcode
+    W->>B: Generate new barcode
+    B->>B: Create new barcode value
+    B->>G: Generate new QR code
+    G-->>B: New QR code
+    B->>F: Store new barcode image
+    F-->>B: New image URL
+    B->>D: Update barcode data
+    B-->>W: Barcode regenerated
+    W-->>A: New barcode ready
+```
+
+### 2.13 Comprehensive Reporting System Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant A as Admin
+    participant W as Web App
+    participant R as Reporting Service
+    participant F as Financial Service
+    participant O as Operational Service
+    participant C as Customer Analytics Service
+    participant E as Export Service
+    participant D as Database
+    participant N as Notification Service
+
+    Note over A: Admin accesses reporting system
+    Note over W: React/Next.js Reporting Interface
+    Note over R: Reporting Service
+    Note over F: Financial Analytics Service
+    Note over O: Operational Analytics Service
+    Note over C: Customer Analytics Service
+    Note over E: Export Service
+    Note over D: MySQL Database
+    Note over N: Email/Notification Service
+
+    A->>W: Access reporting dashboard
+    W->>R: Get dashboard overview
+    R->>D: Fetch summary data
+    D-->>R: Summary information
+    R-->>W: Dashboard data
+    W-->>A: Display reporting dashboard
+
+    Note over A: Financial Reports
+    A->>W: Request financial report
+    W->>F: Get financial data
+    F->>D: Query financial records
+    D-->>F: Financial data
+    F->>F: Process financial analytics
+    F->>F: Calculate revenue metrics
+    F->>F: Generate expense analysis
+    F->>F: Create profit/loss statement
+    F-->>W: Financial report data
+    W-->>A: Display financial report
+
+    A->>W: Export financial report
+    W->>E: Generate export file
+    E->>F: Get report data
+    F-->>E: Financial report data
+    E->>E: Format as PDF/Excel/CSV
+    E-->>W: Export file ready
+    W-->>A: Provide export download
+
+    Note over A: Operational Reports
+    A->>W: Request operational report
+    W->>O: Get operational data
+    O->>D: Query operational records
+    D-->>O: Operational data
+    O->>O: Process booking analytics
+    O->>O: Generate member reports
+    O->>O: Create session utilization
+    O->>O: Analyze staff performance
+    O-->>W: Operational report data
+    W-->>A: Display operational report
+
+    Note over A: Customer Analytics
+    A->>W: Request customer analytics
+    W->>C: Get customer data
+    C->>D: Query customer records
+    D-->>C: Customer data
+    C->>C: Analyze customer behavior
+    C->>C: Process retention metrics
+    C->>C: Generate satisfaction reports
+    C->>C: Create demographics analysis
+    C->>C: Analyze peak hours
+    C-->>W: Customer analytics data
+    W-->>A: Display customer analytics
+
+    Note over A: Scheduled Reports
+    A->>W: Configure scheduled reports
+    W->>R: Set report schedule
+    R->>D: Store schedule configuration
+    R->>N: Set up automated delivery
+    N-->>A: Schedule confirmation
+
+    Note over R: Automated Report Generation
+    Note over R: Daily/Weekly/Monthly reports
+    R->>F: Generate scheduled financial report
+    R->>O: Generate scheduled operational report
+    R->>C: Generate scheduled customer report
+    R->>E: Create scheduled export
+    R->>N: Send scheduled reports via email
+    N-->>A: Scheduled reports delivered
+
+    Note over A: Real-time Dashboards
+    A->>W: Access real-time dashboard
+    W->>R: Get live data
+    R->>D: Query real-time metrics
+    D-->>R: Live data
+    R->>R: Process real-time analytics
+    R-->>W: Real-time dashboard data
+    W-->>A: Display live dashboard
+
+    Note over A: Custom Reports
+    A->>W: Create custom report
+    W->>R: Configure custom parameters
+    R->>D: Query custom data
+    D-->>R: Custom data
+    R->>R: Process custom analytics
+    R->>E: Generate custom export
+    E-->>W: Custom report ready
+    W-->>A: Display custom report
+```
