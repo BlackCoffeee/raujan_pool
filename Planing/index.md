@@ -412,9 +412,9 @@ Untuk pertanyaan atau klarifikasi terkait dokumen analisa ini, khususnya tentang
 
 ---
 
-**Versi**: 1.5  
+**Versi**: 1.6  
 **Tanggal**: 26 Agustus 2025  
-**Status**: Complete dengan Dynamic Pricing, Guest Booking, Google SSO, Mobile-First Web App & Core Booking Flow  
+**Status**: Complete dengan Dynamic Pricing, Guest Booking, Google SSO, Mobile-First Web App, Core Booking Flow, Manual Payment & Dynamic Member Quota  
 **Berdasarkan**: PDF Raujan Pool Syariah  
 **Key Features**:
 
@@ -429,6 +429,8 @@ Untuk pertanyaan atau klarifikasi terkait dokumen analisa ini, khususnya tentang
 - ⭐ **Rating system bintang 1-5 untuk semua pelayanan**
 - ✅ **Check-in & attendance system dengan staff verification**
 - 🎁 **Promotional pricing system dengan flexible campaigns**
+- 💳 **Manual payment system dengan transfer bank & admin verification**
+- 👥 **Dynamic member quota management dengan sistem antrian**
 
 ### Core Booking Flow System
 

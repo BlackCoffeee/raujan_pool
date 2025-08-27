@@ -1475,8 +1475,682 @@ graph TD
 - **Personalized Offers**: Custom promotions based on usage
 - **VIP Treatment**: Special services for high-tier members
 
-## 13. Modul Integrasi SSO dan Manajemen
+## 13. Manual Payment System
 
+### 13.1 Overview
+
+Sistem pembayaran manual memungkinkan user melakukan pembayaran melalui transfer bank dengan verifikasi admin. Sistem ini dirancang untuk memberikan fleksibilitas pembayaran sambil tetap memastikan keamanan dan validitas transaksi.
+
+### 13.2 Fitur Utama
+
+#### 13.2.1 Payment Method Selection
+
+- **Manual Transfer Option**: User dapat memilih metode pembayaran manual transfer
+- **Payment Instructions**: Sistem generate instruksi pembayaran lengkap
+- **Reference Code Generation**: Kode referensi otomatis untuk tracking
+
+#### 13.2.2 Payment Proof Upload
+
+- **File Upload Interface**: Upload bukti transfer dengan drag & drop
+- **File Validation**: Validasi ukuran, format, dan tipe file
+- **Image Preview**: Preview gambar sebelum submit
+- **Progress Indicator**: Progress bar untuk upload process
+
+#### 13.2.3 Payment Submission
+
+- **Transfer Details**: Form untuk input detail transfer
+- **Amount Verification**: Validasi jumlah transfer
+- **Sender Information**: Input informasi pengirim transfer
+- **Submission Confirmation**: Konfirmasi submission berhasil
+
+#### 13.2.4 Payment Status Tracking
+
+- **Real-time Status**: Update status pembayaran real-time
+- **Status History**: Riwayat perubahan status
+- **Email Notifications**: Notifikasi email untuk setiap perubahan status
+- **SMS Alerts**: SMS alert untuk status penting
+
+#### 13.2.5 Admin Verification System
+
+- **Payment Dashboard**: Interface admin untuk review pembayaran
+- **Proof Verification**: Verifikasi bukti transfer
+- **Amount Matching**: Validasi jumlah transfer dengan booking
+- **Reference Validation**: Validasi kode referensi
+- **Action Management**: Confirm, reject, atau request correction
+
+#### 13.2.6 Bank Account Management
+
+- **Multiple Bank Accounts**: Support multiple rekening bank
+- **Primary Account**: Set rekening utama untuk pembayaran
+- **Account Configuration**: Konfigurasi detail rekening
+- **Reference Settings**: Pengaturan prefix kode referensi
+
+#### 13.2.7 Payment Analytics
+
+- **Payment Success Rate**: Analisis tingkat keberhasilan pembayaran
+- **Verification Time**: Rata-rata waktu verifikasi admin
+- **Payment Method Statistics**: Statistik penggunaan metode pembayaran
+- **Revenue Tracking**: Tracking pendapatan dari pembayaran manual
+
+### 13.3 Payment Flow Detail
+
+#### 13.3.1 User Payment Flow
+
+```mermaid
+graph TD
+    A[User Complete Booking] --> B[Select Manual Payment]
+    B --> C[View Payment Instructions]
+    C --> D[Perform Bank Transfer]
+    D --> E[Upload Transfer Proof]
+    E --> F[Submit Payment Details]
+    F --> G[Payment Status: Pending]
+    G --> H[Wait Admin Verification]
+    H --> I{Admin Decision}
+    I -->|Confirm| J[Payment Confirmed]
+    I -->|Reject| K[Payment Rejected]
+    I -->|Request Correction| L[Payment Needs Correction]
+    J --> M[Booking Active]
+    K --> N[Booking Failed]
+    L --> E
 ```
 
+#### 13.3.2 Admin Verification Flow
+
+```mermaid
+graph TD
+    A[Admin Access Payment Dashboard] --> B[View Pending Payments]
+    B --> C[Select Payment to Verify]
+    C --> D[Review Transfer Proof]
+    D --> E[Verify Transfer Details]
+    E --> F{Verification Decision}
+    F -->|Amount Matches| G[Confirm Payment]
+    F -->|Amount Mismatch| H[Request Correction]
+    F -->|Invalid Proof| I[Reject Payment]
+    G --> J[Update Booking Status]
+    H --> K[Send Correction Request]
+    I --> L[Send Rejection Notice]
+    J --> M[Send Confirmation Email]
+    K --> N[Update Payment Status]
+    L --> O[Update Payment Status]
 ```
+
+### 13.4 Database Schema
+
+#### 13.4.1 Manual Payment Records Table
+
+```sql
+-- Menyimpan semua data pembayaran manual
+-- Termasuk bukti transfer, detail transfer, dan status verifikasi
+```
+
+**Key Fields:**
+
+- `payment_amount`: Jumlah yang harus dibayar
+- `reference_code`: Kode referensi otomatis generate
+- `transfer_proof_file`: Path file bukti transfer
+- `transfer_amount`: Jumlah yang ditransfer user
+- `payment_status`: Status pembayaran (pending, verified, confirmed, rejected)
+- `verified_by`: Admin yang melakukan verifikasi
+- `verification_notes`: Catatan verifikasi admin
+
+#### 13.4.2 Bank Account Configuration Table
+
+```sql
+-- Konfigurasi rekening bank untuk pembayaran
+-- Support multiple bank accounts dengan primary account
+```
+
+**Key Fields:**
+
+- `bank_name`: Nama bank
+- `account_number`: Nomor rekening
+- `account_holder_name`: Nama pemilik rekening
+- `is_primary`: Flag rekening utama
+- `reference_prefix`: Prefix untuk kode referensi
+- `auto_generate_reference`: Setting generate kode otomatis
+
+#### 13.4.3 Payment Verification Logs Table
+
+```sql
+-- Log semua aktivitas verifikasi admin
+-- Audit trail lengkap untuk tracking perubahan status
+```
+
+**Key Fields:**
+
+- `action_type`: Jenis aksi (verify, confirm, reject, request_correction)
+- `action_notes`: Catatan admin
+- `verified_amount`: Jumlah yang diverifikasi
+- `amount_matches`: Flag kecocokan jumlah
+- `previous_status`: Status sebelum perubahan
+- `new_status`: Status setelah perubahan
+
+### 13.5 Business Rules
+
+#### 13.5.1 Payment Validation Rules
+
+- **Amount Matching**: Jumlah transfer harus sesuai dengan booking amount
+- **Reference Code**: Kode referensi harus valid dan unique
+- **File Validation**: Bukti transfer harus dalam format yang valid (JPG, PNG, PDF)
+- **File Size Limit**: Maksimal ukuran file 5MB
+- **Deadline**: Pembayaran harus dilakukan dalam 24 jam setelah booking
+
+#### 13.5.2 Admin Verification Rules
+
+- **Manual Review**: Semua pembayaran manual harus diverifikasi admin
+- **Verification Time**: Admin harus verifikasi dalam maksimal 2 jam
+- **Multiple Validation**: Admin harus verifikasi amount, reference, dan file
+- **Notes Requirement**: Admin wajib memberikan catatan untuk reject atau correction
+- **Audit Trail**: Semua aktivitas verifikasi harus dicatat
+
+#### 13.5.3 Payment Status Rules
+
+- **Pending**: Status default setelah user submit payment proof
+- **Verified**: Status setelah admin verifikasi bukti (belum confirm)
+- **Confirmed**: Status setelah admin confirm pembayaran
+- **Rejected**: Status jika admin reject pembayaran
+- **Requires Correction**: Status jika admin minta koreksi
+
+### 13.6 User Interface Design
+
+#### 13.6.1 Payment Method Selection Screen
+
+- **Payment Options**: Card dengan pilihan metode pembayaran
+- **Manual Transfer Card**: Highlight manual transfer option
+- **Benefits Display**: Keuntungan manual transfer
+- **Instructions Preview**: Preview instruksi pembayaran
+
+#### 13.6.2 Payment Instructions Screen
+
+- **Bank Account Details**: Informasi rekening lengkap
+- **Reference Code Display**: Kode referensi yang harus digunakan
+- **Amount Information**: Jumlah yang harus ditransfer
+- **Deadline Warning**: Warning waktu batas pembayaran
+- **Step-by-step Guide**: Panduan langkah pembayaran
+
+#### 13.6.3 Payment Proof Upload Screen
+
+- **Drag & Drop Area**: Area untuk upload file
+- **File Type Indicator**: Icon dan text file type yang didukung
+- **Upload Progress**: Progress bar upload
+- **Image Preview**: Preview gambar setelah upload
+- **Transfer Details Form**: Form untuk input detail transfer
+
+#### 13.6.4 Payment Status Screen
+
+- **Status Indicator**: Visual indicator status pembayaran
+- **Status Timeline**: Timeline perubahan status
+- **Estimated Time**: Estimasi waktu verifikasi
+- **Contact Information**: Info kontak admin untuk pertanyaan
+
+#### 13.6.5 Admin Payment Dashboard
+
+- **Payment List**: List semua pembayaran pending
+- **Filter Options**: Filter berdasarkan status, date, amount
+- **Quick Actions**: Action buttons untuk approve/reject
+- **Detail Modal**: Modal untuk review detail pembayaran
+- **Bulk Actions**: Bulk approve/reject multiple payments
+
+### 13.7 Security Features
+
+#### 13.7.1 File Upload Security
+
+- **File Type Validation**: Hanya terima format yang diizinkan
+- **Size Limitation**: Batasi ukuran file untuk keamanan
+- **Virus Scanning**: Scan file untuk virus/malware
+- **Secure Storage**: Simpan file di secure storage (S3)
+
+#### 13.7.2 Data Protection
+
+- **Encrypted Storage**: Enkripsi data sensitif
+- **Access Control**: Role-based access untuk admin
+- **Audit Logging**: Log semua akses dan perubahan
+- **Data Retention**: Policy retensi data pembayaran
+
+#### 13.7.3 Fraud Prevention
+
+- **Duplicate Detection**: Deteksi payment proof duplicate
+- **Amount Validation**: Validasi jumlah transfer
+- **Reference Validation**: Validasi kode referensi
+- **Time-based Verification**: Verifikasi berdasarkan waktu
+
+### 13.8 Integration Points
+
+#### 13.8.1 Booking System Integration
+
+- **Payment Status Update**: Update booking status berdasarkan payment status
+- **Booking Activation**: Aktifkan booking setelah payment confirmed
+- **Cancellation Handling**: Cancel booking jika payment rejected
+- **Notification System**: Integrasi dengan notification system
+
+#### 13.8.2 User Management Integration
+
+- **User Profile**: Link payment dengan user profile
+- **Payment History**: Riwayat pembayaran di profile user
+- **Credit System**: Integrasi dengan credit/payment history
+- **Member Benefits**: Apply member benefits pada payment
+
+#### 13.8.3 Notification System Integration
+
+- **Email Notifications**: Email untuk status update
+- **SMS Alerts**: SMS alert untuk status penting
+- **Push Notifications**: Push notification untuk mobile app
+- **Admin Alerts**: Alert untuk admin jika ada payment pending
+
+### 13.9 Performance Considerations
+
+#### 13.9.1 File Upload Performance
+
+- **Chunked Upload**: Upload file dalam chunk untuk file besar
+- **Compression**: Compress file sebelum upload
+- **CDN Integration**: Use CDN untuk file delivery
+- **Caching**: Cache payment instructions
+
+#### 13.9.2 Database Performance
+
+- **Indexing Strategy**: Index untuk query payment status
+- **Partitioning**: Partition table berdasarkan date
+- **Query Optimization**: Optimize query untuk payment dashboard
+- **Connection Pooling**: Efficient database connection management
+
+#### 13.9.3 System Scalability
+
+- **Horizontal Scaling**: Scale payment service horizontally
+- **Load Balancing**: Load balance payment requests
+- **Queue System**: Use queue untuk payment processing
+- **Microservices**: Separate payment service sebagai microservice
+
+### 13.10 Monitoring & Analytics
+
+#### 13.10.1 Payment Metrics
+
+- **Success Rate**: Tingkat keberhasilan pembayaran manual
+- **Average Verification Time**: Rata-rata waktu verifikasi admin
+- **Payment Volume**: Volume pembayaran per periode
+- **Rejection Rate**: Tingkat penolakan pembayaran
+
+#### 13.10.2 User Behavior Analytics
+
+- **Payment Method Preference**: Preferensi metode pembayaran user
+- **Completion Rate**: Tingkat completion payment flow
+- **Drop-off Points**: Titik dimana user drop dari payment flow
+- **Retry Patterns**: Pattern retry payment yang gagal
+
+#### 13.10.3 Admin Performance Metrics
+
+- **Verification Speed**: Kecepatan verifikasi admin
+- **Accuracy Rate**: Tingkat akurasi verifikasi admin
+- **Error Rate**: Tingkat error dalam verifikasi
+- **Workload Distribution**: Distribusi workload antar admin
+
+### 13.11 Compliance & Legal
+
+#### 13.11.1 Financial Regulations
+
+- **Transaction Records**: Record semua transaksi sesuai regulasi
+- **Data Retention**: Retensi data sesuai ketentuan hukum
+- **Audit Compliance**: Compliance dengan audit requirements
+- **Reporting**: Generate report untuk regulatory bodies
+
+#### 13.11.2 Privacy Protection
+
+- **GDPR Compliance**: Compliance dengan GDPR requirements
+- **Data Minimization**: Minimalisasi data yang disimpan
+- **User Consent**: Consent user untuk data processing
+- **Right to Delete**: Hak user untuk delete data
+
+### 13.12 Future Enhancements
+
+#### 13.12.1 Advanced Verification
+
+- **OCR Integration**: OCR untuk auto-extract data dari bukti transfer
+- **Bank API Integration**: Integrasi langsung dengan bank API
+- **AI Verification**: AI untuk auto-verify payment proof
+- **Blockchain Integration**: Blockchain untuk payment verification
+
+#### 13.12.2 Enhanced User Experience
+
+- **Mobile Optimization**: Optimize untuk mobile experience
+- **Voice Commands**: Voice command untuk payment process
+- **AR/VR Integration**: AR/VR untuk payment instructions
+- **Chatbot Support**: Chatbot untuk payment assistance
+
+## 14. Dynamic Member Quota Management
+
+### 14.1 Overview
+
+Sistem manajemen kuota member yang dinamis dengan sistem antrian, masa aktif member, dan notifikasi otomatis. Sistem ini memastikan jumlah member tetap dalam batas yang ditentukan sambil memberikan kesempatan kepada user untuk bergabung melalui sistem antrian.
+
+### 14.2 Fitur Utama
+
+#### 14.2.1 Dynamic Quota Management
+
+- **Configurable Member Limit**: Kuota member dapat diatur secara dinamis (default: 100)
+- **Real-time Quota Monitoring**: Monitoring jumlah member aktif real-time
+- **Quota Status Dashboard**: Dashboard untuk melihat status kuota
+- **Quota History Tracking**: Tracking perubahan kuota dari waktu ke waktu
+
+#### 14.2.2 Member Expiry Management
+
+- **Automatic Expiry Detection**: Sistem otomatis mendeteksi member yang expired
+- **3-Day Warning Notification**: Notifikasi 3 hari sebelum masa aktif habis
+- **Auto-Deactivation**: Member otomatis non-aktif setelah 3 hari expired
+- **Expiry Date Tracking**: Tracking tanggal expired setiap member
+
+#### 14.2.3 Queue System
+
+- **Join Queue**: User dapat bergabung antrian untuk menjadi member
+- **Queue Position Tracking**: Tracking posisi dalam antrian
+- **Queue Status Updates**: Update status antrian real-time
+- **Queue Management Dashboard**: Dashboard untuk manage antrian
+
+#### 14.2.4 Auto-Promotion System
+
+- **Vacancy Detection**: Deteksi slot member yang kosong
+- **Queue Promotion**: Auto-promote antrian pertama ketika ada slot kosong
+- **Confirmation Process**: Konfirmasi user sebelum menjadi member
+- **Promotion Notification**: Notifikasi untuk user yang dipromote
+
+#### 14.2.5 Notification System
+
+- **Expiry Warning Notifications**: Notifikasi 3 hari sebelum expired
+- **Queue Position Updates**: Update posisi antrian
+- **Promotion Offers**: Tawaran menjadi member untuk antrian pertama
+- **Status Change Notifications**: Notifikasi perubahan status member
+
+#### 14.2.6 Admin Management
+
+- **Quota Configuration**: Konfigurasi kuota member
+- **Queue Management**: Manage antrian member
+- **Expiry Override**: Override masa aktif member
+- **System Reports**: Report sistem member dan antrian
+
+### 14.3 Member Lifecycle Management
+
+#### 14.3.1 Member Activation Flow
+
+```mermaid
+graph TD
+    A[User Register] --> B{Quota Available?}
+    B -->|Yes| C[Activate Member]
+    B -->|No| D[Join Queue]
+    C --> E[Member Active]
+    D --> F[Queue Position Assigned]
+    F --> G[Wait for Vacancy]
+    G --> H{Vacancy Available?}
+    H -->|Yes| I[Promote to Member]
+    H -->|No| J[Continue Waiting]
+    I --> K[Send Confirmation]
+    K --> L{User Confirm?}
+    L -->|Yes| E
+    L -->|No| M[Remove from Queue]
+    M --> N[Promote Next in Queue]
+```
+
+#### 14.3.2 Member Expiry Flow
+
+```mermaid
+graph TD
+    A[Member Active] --> B[Check Expiry Date]
+    B --> C{3 Days Before Expiry?}
+    C -->|Yes| D[Send Warning Notification]
+    C -->|No| E{Expired?}
+    D --> F[User Renew Membership]
+    F --> G[Update Expiry Date]
+    G --> H[Member Still Active]
+    E -->|Yes| I[Member Expired]
+    I --> J[Wait 3 Days Grace Period]
+    J --> K{3 Days After Expiry?}
+    K -->|Yes| L[Deactivate Member]
+    L --> M[Check Queue]
+    M --> N{Queue Available?}
+    N -->|Yes| O[Promote First in Queue]
+    N -->|No| P[Slot Available for New Queue]
+```
+
+### 14.4 Database Schema
+
+#### 14.4.1 Member Quota Configuration Table
+
+```sql
+-- Konfigurasi kuota member yang dinamis
+```
+
+**Key Fields:**
+
+- `max_members`: Jumlah maksimal member yang diizinkan
+- `current_members`: Jumlah member aktif saat ini
+- `queue_enabled`: Flag untuk enable/disable antrian
+- `grace_period_days`: Periode grace setelah expired (default: 3)
+- `warning_days`: Jumlah hari warning sebelum expired (default: 3)
+
+#### 14.4.2 Member Queue Table
+
+```sql
+-- Sistem antrian untuk menjadi member
+```
+
+**Key Fields:**
+
+- `queue_position`: Posisi dalam antrian
+- `user_id`: User yang bergabung antrian
+- `join_date`: Tanggal bergabung antrian
+- `queue_status`: Status antrian (waiting, promoted, cancelled)
+- `promotion_offer_sent`: Flag notifikasi promotion sudah dikirim
+
+#### 14.4.3 Member Expiry Tracking Table
+
+```sql
+-- Tracking masa aktif member
+```
+
+**Key Fields:**
+
+- `member_id`: ID member
+- `expiry_date`: Tanggal expired
+- `warning_sent`: Flag warning sudah dikirim
+- `deactivation_date`: Tanggal deaktivasi
+- `grace_period_status`: Status grace period
+
+#### 14.4.4 Quota History Table
+
+```sql
+-- History perubahan kuota member
+```
+
+**Key Fields:**
+
+- `quota_limit`: Limit kuota pada waktu tersebut
+- `active_members`: Jumlah member aktif
+- `queue_length`: Panjang antrian
+- `change_reason`: Alasan perubahan kuota
+- `changed_by`: Admin yang mengubah kuota
+
+### 14.5 Business Rules
+
+#### 14.5.1 Quota Management Rules
+
+- **Dynamic Limit**: Kuota member dapat diubah oleh admin kapan saja
+- **Real-time Count**: Jumlah member aktif dihitung real-time
+- **Queue Overflow**: Jika antrian penuh, user baru tidak bisa bergabung
+- **Minimum Quota**: Kuota minimum 1 member
+
+#### 14.5.2 Member Expiry Rules
+
+- **Grace Period**: Member tetap aktif selama 3 hari setelah expired
+- **Warning Notification**: Notifikasi dikirim 3 hari sebelum expired
+- **Auto-Deactivation**: Member otomatis non-aktif setelah grace period
+- **Manual Override**: Admin dapat override masa aktif member
+
+#### 14.5.3 Queue Management Rules
+
+- **FIFO System**: First In First Out untuk antrian
+- **Confirmation Required**: User harus konfirmasi sebelum menjadi member
+- **Timeout Period**: Tawaran promotion kadaluarsa dalam 24 jam
+- **Auto-Promotion**: Antrian pertama otomatis ditawarkan ketika ada slot kosong
+
+#### 14.5.4 Promotion Rules
+
+- **Immediate Notification**: Notifikasi promotion dikirim segera
+- **Confirmation Period**: User memiliki 24 jam untuk konfirmasi
+- **Auto-Skip**: Jika user tidak konfirmasi, antrian berikutnya ditawarkan
+- **Manual Promotion**: Admin dapat promote member secara manual
+
+### 14.6 User Interface Design
+
+#### 14.6.1 Member Quota Dashboard
+
+- **Current Quota Display**: Display kuota saat ini
+- **Active Members Count**: Jumlah member aktif
+- **Queue Length**: Panjang antrian saat ini
+- **Quota Utilization**: Visual indicator penggunaan kuota
+- **Quick Actions**: Action untuk ubah kuota, manage antrian
+
+#### 14.6.2 Queue Management Interface
+
+- **Queue List**: List user dalam antrian
+- **Position Tracking**: Tracking posisi setiap user
+- **Wait Time Estimation**: Estimasi waktu tunggu
+- **Queue Statistics**: Statistik antrian (rata-rata waktu tunggu, dll)
+- **Manual Promotion**: Tool untuk promote manual
+
+#### 14.6.3 Member Expiry Management
+
+- **Expiring Soon List**: List member yang akan expired
+- **Expired Members**: List member yang sudah expired
+- **Grace Period Members**: Member dalam grace period
+- **Bulk Operations**: Bulk renewal, extension, deactivation
+- **Expiry Calendar**: Calendar view untuk tracking expiry
+
+#### 14.6.4 User Queue Interface
+
+- **Queue Status**: Status antrian user
+- **Position Display**: Posisi dalam antrian
+- **Estimated Wait Time**: Estimasi waktu tunggu
+- **Leave Queue**: Option untuk keluar dari antrian
+- **Promotion Confirmation**: Interface untuk konfirmasi promotion
+
+### 14.7 Notification System
+
+#### 14.7.1 Expiry Notifications
+
+- **3-Day Warning**: Email/SMS 3 hari sebelum expired
+- **Grace Period Start**: Notifikasi mulai grace period
+- **Final Warning**: Notifikasi terakhir sebelum deaktivasi
+- **Deactivation Notice**: Notifikasi deaktivasi member
+
+#### 14.7.2 Queue Notifications
+
+- **Queue Join Confirmation**: Konfirmasi bergabung antrian
+- **Position Updates**: Update perubahan posisi antrian
+- **Promotion Offer**: Tawaran menjadi member
+- **Queue Leave Confirmation**: Konfirmasi keluar antrian
+
+#### 14.7.3 Admin Notifications
+
+- **Quota Threshold**: Alert ketika kuota mendekati limit
+- **Expiry Alerts**: Alert member yang akan expired
+- **Queue Overflow**: Alert ketika antrian terlalu panjang
+- **Promotion Success**: Notifikasi promotion berhasil
+
+### 14.8 Integration Points
+
+#### 14.8.1 Member System Integration
+
+- **Member Activation**: Integrasi dengan sistem aktivasi member
+- **Member Deactivation**: Integrasi dengan sistem deaktivasi member
+- **Member Benefits**: Apply/hapus benefits member
+- **Payment Integration**: Integrasi dengan payment untuk renewal
+
+#### 14.8.2 Notification System Integration
+
+- **Email Service**: Integrasi dengan email service
+- **SMS Service**: Integrasi dengan SMS service
+- **Push Notifications**: Integrasi dengan push notification
+- **In-App Notifications**: Notifikasi dalam aplikasi
+
+#### 14.8.3 Booking System Integration
+
+- **Member Privileges**: Apply member privileges pada booking
+- **Queue Status**: Tampilkan status antrian di booking interface
+- **Member Validation**: Validate member status saat booking
+
+### 14.9 Performance Considerations
+
+#### 14.9.1 Database Performance
+
+- **Indexing Strategy**: Index untuk query quota dan queue
+- **Partitioning**: Partition table berdasarkan date
+- **Query Optimization**: Optimize query untuk quota calculation
+- **Caching**: Cache quota and queue data
+
+#### 14.9.2 System Scalability
+
+- **Auto-Scaling**: Auto-scale berdasarkan load
+- **Queue Processing**: Efficient queue processing
+- **Batch Operations**: Batch processing untuk operations besar
+- **Load Balancing**: Load balance notification service
+
+#### 14.9.3 Real-time Updates
+
+- **WebSocket Integration**: Real-time update menggunakan WebSocket
+- **Event-Driven Architecture**: Event-driven untuk queue updates
+- **Background Jobs**: Background jobs untuk expiry processing
+- **Caching Strategy**: Caching untuk performance optimization
+
+### 14.10 Monitoring & Analytics
+
+#### 14.10.1 Quota Analytics
+
+- **Quota Utilization**: Analisis penggunaan kuota
+- **Queue Performance**: Performance antrian
+- **Promotion Success Rate**: Tingkat keberhasilan promotion
+- **Expiry Patterns**: Pattern masa aktif member
+
+#### 14.10.2 User Behavior Analytics
+
+- **Queue Join Patterns**: Pattern bergabung antrian
+- **Promotion Response**: Response rate promotion offers
+- **Renewal Patterns**: Pattern renewal membership
+- **Wait Time Analysis**: Analisis waktu tunggu antrian
+
+#### 14.10.3 System Performance Metrics
+
+- **Queue Processing Time**: Waktu processing antrian
+- **Notification Delivery Rate**: Tingkat delivery notifikasi
+- **System Response Time**: Response time sistem
+- **Error Rate**: Tingkat error sistem
+
+### 14.11 Compliance & Legal
+
+#### 14.11.1 Data Protection
+
+- **Queue Data Privacy**: Privacy data antrian
+- **Expiry Data Handling**: Handling data expired member
+- **Notification Consent**: Consent untuk notifikasi
+- **Data Retention**: Policy retensi data
+
+#### 14.11.2 Fair Use Policy
+
+- **Fair Queue System**: Sistem antrian yang fair
+- **Transparent Rules**: Rules yang transparan
+- **Appeal Process**: Process appeal untuk user
+- **Grievance Handling**: Handling keluhan user
+
+### 14.12 Future Enhancements
+
+#### 14.12.1 Advanced Queue Features
+
+- **Priority Queue**: Antrian berdasarkan priority
+- **VIP Queue**: Antrian khusus untuk VIP users
+- **Dynamic Queue Rules**: Rules antrian yang dinamis
+- **Queue Analytics**: Analytics antrian yang advanced
+
+#### 14.12.2 Smart Expiry Management
+
+- **Predictive Analytics**: Analytics prediktif untuk expiry
+- **Auto-Renewal**: Auto-renewal membership
+- **Smart Notifications**: Notifikasi yang smart
+- **Behavioral Analysis**: Analisis behavior user
+
+## 15. System Integration & Architecture Overview

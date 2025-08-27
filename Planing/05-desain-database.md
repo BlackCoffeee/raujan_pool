@@ -1068,718 +1068,603 @@ END //
 DELIMITER ;
 ```
 
-### 5.4 Process Check-in Procedure
+### 5.14 Process Manual Payment Procedure
 
 ```sql
 DELIMITER //
-CREATE PROCEDURE ProcessCheckIn(
+CREATE PROCEDURE ProcessManualPayment(
     IN p_booking_id INT,
-    IN p_staff_id INT,
-    IN p_verification_method ENUM('qr_code', 'reference_number', 'phone_search', 'email_search', 'member_card', 'manual'),
-    IN p_equipment_issued JSON,
-    IN p_special_notes TEXT,
-    OUT p_attendance_id INT,
+    IN p_user_id INT,
+    IN p_payment_amount DECIMAL(10,2),
+    IN p_transfer_proof_file VARCHAR(255),
+    IN p_original_filename VARCHAR(255),
+    IN p_file_size INT,
+    IN p_file_type VARCHAR(50),
+    IN p_transfer_amount DECIMAL(10,2),
+    IN p_transfer_date DATE,
+    IN p_transfer_time TIME,
+    IN p_sender_name VARCHAR(200),
+    IN p_sender_account VARCHAR(50),
+    OUT p_payment_record_id INT,
+    OUT p_reference_code VARCHAR(50),
     OUT p_status_message VARCHAR(255)
 )
 BEGIN
-    DECLARE v_user_id INT;
-    DECLARE v_guest_user_id INT;
-    DECLARE v_booking_date DATE;
-    DECLARE v_session_time ENUM('morning', 'afternoon');
-    DECLARE v_payment_status ENUM('pending', 'paid', 'failed', 'refunded');
-    DECLARE v_existing_attendance INT;
-    DECLARE v_attendance_id INT;
+    DECLARE v_booking_exists BOOLEAN DEFAULT FALSE;
+    DECLARE v_reference_code VARCHAR(50);
+    DECLARE v_bank_account VARCHAR(50);
+    DECLARE v_bank_name VARCHAR(100);
+    DECLARE v_account_holder VARCHAR(200);
 
-    -- Get booking details
-    SELECT
-        user_id, guest_user_id, session_date, session_time, payment_status
-    INTO v_user_id, v_guest_user_id, v_booking_date, v_session_time, v_payment_status
-    FROM bookings
-    WHERE id = p_booking_id;
+    -- Check if booking exists and is unpaid
+    SELECT EXISTS(
+        SELECT 1 FROM bookings
+        WHERE id = p_booking_id
+        AND payment_status IN ('pending', 'failed')
+    ) INTO v_booking_exists;
 
-    -- Check if booking exists
-    IF v_booking_date IS NULL THEN
-        SET p_status_message = 'Booking not found';
-        SET p_attendance_id = NULL;
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Booking not found';
+    IF NOT v_booking_exists THEN
+        SET p_status_message = 'Booking not found or already paid';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Booking not found or already paid';
     END IF;
 
-    -- Check if date is today
-    IF v_booking_date != CURDATE() THEN
-        SET p_status_message = 'Booking is not for today';
-        SET p_attendance_id = NULL;
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Booking is not for today';
+    -- Get primary bank account
+    SELECT account_number, bank_name, account_holder_name
+    INTO v_bank_account, v_bank_name, v_account_holder
+    FROM bank_account_config
+    WHERE is_primary = TRUE AND is_active = TRUE
+    LIMIT 1;
+
+    IF v_bank_account IS NULL THEN
+        SET p_status_message = 'No active bank account configured';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No active bank account configured';
     END IF;
 
-    -- Check payment status
-    IF v_payment_status != 'paid' THEN
-        SET p_status_message = 'Payment not confirmed';
-        SET p_attendance_id = NULL;
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Payment not confirmed';
-    END IF;
-
-    -- Check for existing attendance (prevent duplicate)
-    SELECT id INTO v_existing_attendance
-    FROM attendance_records
-    WHERE booking_id = p_booking_id
-    AND attendance_status IN ('checked_in', 'checked_out');
-
-    IF v_existing_attendance IS NOT NULL THEN
-        SET p_status_message = 'Already checked in';
-        SET p_attendance_id = NULL;
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Already checked in';
-    END IF;
-
-    -- Insert attendance record
-    INSERT INTO attendance_records (
-        booking_id, user_id, guest_user_id, check_in_time, staff_id,
-        verification_method, equipment_issued, special_notes
-    ) VALUES (
-        p_booking_id, v_user_id, v_guest_user_id, NOW(), p_staff_id,
-        p_verification_method, p_equipment_issued, p_special_notes
+    -- Generate reference code
+    SET v_reference_code = CONCAT(
+        (SELECT reference_prefix FROM bank_account_config WHERE is_primary = TRUE LIMIT 1),
+        DATE_FORMAT(NOW(), '%Y%m%d'),
+        LPAD(p_booking_id, 6, '0')
     );
 
-    SET v_attendance_id = LAST_INSERT_ID();
-    SET p_attendance_id = v_attendance_id;
-    SET p_status_message = 'Check-in successful';
+    -- Insert payment record
+    INSERT INTO manual_payment_records (
+        booking_id, user_id, payment_amount, reference_code,
+        bank_account_number, bank_name, account_holder_name,
+        transfer_proof_file, original_filename, file_size, file_type,
+        transfer_amount, transfer_date, transfer_time,
+        sender_name, sender_account
+    ) VALUES (
+        p_booking_id, p_user_id, p_payment_amount, v_reference_code,
+        v_bank_account, v_bank_name, v_account_holder,
+        p_transfer_proof_file, p_original_filename, p_file_size, p_file_type,
+        p_transfer_amount, p_transfer_date, p_transfer_time,
+        p_sender_name, p_sender_account
+    );
 
-    -- Update equipment quantities if equipment was issued
-    IF p_equipment_issued IS NOT NULL THEN
-        CALL UpdateEquipmentUsage(p_equipment_issued, p_staff_id, v_attendance_id);
-    END IF;
+    SET p_payment_record_id = LAST_INSERT_ID();
+    SET p_reference_code = v_reference_code;
+    SET p_status_message = 'Manual payment submitted successfully';
 
     -- Update booking status
     UPDATE bookings
-    SET status = 'checked_in',
+    SET payment_status = 'pending_confirmation',
+        payment_method = 'manual_transfer',
         updated_at = NOW()
     WHERE id = p_booking_id;
 END //
 DELIMITER ;
 ```
 
-### 5.5 Process Check-out Procedure
+### 5.15 Join Member Queue Procedure
 
 ```sql
 DELIMITER //
-CREATE PROCEDURE ProcessCheckOut(
-    IN p_booking_id INT,
-    IN p_staff_id INT,
-    IN p_return_condition JSON,
-    IN p_notes TEXT,
+CREATE PROCEDURE JoinMemberQueue(
+    IN p_user_id INT,
+    OUT p_queue_id INT,
+    OUT p_queue_position INT,
+    OUT p_estimated_wait_days INT,
     OUT p_status_message VARCHAR(255)
 )
 BEGIN
-    DECLARE v_attendance_id INT;
-    DECLARE v_check_in_time TIMESTAMP;
-    DECLARE v_duration_minutes INT;
-    DECLARE v_equipment_issued JSON;
+    DECLARE v_quota_config_id INT;
+    DECLARE v_max_members INT;
+    DECLARE v_current_members INT;
+    DECLARE v_queue_enabled BOOLEAN;
+    DECLARE v_max_queue_length INT;
+    DECLARE v_current_queue_length INT;
+    DECLARE v_avg_member_lifespan_days INT DEFAULT 365;
+    DECLARE v_next_position INT;
 
-    -- Get attendance record
-    SELECT id, check_in_time, equipment_issued
-    INTO v_attendance_id, v_check_in_time, v_equipment_issued
-    FROM attendance_records
-    WHERE booking_id = p_booking_id
-    AND attendance_status = 'checked_in';
+    -- Get quota configuration
+    SELECT id, max_members, current_members, queue_enabled, max_queue_length
+    INTO v_quota_config_id, v_max_members, v_current_members, v_queue_enabled, v_max_queue_length
+    FROM member_quota_config
+    ORDER BY id DESC LIMIT 1;
 
-    IF v_attendance_id IS NULL THEN
-        SET p_status_message = 'No active check-in found';
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No active check-in found';
+    IF v_quota_config_id IS NULL THEN
+        SET p_status_message = 'Quota configuration not found';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Quota configuration not found';
     END IF;
 
-    -- Calculate duration
-    SET v_duration_minutes = TIMESTAMPDIFF(MINUTE, v_check_in_time, NOW());
-
-    -- Update attendance record
-    UPDATE attendance_records
-    SET check_out_time = NOW(),
-        duration_minutes = v_duration_minutes,
-        attendance_status = 'checked_out',
-        updated_at = NOW()
-    WHERE id = v_attendance_id;
-
-    -- Update booking status
-    UPDATE bookings
-    SET status = 'completed',
-        updated_at = NOW()
-    WHERE id = p_booking_id;
-
-    -- Process equipment returns if any
-    IF v_equipment_issued IS NOT NULL THEN
-        CALL ProcessEquipmentReturns(v_attendance_id, p_return_condition, p_staff_id);
+    -- Check if queue is enabled
+    IF NOT v_queue_enabled THEN
+        SET p_status_message = 'Member queue is currently disabled';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Member queue is currently disabled';
     END IF;
 
-    SET p_status_message = 'Check-out successful';
+    -- Check if user is already in queue
+    IF EXISTS(SELECT 1 FROM member_queue WHERE user_id = p_user_id AND queue_status = 'waiting') THEN
+        SET p_status_message = 'User is already in queue';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'User is already in queue';
+    END IF;
+
+    -- Check if user is already a member
+    IF EXISTS(SELECT 1 FROM members WHERE user_id = p_user_id AND is_active = TRUE) THEN
+        SET p_status_message = 'User is already an active member';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'User is already an active member';
+    END IF;
+
+    -- Get current queue length
+    SELECT COUNT(*) INTO v_current_queue_length
+    FROM member_queue
+    WHERE queue_status = 'waiting';
+
+    -- Check if queue is full
+    IF v_current_queue_length >= v_max_queue_length THEN
+        SET p_status_message = 'Member queue is full';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Member queue is full';
+    END IF;
+
+    -- Get next position
+    SELECT COALESCE(MAX(queue_position), 0) + 1 INTO v_next_position
+    FROM member_queue;
+
+    -- Calculate estimated wait time
+    SET p_estimated_wait_days = CEILING(v_current_queue_length * (v_avg_member_lifespan_days / v_max_members));
+
+    -- Insert into queue
+    INSERT INTO member_queue (
+        user_id, queue_position, estimated_wait_days
+    ) VALUES (
+        p_user_id, v_next_position, p_estimated_wait_days
+    );
+
+    SET p_queue_id = LAST_INSERT_ID();
+    SET p_queue_position = v_next_position;
+    SET p_status_message = 'Successfully joined member queue';
+
+    -- Log quota history
+    INSERT INTO quota_history (
+        quota_limit, active_members, queue_length, available_slots,
+        change_type, change_reason, affected_user_id
+    ) VALUES (
+        v_max_members, v_current_members, v_current_queue_length + 1,
+        v_max_members - v_current_members,
+        'queue_join', 'User joined member queue', p_user_id
+    );
 END //
 DELIMITER ;
 ```
 
-### 5.6 Detect No-Shows Procedure
+### 5.16 Process Member Expiry Procedure
 
 ```sql
 DELIMITER //
-CREATE PROCEDURE DetectNoShows()
+CREATE PROCEDURE ProcessMemberExpiry()
 BEGIN
     DECLARE done INT DEFAULT FALSE;
-    DECLARE v_booking_id INT;
-    DECLARE v_user_id INT;
-    DECLARE v_guest_user_id INT;
-    DECLARE v_session_date DATE;
-    DECLARE v_session_time ENUM('morning', 'afternoon');
-    DECLARE v_no_show_count INT;
+    DECLARE v_member_id INT;
+    DECLARE v_expiry_date DATE;
+    DECLARE v_warning_days INT;
+    DECLARE v_grace_period_days INT;
 
-    -- Cursor to find unchecked bookings that are past session start time
-    DECLARE no_show_cursor CURSOR FOR
-        SELECT
-            b.id,
-            b.user_id,
-            b.guest_user_id,
-            b.session_date,
-            b.session_time,
-            COALESCE(nsr.no_show_count, 0) as no_show_count
-        FROM bookings b
-        LEFT JOIN no_show_records nsr ON (
-            (b.user_id = nsr.user_id OR (b.user_id IS NULL AND b.guest_user_id = nsr.guest_user_id))
-            AND nsr.session_date < b.session_date
-        )
-        WHERE b.session_date = CURDATE()
-        AND b.status = 'confirmed'
-        AND b.payment_status = 'paid'
-        AND (
-            (b.session_time = 'morning' AND TIME(NOW()) > '06:15:00')
-            OR (b.session_time = 'afternoon' AND TIME(NOW()) > '13:15:00')
-        )
-        AND NOT EXISTS (
-            SELECT 1 FROM attendance_records ar
-            WHERE ar.booking_id = b.id
-        );
+    -- Get configuration
+    SELECT warning_days, grace_period_days
+    INTO v_warning_days, v_grace_period_days
+    FROM member_quota_config
+    ORDER BY id DESC LIMIT 1;
+
+    -- Process members that need warning (3 days before expiry)
+    UPDATE member_expiry_tracking met
+    JOIN members m ON met.member_id = m.id
+    SET met.warning_sent = TRUE,
+        met.warning_sent_date = NOW(),
+        met.warning_sent_count = met.warning_sent_count + 1,
+        met.updated_at = NOW()
+    WHERE met.warning_sent = FALSE
+    AND met.expiry_date = DATE_ADD(CURDATE(), INTERVAL v_warning_days DAY)
+    AND m.is_active = TRUE;
+
+    -- Process members entering grace period (expired today)
+    UPDATE member_expiry_tracking met
+    JOIN members m ON met.member_id = m.id
+    SET met.grace_period_status = 'grace',
+        met.grace_period_start_date = CURDATE(),
+        met.updated_at = NOW()
+    WHERE met.expiry_date = CURDATE()
+    AND met.grace_period_status = 'active'
+    AND m.is_active = TRUE;
+
+    -- Process members that should be deactivated (grace period ended)
+    UPDATE member_expiry_tracking met
+    JOIN members m ON met.member_id = m.id
+    SET met.grace_period_status = 'expired',
+        met.deactivation_date = CURDATE(),
+        met.updated_at = NOW()
+    WHERE met.grace_period_status = 'grace'
+    AND met.grace_period_start_date = DATE_SUB(CURDATE(), INTERVAL v_grace_period_days DAY)
+    AND m.is_active = TRUE;
+
+    -- Deactivate members and trigger queue promotion
+    UPDATE members m
+    JOIN member_expiry_tracking met ON m.id = met.member_id
+    SET m.is_active = FALSE,
+        m.updated_at = NOW()
+    WHERE met.grace_period_status = 'expired'
+    AND met.deactivation_date = CURDATE()
+    AND m.is_active = TRUE;
+
+    -- Update current member count
+    UPDATE member_quota_config mqc
+    SET mqc.current_members = (
+        SELECT COUNT(*) FROM members WHERE is_active = TRUE
+    ),
+    mqc.updated_at = NOW();
+
+    -- Trigger queue promotion for each deactivated member
+    CALL PromoteQueueToMembers();
+END //
+DELIMITER ;
+```
+
+### 5.17 Promote Queue To Members Procedure
+
+```sql
+DELIMITER //
+CREATE PROCEDURE PromoteQueueToMembers()
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE v_queue_id INT;
+    DECLARE v_user_id INT;
+    DECLARE v_queue_position INT;
+    DECLARE v_max_members INT;
+    DECLARE v_current_members INT;
+    DECLARE v_available_slots INT;
+
+    -- Get quota configuration
+    SELECT max_members, current_members
+    INTO v_max_members, v_current_members
+    FROM member_quota_config
+    ORDER BY id DESC LIMIT 1;
+
+    SET v_available_slots = v_max_members - v_current_members;
+
+    -- If no slots available, exit
+    IF v_available_slots <= 0 THEN
+        SIGNAL SQLSTATE '01000' SET MESSAGE_TEXT = 'No member slots available';
+    END IF;
+
+    -- Get queue members to promote (limit by available slots)
+    DECLARE promotion_cursor CURSOR FOR
+        SELECT id, user_id, queue_position
+        FROM member_queue
+        WHERE queue_status = 'waiting'
+        AND promotion_offer_sent = FALSE
+        ORDER BY queue_position
+        LIMIT v_available_slots;
 
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
 
-    OPEN no_show_cursor;
+    OPEN promotion_cursor;
 
-    read_loop: LOOP
-        FETCH no_show_cursor INTO v_booking_id, v_user_id, v_guest_user_id, v_session_date, v_session_time, v_no_show_count;
+    promotion_loop: LOOP
+        FETCH promotion_cursor INTO v_queue_id, v_user_id, v_queue_position;
 
         IF done THEN
-            LEAVE read_loop;
+            LEAVE promotion_loop;
         END IF;
 
-        -- Insert no-show record
-        INSERT INTO no_show_records (
-            booking_id, user_id, guest_user_id, session_date, session_time,
-            no_show_count, refund_policy_applied
-        ) VALUES (
-            v_booking_id, v_user_id, v_guest_user_id, v_session_date, v_session_time,
-            v_no_show_count + 1,
-            CASE
-                WHEN v_no_show_count = 0 THEN 'full_refund'
-                WHEN v_no_show_count = 1 THEN 'partial_refund'
-                ELSE 'no_refund'
-            END
-        );
-
-        -- Update booking status
-        UPDATE bookings
-        SET status = 'no_show',
+        -- Send promotion offer
+        UPDATE member_queue
+        SET promotion_offer_sent = TRUE,
+            promotion_offer_date = NOW(),
+            promotion_timeout_date = DATE_ADD(NOW(), INTERVAL 24 HOUR),
             updated_at = NOW()
-        WHERE id = v_booking_id;
+        WHERE id = v_queue_id;
 
-        -- Send notification (implement notification logic here)
+        -- Insert notification (implement notification logic here)
         -- INSERT INTO notifications (...)
 
     END LOOP;
 
-    CLOSE no_show_cursor;
+    CLOSE promotion_cursor;
 END //
 DELIMITER ;
 ```
 
-### 5.7 Get Attendance Dashboard Data Procedure
+### 5.18 Confirm Queue Promotion Procedure
 
 ```sql
 DELIMITER //
-CREATE PROCEDURE GetAttendanceDashboardData(
-    IN p_date DATE
-)
-BEGIN
-    -- Daily attendance summary
-    SELECT
-        COUNT(*) as total_bookings,
-        SUM(CASE WHEN ar.id IS NOT NULL THEN 1 ELSE 0 END) as checked_in,
-        SUM(CASE WHEN ar.attendance_status = 'checked_out' THEN 1 ELSE 0 END) as checked_out,
-        SUM(CASE WHEN nsr.id IS NOT NULL THEN 1 ELSE 0 END) as no_shows,
-        ROUND(
-            (SUM(CASE WHEN ar.id IS NOT NULL THEN 1 ELSE 0 END) / COUNT(*)) * 100, 2
-        ) as attendance_rate
-    FROM bookings b
-    LEFT JOIN attendance_records ar ON b.id = ar.booking_id
-    LEFT JOIN no_show_records nsr ON b.id = nsr.booking_id
-    WHERE b.session_date = p_date;
-
-    -- Attendance by session
-    SELECT
-        b.session_time,
-        COUNT(*) as total_bookings,
-        SUM(CASE WHEN ar.id IS NOT NULL THEN 1 ELSE 0 END) as checked_in,
-        SUM(CASE WHEN nsr.id IS NOT NULL THEN 1 ELSE 0 END) as no_shows
-    FROM bookings b
-    LEFT JOIN attendance_records ar ON b.id = ar.booking_id
-    LEFT JOIN no_show_records nsr ON b.id = nsr.booking_id
-    WHERE b.session_date = p_date
-    GROUP BY b.session_time;
-
-    -- Staff performance
-    SELECT
-        u.full_name as staff_name,
-        COUNT(ar.id) as check_ins_processed,
-        AVG(ar.duration_minutes) as avg_session_duration
-    FROM attendance_records ar
-    JOIN users u ON ar.staff_id = u.id
-    WHERE DATE(ar.check_in_time) = p_date
-    GROUP BY ar.staff_id, u.full_name
-    ORDER BY check_ins_processed DESC;
-
-    -- Equipment usage
-    SELECT
-        em.equipment_name,
-        em.equipment_type,
-        COUNT(ei.id) as times_issued,
-        SUM(ei.quantity_issued) as total_quantity_issued
-    FROM equipment_issuance ei
-    JOIN equipment_management em ON ei.equipment_id = em.id
-    JOIN attendance_records ar ON ei.attendance_record_id = ar.id
-    WHERE DATE(ar.check_in_time) = p_date
-    GROUP BY em.id, em.equipment_name, em.equipment_type
-    ORDER BY times_issued DESC;
-END //
-DELIMITER ;
-```
-
-### 5.8 Update Equipment Usage Procedure
-
-```sql
-DELIMITER //
-CREATE PROCEDURE UpdateEquipmentUsage(
-    IN p_equipment_issued JSON,
-    IN p_staff_id INT,
-    IN p_attendance_id INT
-)
-BEGIN
-    DECLARE done INT DEFAULT FALSE;
-    DECLARE v_equipment_id INT;
-    DECLARE v_quantity INT;
-
-    -- Cursor to process equipment items
-    DECLARE equipment_cursor CURSOR FOR
-        SELECT
-            JSON_EXTRACT(equipment, '$.equipment_id') as equipment_id,
-            JSON_EXTRACT(equipment, '$.quantity') as quantity
-        FROM JSON_TABLE(p_equipment_issued, '$[*]' COLUMNS (
-            equipment JSON PATH '$'
-        )) as equipment_data;
-
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
-
-    OPEN equipment_cursor;
-
-    equipment_loop: LOOP
-        FETCH equipment_cursor INTO v_equipment_id, v_quantity;
-
-        IF done THEN
-            LEAVE equipment_loop;
-        END IF;
-
-        -- Insert equipment issuance record
-        INSERT INTO equipment_issuance (
-            attendance_record_id, equipment_id, quantity_issued, issued_by_staff_id
-        ) VALUES (
-            p_attendance_id, v_equipment_id, v_quantity, p_staff_id
-        );
-
-        -- Update equipment availability
-        UPDATE equipment_management
-        SET available_quantity = available_quantity - v_quantity,
-            checked_out_quantity = checked_out_quantity + v_quantity,
-            updated_at = NOW()
-        WHERE id = v_equipment_id;
-
-    END LOOP;
-
-    CLOSE equipment_cursor;
-END //
-DELIMITER ;
-```
-
-### 5.9 Process Equipment Returns Procedure
-
-```sql
-DELIMITER //
-CREATE PROCEDURE ProcessEquipmentReturns(
-    IN p_attendance_id INT,
-    IN p_return_condition JSON,
-    IN p_staff_id INT
-)
-BEGIN
-    DECLARE done INT DEFAULT FALSE;
-    DECLARE v_equipment_id INT;
-    DECLARE v_quantity_issued INT;
-    DECLARE v_return_condition ENUM('good', 'damaged', 'lost', 'not_returned');
-
-    -- Cursor to process equipment returns
-    DECLARE return_cursor CURSOR FOR
-        SELECT
-            ei.equipment_id,
-            ei.quantity_issued,
-            JSON_UNQUOTE(JSON_EXTRACT(condition_data, '$.condition')) as return_condition
-        FROM equipment_issuance ei
-        CROSS JOIN JSON_TABLE(p_return_condition, '$[*]' COLUMNS (
-            equipment_id INT PATH '$.equipment_id',
-            condition_data JSON PATH '$'
-        )) as conditions
-        WHERE ei.attendance_record_id = p_attendance_id
-        AND ei.return_time IS NULL;
-
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
-
-    OPEN return_cursor;
-
-    return_loop: LOOP
-        FETCH return_cursor INTO v_equipment_id, v_quantity_issued, v_return_condition;
-
-        IF done THEN
-            LEAVE return_loop;
-        END IF;
-
-        -- Update equipment issuance record
-        UPDATE equipment_issuance
-        SET return_time = NOW(),
-            return_condition = v_return_condition,
-            returned_to_staff_id = p_staff_id
-        WHERE attendance_record_id = p_attendance_id
-        AND equipment_id = v_equipment_id;
-
-        -- Update equipment availability based on condition
-        IF v_return_condition IN ('good', 'damaged') THEN
-            UPDATE equipment_management
-            SET available_quantity = available_quantity + v_quantity_issued,
-                checked_out_quantity = checked_out_quantity - v_quantity_issued,
-                updated_at = NOW()
-            WHERE id = v_equipment_id;
-
-            -- If damaged, move to maintenance
-            IF v_return_condition = 'damaged' THEN
-                UPDATE equipment_management
-                SET maintenance_quantity = maintenance_quantity + v_quantity_issued,
-                    available_quantity = available_quantity - v_quantity_issued
-                WHERE id = v_equipment_id;
-            END IF;
-        END IF;
-
-    END LOOP;
-
-    CLOSE return_cursor;
-END //
-DELIMITER ;
-```
-
-### 5.9 Apply Promotional Pricing Procedure
-
-```sql
-DELIMITER //
-CREATE PROCEDURE ApplyPromotionalPricing(
-    IN p_booking_id INT,
+CREATE PROCEDURE ConfirmQueuePromotion(
+    IN p_queue_id INT,
     IN p_user_id INT,
-    IN p_booking_date DATE,
-    IN p_session_time ENUM('morning', 'afternoon'),
-    IN p_base_amount DECIMAL(10,2),
-    IN p_booking_type VARCHAR(50),
-    OUT p_best_promotion_id INT,
-    OUT p_discount_amount DECIMAL(10,2),
-    OUT p_final_amount DECIMAL(10,2),
-    OUT p_promotion_details JSON
+    IN p_confirmed BOOLEAN,
+    OUT p_status_message VARCHAR(255)
 )
 BEGIN
-    DECLARE v_best_discount DECIMAL(10,2) DEFAULT 0;
-    DECLARE v_best_promotion_id INT DEFAULT NULL;
-    DECLARE v_user_type VARCHAR(50);
-    DECLARE v_is_member BOOLEAN DEFAULT FALSE;
-    DECLARE v_is_new_user BOOLEAN DEFAULT FALSE;
-    DECLARE v_promotion_calculated BOOLEAN DEFAULT FALSE;
-    DECLARE v_promotion_details JSON;
+    DECLARE v_queue_exists BOOLEAN DEFAULT FALSE;
+    DECLARE v_queue_status VARCHAR(20);
+    DECLARE v_promotion_timeout_date TIMESTAMP;
+    DECLARE v_max_members INT;
+    DECLARE v_current_members INT;
 
-    -- Get user type and status
-    SELECT
-        CASE
-            WHEN p_user_id IS NOT NULL THEN 'member'
-            ELSE 'guest'
-        END INTO v_user_type;
+    -- Check if queue record exists and is valid
+    SELECT EXISTS(
+        SELECT 1 FROM member_queue
+        WHERE id = p_queue_id
+        AND user_id = p_user_id
+        AND queue_status = 'waiting'
+    ) INTO v_queue_exists;
 
-    -- Check if member
-    IF p_user_id IS NOT NULL THEN
-        SELECT EXISTS(SELECT 1 FROM members WHERE user_id = p_user_id AND is_active = TRUE) INTO v_is_member;
+    IF NOT v_queue_exists THEN
+        SET p_status_message = 'Queue record not found or invalid';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Queue record not found or invalid';
     END IF;
 
-    -- Check if new user (first booking)
-    SELECT EXISTS(
-        SELECT 1 FROM bookings
-        WHERE user_id = p_user_id AND created_at < DATE_SUB(NOW(), INTERVAL 30 DAY)
-    ) INTO v_is_new_user;
+    -- Get queue details
+    SELECT queue_status, promotion_timeout_date
+    INTO v_queue_status, v_promotion_timeout_date
+    FROM member_queue
+    WHERE id = p_queue_id;
 
-    -- Find best promotion based on priority and eligibility
-    SELECT
-        pc.id,
-        CASE
-            WHEN pc.campaign_type = 'percentage_discount' THEN (p_base_amount * pc.discount_percentage / 100)
-            WHEN pc.campaign_type = 'fixed_discount' THEN pc.discount_amount
-            ELSE 0
-        END as calculated_discount,
-        JSON_OBJECT(
-            'campaign_id', pc.id,
-            'campaign_name', pc.campaign_name,
-            'campaign_type', pc.campaign_type,
-            'discount_percentage', pc.discount_percentage,
-            'discount_amount', pc.discount_amount,
-            'free_additional_persons', pc.free_additional_persons,
-            'description', pc.campaign_description
-        ) as promotion_info
-    INTO v_best_promotion_id, v_best_discount, v_promotion_details
-    FROM promotional_campaigns pc
-    WHERE pc.campaign_status = 'active'
-    AND pc.start_date <= p_booking_date
-    AND pc.end_date >= p_booking_date
-    AND (
-        (pc.day_of_week IS NULL) OR
-        (JSON_CONTAINS(pc.day_of_week, CAST(DAYOFWEEK(p_booking_date) AS JSON)))
-    )
-    AND (
-        (pc.target_user_type = 'all') OR
-        (pc.target_user_type = 'members_only' AND v_is_member) OR
-        (pc.target_user_type = 'guests_only' AND p_user_id IS NULL) OR
-        (pc.target_user_type = 'new_users' AND v_is_new_user) OR
-        (pc.target_user_type = 'returning_users' AND NOT v_is_new_user)
-    )
-    AND (
-        (pc.applicable_services IS NULL) OR
-        (JSON_CONTAINS(pc.applicable_services, JSON_QUOTE(p_booking_type)))
-    )
-    AND (
-        (pc.minimum_booking_value IS NULL) OR
-        (p_base_amount >= pc.minimum_booking_value)
-    )
-    AND (
-        (pc.total_usage_limit IS NULL) OR
-        (pc.usage_count < pc.total_usage_limit)
-    )
-    ORDER BY pc.priority_level DESC, v_best_discount DESC
-    LIMIT 1;
+    -- Check if promotion has timed out
+    IF v_promotion_timeout_date < NOW() THEN
+        UPDATE member_queue
+        SET queue_status = 'timeout',
+            updated_at = NOW()
+        WHERE id = p_queue_id;
 
-    -- Set output parameters
-    SET p_best_promotion_id = v_best_promotion_id;
-    SET p_discount_amount = v_best_discount;
-    SET p_final_amount = p_base_amount - v_best_discount;
-    SET p_promotion_details = v_promotion_details;
+        SET p_status_message = 'Promotion offer has timed out';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Promotion offer has timed out';
+    END IF;
 
-    -- Log promotion application if promotion found
-    IF v_best_promotion_id IS NOT NULL THEN
-        INSERT INTO campaign_usage_tracking (
-            campaign_id, booking_id, user_id,
-            original_amount, discounted_amount, discount_applied, final_amount,
-            promotion_source
+    -- Get quota configuration
+    SELECT max_members, current_members
+    INTO v_max_members, v_current_members
+    FROM member_quota_config
+    ORDER BY id DESC LIMIT 1;
+
+    IF p_confirmed THEN
+        -- Check if slot is still available
+        IF v_current_members >= v_max_members THEN
+            UPDATE member_queue
+            SET queue_status = 'cancelled',
+                notes = 'No member slots available',
+                updated_at = NOW()
+            WHERE id = p_queue_id;
+
+            SET p_status_message = 'No member slots available';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No member slots available';
+        END IF;
+
+        -- Activate member
+        INSERT INTO members (
+            user_id, membership_start_date, membership_end_date,
+            membership_type, is_active, created_at
         ) VALUES (
-            v_best_promotion_id, p_booking_id, p_user_id,
-            p_base_amount, p_base_amount - v_best_discount, v_best_discount, p_final_amount,
-            'auto'
+            p_user_id, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 1 YEAR),
+            'standard', TRUE, NOW()
         );
 
-        -- Update campaign usage count
-        UPDATE promotional_campaigns
-        SET usage_count = usage_count + 1
-        WHERE id = v_best_promotion_id;
+        -- Insert expiry tracking
+        INSERT INTO member_expiry_tracking (
+            member_id, expiry_date
+        ) VALUES (
+            LAST_INSERT_ID(), DATE_ADD(CURDATE(), INTERVAL 1 YEAR)
+        );
+
+        -- Update queue status
+        UPDATE member_queue
+        SET queue_status = 'promoted',
+            promotion_confirmed = TRUE,
+            promotion_confirmed_date = NOW(),
+            updated_at = NOW()
+        WHERE id = p_queue_id;
+
+        -- Update member count
+        UPDATE member_quota_config
+        SET current_members = current_members + 1,
+            updated_at = NOW();
+
+        SET p_status_message = 'Member activation successful';
+
+    ELSE
+        -- User declined promotion
+        UPDATE member_queue
+        SET queue_status = 'cancelled',
+            notes = 'User declined promotion offer',
+            updated_at = NOW()
+        WHERE id = p_queue_id;
+
+        SET p_status_message = 'Promotion declined';
+
+        -- Promote next in queue
+        CALL PromoteQueueToMembers();
     END IF;
+
+    -- Log quota history
+    INSERT INTO quota_history (
+        quota_limit, active_members, queue_length, available_slots,
+        change_type, change_reason, affected_user_id
+    ) VALUES (
+        v_max_members,
+        CASE WHEN p_confirmed THEN v_current_members + 1 ELSE v_current_members END,
+        (SELECT COUNT(*) FROM member_queue WHERE queue_status = 'waiting'),
+        CASE WHEN p_confirmed THEN v_max_members - (v_current_members + 1) ELSE v_max_members - v_current_members END,
+        CASE WHEN p_confirmed THEN 'promotion' ELSE 'queue_leave' END,
+        CASE WHEN p_confirmed THEN 'User accepted promotion' ELSE 'User declined promotion' END,
+        p_user_id
+    );
 END //
 DELIMITER ;
 ```
 
-### 5.10 Create Promotional Campaign Procedure
+### 5.19 Update Member Quota Procedure
 
 ```sql
 DELIMITER //
-CREATE PROCEDURE CreatePromotionalCampaign(
-    IN p_campaign_name VARCHAR(200),
-    IN p_campaign_description TEXT,
-    IN p_campaign_type ENUM('percentage_discount', 'fixed_discount', 'free_additional_person', 'package_deal', 'combo_discount', 'loyalty_reward', 'referral_bonus'),
-    IN p_start_date DATE,
-    IN p_end_date DATE,
-    IN p_target_user_type ENUM('all', 'members_only', 'guests_only', 'new_users', 'returning_users'),
-    IN p_discount_percentage DECIMAL(5,2),
-    IN p_discount_amount DECIMAL(10,2),
-    IN p_free_additional_persons INT,
-    IN p_applicable_services JSON,
-    IN p_created_by INT,
-    OUT p_campaign_id INT
+CREATE PROCEDURE UpdateMemberQuota(
+    IN p_max_members INT,
+    IN p_admin_id INT,
+    IN p_reason TEXT,
+    OUT p_status_message VARCHAR(255)
 )
 BEGIN
-    INSERT INTO promotional_campaigns (
-        campaign_name, campaign_description, campaign_type,
-        start_date, end_date, target_user_type,
-        discount_percentage, discount_amount, free_additional_persons,
-        applicable_services, created_by
+    DECLARE v_previous_max_members INT;
+    DECLARE v_current_members INT;
+    DECLARE v_queue_length INT;
+
+    -- Get current configuration
+    SELECT max_members, current_members
+    INTO v_previous_max_members, v_current_members
+    FROM member_quota_config
+    ORDER BY id DESC LIMIT 1;
+
+    -- Get current queue length
+    SELECT COUNT(*) INTO v_queue_length
+    FROM member_queue
+    WHERE queue_status = 'waiting';
+
+    -- Validate new quota
+    IF p_max_members < v_current_members THEN
+        SET p_status_message = 'New quota cannot be less than current active members';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'New quota cannot be less than current active members';
+    END IF;
+
+    IF p_max_members < 1 THEN
+        SET p_status_message = 'Quota must be at least 1';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Quota must be at least 1';
+    END IF;
+
+    -- Update quota configuration
+    INSERT INTO member_quota_config (
+        max_members, current_members, queue_enabled,
+        grace_period_days, warning_days, promotion_timeout_hours,
+        max_queue_length, allow_manual_override, auto_promotion_enabled,
+        notification_enabled, quota_name, quota_description, benefits_description,
+        updated_by
     ) VALUES (
-        p_campaign_name, p_campaign_description, p_campaign_type,
-        p_start_date, p_end_date, p_target_user_type,
-        p_discount_percentage, p_discount_amount, p_free_additional_persons,
-        p_applicable_services, p_created_by
+        p_max_members, v_current_members, TRUE, 3, 3, 24, 50, TRUE, TRUE, TRUE,
+        'Standard Membership', 'Standard swimming pool membership',
+        'Access to all swimming sessions and member benefits',
+        p_admin_id
     );
 
-    SET p_campaign_id = LAST_INSERT_ID();
-END //
-DELIMITER ;
-```
-
-### 5.11 Get Campaign Analytics Procedure
-
-```sql
-DELIMITER //
-CREATE PROCEDURE GetCampaignAnalytics(
-    IN p_campaign_id INT,
-    IN p_start_date DATE,
-    IN p_end_date DATE
-)
-BEGIN
-    -- Campaign performance summary
-    SELECT
-        pc.campaign_name,
-        pc.campaign_type,
-        pc.campaign_status,
-        pc.start_date,
-        pc.end_date,
-        pc.usage_count,
-        pc.total_usage_limit,
-        ROUND((pc.usage_count / pc.total_usage_limit) * 100, 2) as usage_percentage
-    FROM promotional_campaigns pc
-    WHERE pc.id = p_campaign_id;
-
-    -- Daily usage breakdown
-    SELECT
-        DATE(cut.applied_at) as usage_date,
-        COUNT(*) as daily_usage,
-        SUM(cut.discount_applied) as total_discount_given,
-        COUNT(DISTINCT cut.user_id) as unique_users
-    FROM campaign_usage_tracking cut
-    WHERE cut.campaign_id = p_campaign_id
-    AND DATE(cut.applied_at) BETWEEN p_start_date AND p_end_date
-    GROUP BY DATE(cut.applied_at)
-    ORDER BY usage_date;
-
-    -- Revenue impact analysis
-    SELECT
-        SUM(cut.original_amount) as total_original_revenue,
-        SUM(cut.final_amount) as total_promoted_revenue,
-        SUM(cut.discount_applied) as total_discount_amount,
-        ROUND((SUM(cut.discount_applied) / SUM(cut.original_amount)) * 100, 2) as discount_percentage,
-        COUNT(*) as total_bookings,
-        AVG(cut.discount_applied) as avg_discount_per_booking
-    FROM campaign_usage_tracking cut
-    WHERE cut.campaign_id = p_campaign_id
-    AND DATE(cut.applied_at) BETWEEN p_start_date AND p_end_date;
-
-    -- User type breakdown
-    SELECT
+    -- Log quota history
+    INSERT INTO quota_history (
+        quota_limit, active_members, queue_length, available_slots,
+        change_type, change_reason, previous_quota_limit,
+        previous_active_members, changed_by
+    ) VALUES (
+        p_max_members, v_current_members, v_queue_length,
+        p_max_members - v_current_members,
         CASE
-            WHEN cut.user_id IS NULL THEN 'Guest Users'
-            ELSE 'Member Users'
-        END as user_type,
-        COUNT(*) as usage_count,
-        SUM(cut.discount_applied) as total_discount,
-        AVG(cut.discount_applied) as avg_discount
-    FROM campaign_usage_tracking cut
-    WHERE cut.campaign_id = p_campaign_id
-    AND DATE(cut.applied_at) BETWEEN p_start_date AND p_end_date
-    GROUP BY user_type;
+            WHEN p_max_members > v_previous_max_members THEN 'quota_increase'
+            ELSE 'quota_decrease'
+        END,
+        p_reason, v_previous_max_members, v_current_members, p_admin_id
+    );
+
+    -- Check if new slots are available for queue promotion
+    IF p_max_members > v_previous_max_members AND v_queue_length > 0 THEN
+        CALL PromoteQueueToMembers();
+    END IF;
+
+    SET p_status_message = CONCAT('Quota updated successfully from ', v_previous_max_members, ' to ', p_max_members);
 END //
 DELIMITER ;
 ```
 
-### 5.12 Update Campaign Analytics Procedure
+### 5.20 Get Member Quota Dashboard Data Procedure
 
 ```sql
 DELIMITER //
-CREATE PROCEDURE UpdateCampaignAnalytics()
+CREATE PROCEDURE GetMemberQuotaDashboardData()
 BEGIN
-    DECLARE done INT DEFAULT FALSE;
-    DECLARE v_campaign_id INT;
-    DECLARE v_analytics_date DATE;
-    DECLARE v_total_bookings INT;
-    DECLARE v_bookings_with_promotion INT;
-    DECLARE v_total_revenue DECIMAL(12,2);
-    DECLARE v_revenue_with_promotion DECIMAL(12,2);
-    DECLARE v_total_discount DECIMAL(12,2);
+    -- Current quota status
+    SELECT
+        mqc.max_members,
+        mqc.current_members,
+        (mqc.max_members - mqc.current_members) as available_slots,
+        ROUND((mqc.current_members / mqc.max_members) * 100, 2) as utilization_percentage,
+        mqc.queue_enabled,
+        mqc.auto_promotion_enabled
+    FROM member_quota_config mqc
+    ORDER BY mqc.id DESC LIMIT 1;
 
-    -- Cursor for campaigns that need analytics update
-    DECLARE campaign_cursor CURSOR FOR
-        SELECT DISTINCT
-            pc.id as campaign_id,
-            DATE(cut.applied_at) as analytics_date
-        FROM promotional_campaigns pc
-        JOIN campaign_usage_tracking cut ON pc.id = cut.campaign_id
-        WHERE DATE(cut.applied_at) >= CURDATE() - INTERVAL 7 DAY
-        AND NOT EXISTS (
-            SELECT 1 FROM campaign_analytics ca
-            WHERE ca.campaign_id = pc.id
-            AND ca.analytics_date = DATE(cut.applied_at)
-        );
+    -- Queue statistics
+    SELECT
+        COUNT(*) as queue_length,
+        AVG(estimated_wait_days) as avg_wait_days,
+        MIN(join_date) as oldest_queue_entry,
+        COUNT(CASE WHEN promotion_offer_sent = TRUE THEN 1 END) as pending_confirmations
+    FROM member_queue
+    WHERE queue_status = 'waiting';
 
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+    -- Recent queue activity
+    SELECT
+        mq.queue_position,
+        u.full_name,
+        u.email,
+        u.phone,
+        mq.join_date,
+        mq.estimated_wait_days,
+        mq.promotion_offer_sent,
+        mq.promotion_offer_date
+    FROM member_queue mq
+    JOIN users u ON mq.user_id = u.id
+    WHERE mq.queue_status = 'waiting'
+    ORDER BY mq.queue_position
+    LIMIT 20;
 
-    OPEN campaign_cursor;
+    -- Expiring members (next 7 days)
+    SELECT
+        m.id as member_id,
+        u.full_name,
+        u.email,
+        u.phone,
+        met.expiry_date,
+        met.warning_sent,
+        met.grace_period_status,
+        DATEDIFF(met.expiry_date, CURDATE()) as days_until_expiry
+    FROM member_expiry_tracking met
+    JOIN members m ON met.member_id = m.id
+    JOIN users u ON m.user_id = u.id
+    WHERE met.expiry_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)
+    AND met.grace_period_status = 'active'
+    ORDER BY met.expiry_date;
 
-    analytics_loop: LOOP
-        FETCH campaign_cursor INTO v_campaign_id, v_analytics_date;
-
-        IF done THEN
-            LEAVE analytics_loop;
-        END IF;
-
-        -- Calculate analytics for this campaign and date
-        SELECT
-            COUNT(DISTINCT b.id) as total_bookings,
-            COUNT(DISTINCT CASE WHEN cut.campaign_id = v_campaign_id THEN b.id END) as bookings_with_promotion,
-            SUM(b.final_amount) as total_revenue,
-            SUM(CASE WHEN cut.campaign_id = v_campaign_id THEN b.final_amount ELSE 0 END) as revenue_with_promotion,
-            SUM(CASE WHEN cut.campaign_id = v_campaign_id THEN cut.discount_applied ELSE 0 END) as total_discount
-        INTO v_total_bookings, v_bookings_with_promotion, v_total_revenue, v_revenue_with_promotion, v_total_discount
-        FROM bookings b
-        LEFT JOIN campaign_usage_tracking cut ON b.id = cut.booking_id
-        WHERE DATE(b.created_at) = v_analytics_date;
-
-        -- Insert or update analytics
-        INSERT INTO campaign_analytics (
-            campaign_id, analytics_date, total_bookings, bookings_with_promotion,
-            conversion_rate, total_revenue, revenue_with_promotion, total_discount_given,
-            net_revenue
-        ) VALUES (
-            v_campaign_id, v_analytics_date, v_total_bookings, v_bookings_with_promotion,
-            CASE WHEN v_total_bookings > 0 THEN (v_bookings_with_promotion / v_total_bookings) * 100 ELSE 0 END,
-            v_total_revenue, v_revenue_with_promotion, v_total_discount,
-            v_revenue_with_promotion - v_total_discount
-        ) ON DUPLICATE KEY UPDATE
-            total_bookings = v_total_bookings,
-            bookings_with_promotion = v_bookings_with_promotion,
-            conversion_rate = CASE WHEN v_total_bookings > 0 THEN (v_bookings_with_promotion / v_total_bookings) * 100 ELSE 0 END,
-            total_revenue = v_total_revenue,
-            revenue_with_promotion = v_revenue_with_promotion,
-            total_discount_given = v_total_discount,
-            net_revenue = v_revenue_with_promotion - v_total_discount,
-            created_at = NOW();
-
-    END LOOP;
-
-    CLOSE campaign_cursor;
+    -- Recent quota changes
+    SELECT
+        qh.change_type,
+        qh.quota_limit,
+        qh.active_members,
+        qh.queue_length,
+        qh.change_reason,
+        qh.changed_at,
+        COALESCE(admin.full_name, 'System') as changed_by
+    FROM quota_history qh
+    LEFT JOIN users admin ON qh.changed_by = admin.id
+    ORDER BY qh.changed_at DESC
+    LIMIT 10;
 END //
 DELIMITER ;
 ```
 
-### 5.13 Calculate Dynamic Price Procedure
+### 5.21 Calculate Dynamic Price Procedure
 
 ```sql
 DELIMITER //

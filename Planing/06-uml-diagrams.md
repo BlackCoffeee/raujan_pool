@@ -138,6 +138,32 @@ graph TB
             UC81[Capacity Management]
             UC82[Session Slot Management]
         end
+
+        subgraph "Manual Payment System"
+            UC83[Select Manual Payment]
+            UC84[Upload Transfer Proof]
+            UC85[Submit Payment Proof]
+            UC86[View Payment Status]
+            UC87[Verify Payment Proof]
+            UC88[Confirm Payment]
+            UC89[Reject Payment]
+            UC90[Request Payment Correction]
+            UC91[Generate Payment Instructions]
+            UC92[Track Payment History]
+        end
+
+        subgraph "Dynamic Member Quota Management"
+            UC93[Configure Member Quota]
+            UC94[Join Member Queue]
+            UC95[Monitor Queue Position]
+            UC96[Process Member Expiry]
+            UC97[Send Expiry Warnings]
+            UC98[Auto-Promote Queue]
+            UC99[Confirm Promotion Offer]
+            UC100[Update Quota Settings]
+            UC101[Track Quota History]
+            UC102[View Quota Dashboard]
+        end
     end
 
     A1 -.-> UC1
@@ -204,6 +230,23 @@ graph TB
     A1 -.-> UC80
     A1 -.-> UC81
     A1 -.-> UC82
+    A1 -.-> UC83
+    A1 -.-> UC84
+    A1 -.-> UC85
+    A1 -.-> UC86
+    A1 -.-> UC87
+    A1 -.-> UC88
+    A1 -.-> UC89
+    A1 -.-> UC90
+    A1 -.-> UC91
+    A1 -.-> UC92
+    A1 -.-> UC93
+    A1 -.-> UC96
+    A1 -.-> UC97
+    A1 -.-> UC98
+    A1 -.-> UC100
+    A1 -.-> UC101
+    A1 -.-> UC102
 
     A2 -.-> UC1
     A2 -.-> UC2
@@ -217,6 +260,10 @@ graph TB
     A2 -.-> UC40
     A2 -.-> UC41
     A2 -.-> UC42
+    A2 -.-> UC87
+    A2 -.-> UC88
+    A2 -.-> UC89
+    A2 -.-> UC90
 
     A3 -.-> UC26
     A3 -.-> UC27
@@ -241,6 +288,9 @@ graph TB
     A4 -.-> UC30
     A4 -.-> UC38
     A4 -.-> UC5
+    A4 -.-> UC94
+    A4 -.-> UC95
+    A4 -.-> UC99
 
     A5 -.-> UC6
     A5 -.-> UC8
@@ -255,6 +305,13 @@ graph TB
     A5 -.-> UC29
     A5 -.-> UC30
     A5 -.-> UC38
+    A5 -.-> UC83
+    A5 -.-> UC84
+    A5 -.-> UC85
+    A5 -.-> UC86
+    A5 -.-> UC94
+    A5 -.-> UC95
+    A5 -.-> UC99
 
     %% Custom styling untuk lines dengan warna berbeda
     linkStyle 0,1,2,3,4,5,6,7 stroke:#ff6b6b,stroke-width:3px
@@ -920,6 +977,89 @@ sequenceDiagram
     Note over C: Phone/Email Search
     Note over C: Member Card
     Note over C: Manual Entry
+```
+
+### 2.7 Dynamic Member Quota Management Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant W as Web App
+    participant A as API Gateway
+    participant Q as Quota Service
+    participant N as Notification Service
+    participant D as Database
+
+    Note over U: User wants to become member
+    Note over W: React/Next.js Frontend
+    Note over A: Laravel API Gateway
+    Note over Q: Quota Management Service
+    Note over N: FCM Push Service
+    Note over D: MySQL Database
+
+    U->>W: Request member registration
+    W->>A: Check quota availability
+    A->>Q: Get current quota status
+    Q->>D: Fetch quota configuration
+    D-->>Q: Current quota data
+    Q-->>A: Quota status (full/available)
+    A-->>W: Quota status response
+
+    alt Quota Available
+        W-->>U: Proceed with registration
+    else Quota Full
+        W-->>U: Offer to join queue
+        U->>W: Accept queue invitation
+        W->>A: Join member queue
+        A->>Q: Add to queue
+        Q->>D: Insert queue record
+        A->>N: Send queue confirmation
+        N-->>U: Queue position notification
+        A-->>W: Queue position details
+        W-->>U: Queue position confirmed
+    end
+
+    Note over Q: Member Expiry Processing (Daily Job)
+    Note over Q: Check for expired members
+    Q->>D: Get members expiring in 3 days
+    D-->>Q: List of expiring members
+    Q->>N: Send warning notifications
+    N-->>U: Expiry warning (3 days before)
+
+    Note over Q: Grace Period Processing
+    Note over Q: Check members in grace period
+    Q->>D: Get members past expiry date
+    D-->>Q: Members in grace period
+    Q->>D: Deactivate members (3 days after expiry)
+    Q->>Q: Trigger queue promotion
+    Q->>D: Get first in queue
+    D-->>Q: Queue member details
+    Q->>N: Send promotion offer
+    N-->>U: Promotion offer notification
+
+    Note over U: User receives promotion offer
+    U->>W: Respond to promotion
+    W->>A: Confirm/decline promotion
+    A->>Q: Process promotion response
+    Q->>D: Update member status
+
+    alt User Accepts
+        Q->>D: Activate member
+        A->>N: Send activation confirmation
+        N-->>U: Member activation success
+    else User Declines
+        Q->>Q: Promote next in queue
+        Q->>N: Send next promotion offer
+        N-->>U: Next user gets promotion offer
+    end
+
+    Note over Q: Admin Quota Management
+    Note over Q: Admin updates quota settings
+    A->>Q: Update quota configuration
+    Q->>D: Update quota limits
+    Q->>Q: Check for available promotions
+    Q->>N: Send quota change notifications
+    N-->>U: Quota change notification
 ```
 
 ### 2.3 Core Booking Flow Sequence Diagram
