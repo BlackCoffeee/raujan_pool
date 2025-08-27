@@ -63,56 +63,54 @@ graph TB
         end
     end
 
-    A1 --> UC1:::admin-line
-    A1 --> UC2:::admin-line
-    A1 --> UC3:::admin-line
-    A1 --> UC4:::admin-line
-    A1 --> UC21:::admin-line
-    A1 --> UC22:::admin-line
-    A1 --> UC23:::admin-line
-    A1 --> UC24:::admin-line
+    A1 -.-> UC1
+    A1 -.-> UC2
+    A1 -.-> UC3
+    A1 -.-> UC4
+    A1 -.-> UC21
+    A1 -.-> UC22
+    A1 -.-> UC23
+    A1 -.-> UC24
 
-    A2 --> UC1:::staff-line
-    A2 --> UC2:::staff-line
-    A2 --> UC9:::staff-line
-    A2 --> UC11:::staff-line
-    A2 --> UC12:::staff-line
-    A2 --> UC13:::staff-line
-    A2 --> UC14:::staff-line
+    A2 -.-> UC1
+    A2 -.-> UC2
+    A2 -.-> UC9
+    A2 -.-> UC11
+    A2 -.-> UC12
+    A2 -.-> UC13
+    A2 -.-> UC14
 
-    A3 --> UC16:::staff-line
-    A3 --> UC17:::staff-line
-    A3 --> UC18:::staff-line
-    A3 --> UC19:::staff-line
-    A3 --> UC20:::staff-line
+    A3 -.-> UC16
+    A3 -.-> UC17
+    A3 -.-> UC18
+    A3 -.-> UC19
+    A3 -.-> UC20
 
-    A4 --> UC2:::member-line
-    A4 --> UC4:::member-line
-    A4 --> UC6:::member-line
-    A4 --> UC7:::member-line
-    A4 --> UC8:::member-line
-    A4 --> UC10:::member-line
-    A4 --> UC16:::member-line
-    A4 --> UC17:::member-line
-    A4 --> UC5:::member-line
+    A4 -.-> UC2
+    A4 -.-> UC4
+    A4 -.-> UC6
+    A4 -.-> UC7
+    A4 -.-> UC8
+    A4 -.-> UC10
+    A4 -.-> UC16
+    A4 -.-> UC17
+    A4 -.-> UC5
 
-    A5 --> UC6:::guest-line
-    A5 --> UC8:::guest-line
-    A5 --> UC10:::guest-line
-    A5 --> UC11:::guest-line
-    A5 --> UC13:::guest-line
-    A5 --> UC14:::guest-line
-    A5 --> UC16:::guest-line
-    A5 --> UC17:::guest-line
+    A5 -.-> UC6
+    A5 -.-> UC8
+    A5 -.-> UC10
+    A5 -.-> UC11
+    A5 -.-> UC13
+    A5 -.-> UC14
+    A5 -.-> UC16
+    A5 -.-> UC17
 
-    classDef admin fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
-    classDef staff fill:#4ecdc4,stroke:#333,stroke-width:2px,color:#fff
-    classDef member fill:#45b7d1,stroke:#333,stroke-width:2px,color:#fff
-    classDef guest fill:#96ceb4,stroke:#333,stroke-width:2px,color:#fff
-    classDef admin-line stroke:#ff6b6b,stroke-width:3px
-    classDef staff-line stroke:#4ecdc4,stroke-width:3px
-    classDef member-line stroke:#45b7d1,stroke-width:3px
-    classDef guest-line stroke:#96ceb4,stroke-width:3px
+    %% Custom styling untuk lines dengan warna berbeda
+    linkStyle 0,1,2,3,4,5,6,7 stroke:#ff6b6b,stroke-width:3px
+    linkStyle 8,9,10,11,12,13,14 stroke:#4ecdc4,stroke-width:3px
+    linkStyle 15,16,17,18,19 stroke:#4ecdc4,stroke-width:3px
+    linkStyle 20,21,22,23,24,25,26,27,28 stroke:#45b7d1,stroke-width:3px
+    linkStyle 29,30,31,32,33,34,35,36 stroke:#96ceb4,stroke-width:3px
 ```
 
 ### 1.2 Use Case Diagram Detail Member
