@@ -2,7 +2,7 @@
 
 ## Overview
 
-Dokumen ini berisi analisa komprehensif untuk pengembangan sistem manajemen kolam renang syariah yang mencakup manajemen member, reservasi, jadwal renang, dan mini cafe berdasarkan informasi dari Raujan Pool Syariah dengan **Dynamic Pricing System**, **Guest Booking System**, **Google SSO Integration**, **Rating & Review System**, **Check-in & Attendance System**, **Promotional Pricing System**, **Manual Payment System**, **Dynamic Member Quota Management**, **Member Daily Swimming Limit**, **Private Pool Rental System**, **Cafe System with Barcode Integration & Dynamic Menu Management**, dan **Mobile-First Web Application** yang memungkinkan semua besaran biaya dapat dikonfigurasi secara fleksibel, mendukung booking untuk guest users tanpa registrasi, dan menyediakan sistem manajemen kolam renang yang lengkap.
+Dokumen ini berisi analisa komprehensif untuk pengembangan sistem manajemen kolam renang syariah yang mencakup manajemen member, reservasi, jadwal renang, dan mini cafe berdasarkan informasi dari Raujan Pool Syariah dengan **Dynamic Pricing System**, **Guest Booking System**, **Google SSO Integration**, **Rating & Review System**, **Check-in & Attendance System**, **Promotional Pricing System**, **Manual Payment System**, **Dynamic Member Quota Management**, **Member Daily Swimming Limit**, **Private Pool Rental System**, **Cafe System with Barcode Integration & Dynamic Menu Management**, **Comprehensive Reporting System**, dan **Mobile-First Web Application** yang memungkinkan semua besaran biaya dapat dikonfigurasi secara fleksibel, mendukung booking untuk guest users tanpa registrasi, dan menyediakan sistem manajemen kolam renang yang lengkap.
 
 ## Daftar Dokumen Analisa
 
@@ -134,7 +134,8 @@ Dokumen ini berisi analisa komprehensif untuk pengembangan sistem manajemen kola
 ### Specialized Services
 
 - **Private Pool Rental System**: Sewa kolam pribadi (1h 30min standard, 30min bonus untuk new customer)
-- **Cafe System with Barcode Integration**: Barcode scanning, dynamic menu management, stock integration, margin calculation, cart management, special notes, comprehensive status tracking
+- **Cafe System with Barcode Integration**: Barcode scanning, dynamic menu management, stock integration, margin calculation, barcode generation & download, cart management, special notes, comprehensive status tracking
+- **Comprehensive Reporting System**: Financial reports, operational reports, customer analytics, business intelligence, real-time dashboards
 - **Promotional Pricing System**: Flexible campaigns dengan berbagai tipe promosi
 - **Manual Payment System**: Transfer bank dengan upload bukti dan admin verification
 - **Mini Cafe Management**: Menu, stock management, dan order processing
@@ -617,13 +618,13 @@ Setelah dokumen analisa komprehensif ini selesai dengan semua sistem terintegras
 
 ## Kontak dan Support
 
-Untuk pertanyaan atau klarifikasi terkait dokumen analisa ini, khususnya tentang semua sistem terintegrasi (**Dynamic Pricing**, **Guest Booking**, **Google SSO**, **Rating System**, **Check-in & Attendance**, **Promotional Pricing**, **Manual Payment**, **Dynamic Member Quota**, **Member Daily Swimming Limit**, **Private Pool Rental System**, dan **Mobile-First Web App**), silakan menghubungi tim development atau stakeholder terkait.
+Untuk pertanyaan atau klarifikasi terkait dokumen analisa ini, khususnya tentang semua sistem terintegrasi (**Dynamic Pricing**, **Guest Booking**, **Google SSO**, **Rating System**, **Check-in & Attendance**, **Promotional Pricing**, **Manual Payment**, **Dynamic Member Quota**, **Member Daily Swimming Limit**, **Private Pool Rental System**, **Cafe System with Barcode Integration & Dynamic Menu Management**, **Comprehensive Reporting System**, dan **Mobile-First Web App**), silakan menghubungi tim development atau stakeholder terkait.
 
 ---
 
-**Versi**: 2.1  
+**Versi**: 2.2  
 **Tanggal**: 26 Agustus 2025  
-**Status**: Complete dengan semua sistem terintegrasi: Dynamic Pricing, Guest Booking, Google SSO, Mobile-First Web App, Core Booking Flow, Rating System, Check-in & Attendance, Promotional Pricing, Manual Payment, Dynamic Member Quota, Member Daily Swimming Limit, Private Pool Rental System, Cafe System with Barcode Integration, dan Comprehensive System Integration  
+**Status**: Complete dengan semua sistem terintegrasi: Dynamic Pricing, Guest Booking, Google SSO, Mobile-First Web App, Core Booking Flow, Rating System, Check-in & Attendance, Promotional Pricing, Manual Payment, Dynamic Member Quota, Member Daily Swimming Limit, Private Pool Rental System, Cafe System with Barcode Integration & Dynamic Menu Management, Comprehensive Reporting System, dan Comprehensive System Integration  
 **Berdasarkan**: PDF Raujan Pool Syariah  
 **Key Features**:
 
@@ -642,7 +643,8 @@ Untuk pertanyaan atau klarifikasi terkait dokumen analisa ini, khususnya tentang
 - 👥 **Dynamic member quota management dengan sistem antrian**
 - 🏊‍♂️ **Member daily swimming limit (1x/hari gratis, additional session berbayar)**
 - 🏊‍♀️ **Private pool rental system (1h 30min standard, 30min bonus untuk new customer, dynamic additional charges)**
-- 🍽️ **Cafe system dengan barcode integration, dynamic menu management, stock integration, margin calculation, cart management, special notes, dan comprehensive status tracking**
+- 🍽️ **Cafe system dengan barcode integration, dynamic menu management, stock integration, margin calculation, barcode generation & download, cart management, special notes, dan comprehensive status tracking**
+- 📊 **Comprehensive reporting system dengan laporan keuangan, operasional, customer analytics, dan business intelligence**
 
 ### Core Booking Flow System
 

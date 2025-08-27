@@ -2587,6 +2587,12 @@ CREATE TABLE cafe_menu (
     updated_by INT NULL,
     menu_code VARCHAR(20) UNIQUE, -- Kode menu untuk tracking
 
+    -- Barcode Management
+    barcode_value VARCHAR(50) UNIQUE, -- Nilai barcode untuk menu
+    qr_code_url VARCHAR(255), -- URL QR code untuk menu
+    barcode_image_url VARCHAR(255), -- URL gambar barcode
+    is_barcode_active BOOLEAN DEFAULT TRUE, -- Status barcode aktif
+
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
@@ -2962,7 +2968,114 @@ BEGIN
 
     SET p_menu_id = LAST_INSERT_ID();
     SET p_menu_code = v_menu_code;
-    SET p_status_message = 'Menu created successfully';
+
+    -- Generate barcode for menu
+    CALL GenerateMenuBarcode(p_menu_id, v_menu_code, p_barcode_value, p_status_message);
+
+    SET p_status_message = 'Menu created successfully with barcode';
+END //
+DELIMITER ;
+```
+
+### 5.10 Generate Menu Barcode Procedure
+
+```sql
+DELIMITER //
+CREATE PROCEDURE GenerateMenuBarcode(
+    IN p_menu_id INT,
+    IN p_menu_code VARCHAR(20),
+    OUT p_barcode_value VARCHAR(50),
+    OUT p_status_message VARCHAR(255)
+)
+BEGIN
+    DECLARE v_barcode_value VARCHAR(50);
+    DECLARE v_qr_code_url VARCHAR(255);
+    DECLARE v_barcode_image_url VARCHAR(255);
+
+    -- Generate barcode value using menu code
+    SET v_barcode_value = CONCAT('MENU-', p_menu_code, '-', DATE_FORMAT(NOW(), '%y%m%d'));
+
+    -- Generate QR code URL (this would be handled by application layer)
+    SET v_qr_code_url = CONCAT('/api/menu/qr/', p_menu_id);
+
+    -- Generate barcode image URL (this would be handled by application layer)
+    SET v_barcode_image_url = CONCAT('/api/menu/barcode/', p_menu_id);
+
+    -- Update menu with barcode information
+    UPDATE cafe_menu
+    SET barcode_value = v_barcode_value,
+        qr_code_url = v_qr_code_url,
+        barcode_image_url = v_barcode_image_url,
+        updated_at = NOW()
+    WHERE id = p_menu_id;
+
+    SET p_barcode_value = v_barcode_value;
+    SET p_status_message = 'Barcode generated successfully';
+END //
+DELIMITER ;
+```
+
+### 5.11 Download Menu Barcode Procedure
+
+```sql
+DELIMITER //
+CREATE PROCEDURE GetMenuBarcodeInfo(
+    IN p_menu_id INT,
+    OUT p_barcode_data JSON
+)
+BEGIN
+    SELECT
+        JSON_OBJECT(
+            'menu_id', cm.id,
+            'menu_name', cm.menu_name,
+            'menu_code', cm.menu_code,
+            'barcode_value', cm.barcode_value,
+            'qr_code_url', cm.qr_code_url,
+            'barcode_image_url', cm.barcode_image_url,
+            'category', cm.category,
+            'selling_price', cm.selling_price,
+            'is_barcode_active', cm.is_barcode_active
+        ) INTO p_barcode_data
+    FROM cafe_menu cm
+    WHERE cm.id = p_menu_id AND cm.is_barcode_active = TRUE;
+END //
+DELIMITER ;
+```
+
+### 5.12 Bulk Export Barcodes Procedure
+
+```sql
+DELIMITER //
+CREATE PROCEDURE GetBulkMenuBarcodes(
+    IN p_category VARCHAR(50) NULL,
+    IN p_is_active BOOLEAN NULL,
+    OUT p_total_count INT
+)
+BEGIN
+    -- Get total count
+    SELECT COUNT(*) INTO p_total_count
+    FROM cafe_menu cm
+    WHERE (p_category IS NULL OR cm.category = p_category)
+      AND (p_is_active IS NULL OR cm.is_active = p_is_active)
+      AND cm.is_barcode_active = TRUE;
+
+    -- Return barcode data for all matching menus
+    SELECT
+        cm.id,
+        cm.menu_name,
+        cm.menu_code,
+        cm.barcode_value,
+        cm.qr_code_url,
+        cm.barcode_image_url,
+        cm.category,
+        cm.selling_price,
+        cm.preparation_time,
+        cm.image_url as menu_image_url
+    FROM cafe_menu cm
+    WHERE (p_category IS NULL OR cm.category = p_category)
+      AND (p_is_active IS NULL OR cm.is_active = p_is_active)
+      AND cm.is_barcode_active = TRUE
+    ORDER BY cm.category, cm.menu_name;
 END //
 DELIMITER ;
 ```

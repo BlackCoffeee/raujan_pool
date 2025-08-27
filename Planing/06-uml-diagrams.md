@@ -204,6 +204,10 @@ graph TB
                     UC132[Update Menu]
                     UC133[Manage Stock]
                     UC134[View Menu Analytics]
+                    UC135[Generate Menu Barcode]
+                    UC136[Download Barcode]
+                    UC137[Generate Financial Reports]
+                    UC138[View Analytics Dashboard]
                 end
     end
 
@@ -421,6 +425,10 @@ graph TB
             A1 -.-> UC132
             A1 -.-> UC133
             A1 -.-> UC134
+            A1 -.-> UC135
+            A1 -.-> UC136
+            A1 -.-> UC137
+            A1 -.-> UC138
 
     %% Custom styling untuk lines dengan warna berbeda
     linkStyle 0,1,2,3,4,5,6,7 stroke:#ff6b6b,stroke-width:3px

@@ -2802,10 +2802,13 @@ Sistem cafe terintegrasi dengan barcode scanning yang memungkinkan tamu untuk me
 #### 17.2.1 Barcode Integration System
 
 - **Pool Area Barcodes**: Barcode ditempel di area kolam renang
-- **QR Code Generation**: Generate QR code untuk setiap area/lokasi
+- **Menu Barcode Generation**: Sistem generate barcode untuk setiap menu
+- **QR Code Generation**: Generate QR code untuk setiap area/lokasi dan menu
 - **Barcode Scanning**: Scan barcode via mobile device
 - **Automatic Menu Display**: Menu otomatis muncul setelah scan
 - **Location-Based Menu**: Menu berbeda berdasarkan area scan
+- **Barcode Download**: Tombol download barcode untuk setiap menu
+- **Bulk Barcode Export**: Export semua barcode dalam format PDF/PNG
 
 #### 17.2.2 Dynamic Menu Management System
 
@@ -3116,9 +3119,13 @@ CREATE TABLE cafe_order_status_logs (
 #### 17.5.1 Barcode System Rules
 
 - **Unique Barcodes**: Setiap barcode harus unique
+- **Menu Barcode Auto-Generation**: Barcode otomatis generate saat menu dibuat
 - **Location-Based Menu**: Menu dapat difilter berdasarkan lokasi
 - **Active/Inactive Locations**: Lokasi dapat diaktifkan/nonaktifkan
-- **QR Code Generation**: QR code otomatis generate untuk setiap barcode
+- **QR Code Generation**: QR code otomatis generate untuk setiap barcode dan menu
+- **Barcode Download**: Barcode dapat didownload dalam berbagai format
+- **Bulk Barcode Export**: Export semua barcode dalam format PDF/PNG
+- **Barcode Validation**: Validasi barcode sebelum scanning
 
 #### 17.5.2 Dynamic Menu Management Rules
 
@@ -3175,6 +3182,9 @@ CREATE TABLE cafe_order_status_logs (
 - **Menu List**: List menu dengan filter dan search
 - **Bulk Operations**: Import/export menu untuk efisiensi
 - **Menu Preview**: Preview menu seperti yang dilihat customer
+- **Barcode Management**: Generate dan manage barcode untuk setiap menu
+- **Barcode Download**: Download barcode individual atau bulk
+- **Barcode Preview**: Preview barcode sebelum download
 
 #### 17.6.2 Cart Management Interface
 
@@ -3343,7 +3353,329 @@ CREATE TABLE cafe_order_status_logs (
 - **Tablet Menu**: Tablet interface untuk ordering
 - **Kitchen Display System**: Sistem display untuk kitchen
 
-## 18. System Integration & Architecture Overview
+## 18. Comprehensive Reporting System
+
+### 18.1 Overview
+
+Sistem laporan komprehensif yang mencakup laporan keuangan, laporan operasional, dan laporan bisnis lainnya untuk memantau performa dan kesehatan bisnis kolam renang syariah. Sistem ini memberikan insights yang mendalam untuk pengambilan keputusan strategis.
+
+### 18.2 Fitur Utama
+
+#### 18.2.1 Financial Reports System
+
+- **Revenue Reports**: Laporan pendapatan harian, mingguan, bulanan, tahunan
+- **Expense Reports**: Laporan pengeluaran operasional dan overhead
+- **Profit & Loss Statements**: Laporan laba rugi komprehensif
+- **Cash Flow Reports**: Laporan arus kas dan likuiditas
+- **Tax Reports**: Laporan untuk keperluan perpajakan
+- **Budget vs Actual**: Perbandingan budget dengan realisasi
+
+#### 18.2.2 Operational Reports System
+
+- **Booking Analytics**: Analisis booking patterns dan trends
+- **Member Reports**: Laporan member aktif, expired, dan antrian
+- **Session Utilization**: Utilization rate setiap sesi
+- **Private Pool Reports**: Laporan sewa kolam pribadi
+- **Cafe Sales Reports**: Laporan penjualan cafe dan menu performance
+- **Staff Performance**: Laporan performa staff
+
+#### 18.2.3 Customer Analytics Reports
+
+- **Customer Behavior**: Analisis behavior dan preferensi customer
+- **Customer Retention**: Laporan retensi member dan customer
+- **Customer Satisfaction**: Laporan rating dan feedback
+- **Demographics Analysis**: Analisis demografi pengunjung
+- **Peak Hours Analysis**: Analisis jam sibuk dan optimal
+- **Seasonal Trends**: Analisis trend musiman
+
+#### 18.2.4 Inventory & Stock Reports
+
+- **Stock Reports**: Laporan stock semua produk
+- **Low Stock Alerts**: Laporan item dengan stock menipis
+- **Stock Movement**: Analisis pergerakan stock
+- **Waste Reports**: Laporan stock yang terbuang
+- **Purchase Reports**: Laporan pembelian stock
+- **Cost Analysis**: Analisis biaya inventory
+
+#### 18.2.5 Promotional Reports
+
+- **Campaign Performance**: Laporan performa promosi
+- **Promotion ROI**: Return on investment promosi
+- **Customer Response**: Response rate promosi
+- **Promotion Revenue Impact**: Dampak pendapatan promosi
+- **Promotion Comparison**: Perbandingan berbagai promosi
+
+#### 18.2.6 Compliance & Legal Reports
+
+- **Regulatory Reports**: Laporan untuk regulasi
+- **Safety Reports**: Laporan keselamatan dan incident
+- **Maintenance Reports**: Laporan maintenance fasilitas
+- **Insurance Reports**: Laporan untuk asuransi
+- **Audit Reports**: Laporan audit internal
+
+### 18.3 Report Types & Formats
+
+#### 18.3.1 Financial Report Types
+
+```mermaid
+graph TD
+    A[Financial Reports] --> B[Revenue Reports]
+    A --> C[Expense Reports]
+    A --> D[Profit & Loss]
+    A --> E[Cash Flow]
+    A --> F[Tax Reports]
+    A --> G[Budget Analysis]
+
+    B --> B1[Daily Revenue]
+    B --> B2[Weekly Revenue]
+    B --> B3[Monthly Revenue]
+    B --> B4[Yearly Revenue]
+    B --> B5[Revenue by Service]
+    B --> B6[Revenue by Payment Method]
+
+    C --> C1[Operational Expenses]
+    C --> C2[Staff Salaries]
+    C --> C3[Utility Bills]
+    C --> C4[Maintenance Costs]
+    C --> C5[Marketing Expenses]
+    C --> C6[Inventory Costs]
+
+    D --> D1[Gross Profit]
+    D --> D2[Operating Profit]
+    D --> D3[Net Profit]
+    D --> D4[Profit Margins]
+    D --> D5[Profit Trends]
+
+    E --> E1[Cash Inflow]
+    E --> E2[Cash Outflow]
+    E --> E3[Net Cash Flow]
+    E --> E4[Cash Position]
+    E --> E5[Working Capital]
+```
+
+#### 18.3.2 Operational Report Types
+
+```mermaid
+graph TD
+    A[Operational Reports] --> B[Booking Reports]
+    A --> C[Member Reports]
+    A --> D[Session Reports]
+    A --> E[Staff Reports]
+    A --> F[Facility Reports]
+
+    B --> B1[Booking Volume]
+    B --> B2[Booking Trends]
+    B --> B3[No-Show Reports]
+    B --> B4[Capacity Utilization]
+    B --> B5[Booking by Time]
+    B --> B6[Booking by Day]
+
+    C --> C1[Active Members]
+    C --> C2[Expired Members]
+    C --> C3[New Members]
+    C --> C4[Member Usage]
+    C --> C5[Member Growth]
+    C --> C6[Member Retention]
+
+    D --> D1[Session Attendance]
+    D --> D2[Session Capacity]
+    D --> D3[Session Revenue]
+    D --> D4[Private Sessions]
+    D --> D5[Session Trends]
+
+    E --> E1[Staff Attendance]
+    E --> E2[Staff Performance]
+    E --> E3[Staff Productivity]
+    E --> E4[Check-in/Check-out]
+    E --> E5[Staff Shifts]
+
+    F --> F1[Facility Usage]
+    F --> F2[Maintenance Schedule]
+    F --> F3[Equipment Status]
+    F --> F4[Safety Incidents]
+    F --> F5[Facility Costs]
+```
+
+### 18.4 Report Generation System
+
+#### 18.4.1 Scheduled Reports
+
+- **Daily Reports**: Laporan harian otomatis
+- **Weekly Reports**: Laporan mingguan dengan summary
+- **Monthly Reports**: Laporan bulanan komprehensif
+- **Quarterly Reports**: Laporan triwulan untuk analisis
+- **Annual Reports**: Laporan tahunan lengkap
+- **Custom Period Reports**: Laporan periode kustom
+
+#### 18.4.2 Real-time Dashboards
+
+- **Executive Dashboard**: Dashboard untuk eksekutif
+- **Manager Dashboard**: Dashboard untuk manager
+- **Staff Dashboard**: Dashboard untuk staff
+- **Financial Dashboard**: Dashboard keuangan real-time
+- **Operational Dashboard**: Dashboard operasional
+- **Customer Dashboard**: Dashboard customer insights
+
+#### 18.4.3 Export & Distribution
+
+- **PDF Export**: Export laporan ke PDF
+- **Excel Export**: Export data ke Excel
+- **CSV Export**: Export data ke CSV
+- **Email Distribution**: Distribusi otomatis via email
+- **Print Reports**: Print laporan fisik
+- **Digital Archive**: Arsip digital semua laporan
+
+### 18.5 Report Customization
+
+#### 18.5.1 Customizable Parameters
+
+- **Date Range Selection**: Pilih periode laporan
+- **Service Type Filter**: Filter berdasarkan jenis layanan
+- **Customer Type Filter**: Filter berdasarkan tipe customer
+- **Payment Method Filter**: Filter berdasarkan metode pembayaran
+- **Staff Filter**: Filter berdasarkan staff
+- **Location Filter**: Filter berdasarkan lokasi
+
+#### 18.5.2 Dynamic Charts & Graphs
+
+- **Revenue Charts**: Grafik pendapatan
+- **Booking Trends**: Grafik trend booking
+- **Customer Demographics**: Grafik demografi
+- **Stock Levels**: Grafik level stock
+- **Performance Metrics**: Grafik metrik performa
+- **Comparison Charts**: Grafik perbandingan
+
+#### 18.5.3 Report Templates
+
+- **Standard Templates**: Template standar untuk setiap jenis laporan
+- **Custom Templates**: Template kustom sesuai kebutuhan
+- **Branded Reports**: Laporan dengan branding perusahaan
+- **Multi-language Support**: Support multi bahasa
+- **Responsive Design**: Design responsive untuk mobile
+
+### 18.6 Financial Analytics
+
+#### 18.6.1 Revenue Analytics
+
+- **Revenue by Service**: Pendapatan per layanan
+- **Revenue by Time**: Pendapatan per waktu
+- **Revenue by Customer Type**: Pendapatan per tipe customer
+- **Revenue Growth**: Pertumbuhan pendapatan
+- **Revenue Forecasting**: Forecasting pendapatan
+- **Seasonal Revenue Patterns**: Pattern pendapatan musiman
+
+#### 18.6.2 Cost Analytics
+
+- **Cost Breakdown**: Breakdown biaya per kategori
+- **Cost Trends**: Trend biaya dari waktu ke waktu
+- **Cost per Customer**: Biaya per customer
+- **Cost per Transaction**: Biaya per transaksi
+- **Variable vs Fixed Costs**: Biaya variabel vs tetap
+- **Cost Efficiency**: Efisiensi biaya
+
+#### 18.6.3 Profitability Analysis
+
+- **Profit Margins**: Margin keuntungan
+- **Profit by Service**: Keuntungan per layanan
+- **Profit Trends**: Trend keuntungan
+- **Break-even Analysis**: Analisis break-even
+- **ROI Analysis**: Analisis return on investment
+- **Profit Forecasting**: Forecasting keuntungan
+
+### 18.7 Operational Analytics
+
+#### 18.7.1 Booking Analytics
+
+- **Booking Patterns**: Pattern booking
+- **Peak Hours Analysis**: Analisis jam sibuk
+- **Capacity Utilization**: Utilization kapasitas
+- **No-show Rate**: Rate no-show
+- **Booking Efficiency**: Efisiensi booking
+- **Customer Flow**: Flow customer
+
+#### 18.7.2 Customer Analytics
+
+- **Customer Segmentation**: Segmentasi customer
+- **Customer Lifetime Value**: Nilai lifetime customer
+- **Customer Retention Rate**: Rate retensi customer
+- **Customer Satisfaction**: Kepuasan customer
+- **Customer Behavior**: Behavior customer
+- **Customer Acquisition**: Akuisisi customer
+
+#### 18.7.3 Staff Analytics
+
+- **Staff Productivity**: Produktivitas staff
+- **Staff Performance**: Performa staff
+- **Staff Efficiency**: Efisiensi staff
+- **Staff Attendance**: Kehadiran staff
+- **Staff Customer Satisfaction**: Kepuasan customer terhadap staff
+- **Staff Training Needs**: Kebutuhan training staff
+
+### 18.8 Report Security & Access Control
+
+#### 18.8.1 Role-based Access
+
+- **Executive Access**: Akses untuk eksekutif
+- **Manager Access**: Akses untuk manager
+- **Staff Access**: Akses terbatas untuk staff
+- **Financial Access**: Akses khusus keuangan
+- **Read-only Access**: Akses read-only
+- **Admin Access**: Akses admin penuh
+
+#### 18.8.2 Data Security
+
+- **Data Encryption**: Enkripsi data sensitif
+- **Audit Trail**: Trail audit untuk semua akses
+- **Data Backup**: Backup data laporan
+- **Access Logging**: Logging semua akses
+- **Sensitive Data Protection**: Proteksi data sensitif
+- **Compliance**: Compliance dengan regulasi
+
+### 18.9 Integration with Other Systems
+
+#### 18.9.1 Booking System Integration
+
+- **Booking Data**: Integrasi data booking
+- **Revenue Data**: Integrasi data pendapatan
+- **Customer Data**: Integrasi data customer
+- **Session Data**: Integrasi data sesi
+- **Payment Data**: Integrasi data pembayaran
+
+#### 18.9.2 Cafe System Integration
+
+- **Sales Data**: Data penjualan cafe
+- **Inventory Data**: Data inventory cafe
+- **Menu Performance**: Performa menu
+- **Stock Reports**: Laporan stock
+- **Cost Analysis**: Analisis biaya cafe
+
+#### 18.9.3 Member System Integration
+
+- **Member Data**: Data member
+- **Membership Analytics**: Analytics membership
+- **Renewal Reports**: Laporan renewal
+- **Member Usage**: Usage member
+- **Member Value**: Nilai member
+
+### 18.10 Future Enhancements
+
+#### 18.10.1 Advanced Analytics
+
+- **Predictive Analytics**: Analytics prediktif
+- **Machine Learning**: Machine learning untuk insights
+- **AI-powered Insights**: Insights powered AI
+- **Trend Analysis**: Analisis trend advanced
+- **Forecasting Models**: Model forecasting
+
+#### 18.10.2 Business Intelligence
+
+- **BI Dashboard**: Dashboard business intelligence
+- **Real-time Analytics**: Analytics real-time
+- **Data Visualization**: Visualisasi data
+- **Interactive Reports**: Laporan interaktif
+- **KPI Tracking**: Tracking KPI
+
+## 19. System Integration & Architecture Overview
 
 ---
 
