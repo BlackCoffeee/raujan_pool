@@ -2791,7 +2791,559 @@ CREATE TABLE customer_visit_history (
 - **Seasonal Pricing**: Harga berdasarkan musim
 - **Online Payment**: Integrasi payment gateway online
 
-## 17. System Integration & Architecture Overview
+## 17. Cafe System with Barcode Integration
+
+### 17.1 Overview
+
+Sistem cafe terintegrasi dengan barcode scanning yang memungkinkan tamu untuk memesan makanan melalui scan barcode, mengelola keranjang belanja dengan catatan khusus, dan tracking status pesanan secara real-time. Sistem ini memberikan pengalaman ordering yang seamless dengan integrasi pembayaran dan delivery tracking.
+
+### 17.2 Fitur Utama
+
+#### 17.2.1 Barcode Integration System
+
+- **Pool Area Barcodes**: Barcode ditempel di area kolam renang
+- **QR Code Generation**: Generate QR code untuk setiap area/lokasi
+- **Barcode Scanning**: Scan barcode via mobile device
+- **Automatic Menu Display**: Menu otomatis muncul setelah scan
+- **Location-Based Menu**: Menu berbeda berdasarkan area scan
+
+#### 17.2.2 Dynamic Menu Management System
+
+- **Dynamic Menu Creation**: Admin dapat menambah, edit, dan hapus menu
+- **Menu Image Management**: Upload dan manage foto menu
+- **Menu Details Management**: Nama, deskripsi, kategori, dan informasi detail
+- **Margin Calculation**: Harga dasar vs harga jual untuk perhitungan margin otomatis
+- **Stock Integration**: Terhubung langsung dengan sistem inventory
+- **Menu Status Management**: Active/inactive menu berdasarkan stok dan preferensi
+- **Bulk Menu Operations**: Import/export menu untuk efisiensi
+- **Menu Code Generation**: Kode otomatis untuk tracking menu
+- **Cooking Instructions**: Instruksi memasak untuk kitchen staff
+- **Allergen & Dietary Info**: Informasi alergen dan diet untuk customer
+
+#### 17.2.3 Cart Management System
+
+- **Add to Cart**: Tambah item ke keranjang dengan quantity
+- **Special Notes per Item**: Catatan khusus untuk setiap item
+- **Cart Preview**: Preview keranjang sebelum checkout
+- **Item Modification**: Edit quantity dan notes dalam keranjang
+- **Remove Items**: Hapus item dari keranjang
+
+#### 17.2.4 Special Notes System
+
+- **Per-Item Notes**: Catatan terpisah untuk setiap menu
+- **Custom Instructions**: Instruksi khusus untuk makanan
+- **Allergy Information**: Informasi alergi
+- **Cooking Preferences**: Preferensi memasak (matang, mentah, dll)
+- **Note Length Limit**: Batasan panjang catatan
+
+#### 17.2.5 Payment Integration
+
+- **Manual Transfer**: Upload bukti pembayaran
+- **Payment Verification**: Verifikasi pembayaran oleh admin
+- **Payment Status Tracking**: Tracking status pembayaran real-time
+- **Receipt Generation**: Generate receipt dengan detail pesanan
+
+#### 17.2.6 Order Status Management
+
+- **Comprehensive Status Tracking**: Status untuk tamu dan admin
+- **Real-time Updates**: Update status real-time
+- **Status Notifications**: Notifikasi perubahan status
+- **Delivery Confirmation**: Konfirmasi pesanan diterima tamu
+
+#### 17.2.7 Stock Management System
+
+- **Real-time Stock Tracking**: Tracking stok real-time dengan transaksi detail
+- **Automatic Stock Updates**: Update stok otomatis saat order
+- **Low Stock Alerts**: Alert ketika stok menipis
+- **Stock Transactions**: Record semua transaksi stok (purchase, sale, adjustment, waste)
+- **Reorder Point Management**: Setting titik reorder untuk setiap menu
+- **Stock Analytics**: Analisis pergerakan stok dan trend
+- **Waste Management**: Tracking stok yang terbuang/expired
+- **Inventory Reports**: Laporan inventory lengkap
+
+### 17.3 Flow Diagrams
+
+#### 17.3.1 Customer Order Flow
+
+```mermaid
+graph TD
+    A[Customer at Pool Area] --> B[Scan Barcode/QR Code]
+    B --> C[System Display Menu]
+    C --> D[Customer Browse Menu]
+    D --> E[Check Item Availability]
+    E --> F[Add Item to Cart]
+    F --> G[Add Special Notes]
+    G --> H[Set Quantity]
+    H --> I[Continue Shopping?]
+    I -->|Yes| D
+    I -->|No| J[Review Cart]
+    J --> K[Check Total Price]
+    K --> L[Proceed to Payment]
+    L --> M[Upload Payment Proof]
+    M --> N[Submit Order]
+    N --> O[Wait Admin Confirmation]
+    O --> P[Order Confirmed]
+    P --> Q[Wait Food Preparation]
+    Q --> R[Food Ready]
+    R --> S[Food Delivered]
+    S --> T[Customer Confirm Reception]
+```
+
+#### 17.3.3 Admin Menu Management Flow
+
+```mermaid
+graph TD
+    A[Admin Login] --> B[Access Menu Management]
+    B --> C[Add New Menu]
+    C --> D[Upload Menu Image]
+    D --> E[Enter Menu Details]
+    E --> F[Set Base Cost & Selling Price]
+    F --> G[Configure Stock Settings]
+    G --> H[Save Menu]
+    H --> I[Initialize Inventory]
+    I --> J[Menu Active]
+
+    B --> K[Edit Existing Menu]
+    K --> L[Update Menu Details]
+    L --> M[Update Pricing]
+    M --> N[Update Stock Settings]
+    N --> O[Save Changes]
+
+    B --> P[Stock Management]
+    P --> Q[View Current Stock]
+    Q --> R[Add Stock Purchase]
+    R --> S[Record Waste/Adjustment]
+    S --> T[Update Stock Levels]
+    T --> U[Generate Reports]
+```
+
+#### 17.3.2 Admin Order Management Flow
+
+```mermaid
+graph TD
+    A[Admin Login] --> B[View Pending Orders]
+    B --> C[Select Order]
+    C --> D[Review Order Details]
+    D --> E[Check Payment Proof]
+    E --> F{Payment Valid?}
+    F -->|Yes| G[Confirm Payment]
+    F -->|No| H[Request Payment]
+    G --> I[Update Order Status: Paid]
+    H --> J[Send Payment Request]
+    I --> K[Prepare Food]
+    K --> L[Food Ready]
+    L --> M[Update Status: Ready]
+    M --> N[Deliver to Customer]
+    N --> O[Confirm Delivery]
+    O --> P[Update Status: Delivered]
+    P --> Q[Wait Customer Confirmation]
+    Q --> R[Order Complete]
+```
+
+### 17.4 Database Schema
+
+#### 17.4.1 Cafe Menu Table
+
+```sql
+CREATE TABLE cafe_menu (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    menu_name VARCHAR(100) NOT NULL,
+    description TEXT,
+    price DECIMAL(10,2) NOT NULL,
+    category ENUM('food', 'beverage', 'snack', 'dessert') NOT NULL,
+
+    -- Availability Management
+    is_available BOOLEAN DEFAULT TRUE,
+    stock_quantity INT DEFAULT 0,
+    min_stock_threshold INT DEFAULT 5,
+
+    -- Menu Details
+    image_url VARCHAR(255),
+    preparation_time INT DEFAULT 15, -- minutes
+    is_hot_item BOOLEAN DEFAULT FALSE,
+
+    -- Configuration
+    can_add_notes BOOLEAN DEFAULT TRUE,
+    max_notes_length INT DEFAULT 200,
+    allergens TEXT,
+    dietary_info TEXT,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    INDEX idx_category (category),
+    INDEX idx_is_available (is_available),
+    INDEX idx_stock_quantity (stock_quantity)
+);
+```
+
+#### 17.4.2 Cafe Orders Table
+
+```sql
+CREATE TABLE cafe_orders (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    order_number VARCHAR(20) UNIQUE NOT NULL,
+
+    -- Customer Information
+    customer_id INT NULL,
+    guest_customer_id INT NULL,
+    customer_name VARCHAR(100),
+    phone_number VARCHAR(20),
+    table_number VARCHAR(10),
+
+    -- Order Details
+    total_amount DECIMAL(10,2) NOT NULL,
+    tax_amount DECIMAL(10,2) DEFAULT 0.00,
+    discount_amount DECIMAL(10,2) DEFAULT 0.00,
+    final_amount DECIMAL(10,2) NOT NULL,
+
+    -- Order Status
+    order_status ENUM('pending', 'payment_confirmed', 'preparing', 'ready', 'delivered', 'completed', 'cancelled') DEFAULT 'pending',
+    payment_status ENUM('pending', 'verified', 'confirmed', 'rejected') DEFAULT 'pending',
+
+    -- Delivery Information
+    delivery_location VARCHAR(100),
+    special_instructions TEXT,
+
+    -- Timestamps
+    order_date DATETIME NOT NULL,
+    payment_confirmed_at DATETIME NULL,
+    preparation_started_at DATETIME NULL,
+    ready_at DATETIME NULL,
+    delivered_at DATETIME NULL,
+    completed_at DATETIME NULL,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (customer_id) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (guest_customer_id) REFERENCES guest_users(id) ON DELETE SET NULL,
+
+    INDEX idx_order_number (order_number),
+    INDEX idx_order_status (order_status),
+    INDEX idx_payment_status (payment_status),
+    INDEX idx_order_date (order_date)
+);
+```
+
+#### 17.4.3 Cafe Order Items Table
+
+```sql
+CREATE TABLE cafe_order_items (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    order_id INT NOT NULL,
+    menu_id INT NOT NULL,
+
+    -- Item Details
+    quantity INT NOT NULL,
+    unit_price DECIMAL(10,2) NOT NULL,
+    total_price DECIMAL(10,2) NOT NULL,
+
+    -- Special Notes
+    special_notes TEXT,
+    is_special_order BOOLEAN DEFAULT FALSE,
+
+    -- Item Status
+    item_status ENUM('ordered', 'preparing', 'ready', 'delivered') DEFAULT 'ordered',
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (order_id) REFERENCES cafe_orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (menu_id) REFERENCES cafe_menu(id) ON DELETE RESTRICT,
+
+    INDEX idx_order_id (order_id),
+    INDEX idx_menu_id (menu_id),
+    INDEX idx_item_status (item_status)
+);
+```
+
+#### 17.4.4 Barcode Locations Table
+
+```sql
+CREATE TABLE barcode_locations (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    location_name VARCHAR(100) NOT NULL,
+    barcode_value VARCHAR(50) UNIQUE NOT NULL,
+    qr_code_url VARCHAR(255),
+
+    -- Location Details
+    area_description TEXT,
+    menu_category_filter VARCHAR(50), -- Filter menu berdasarkan area
+    is_active BOOLEAN DEFAULT TRUE,
+
+    -- Configuration
+    auto_redirect BOOLEAN DEFAULT TRUE,
+    custom_welcome_message TEXT,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    INDEX idx_barcode_value (barcode_value),
+    INDEX idx_is_active (is_active)
+);
+```
+
+#### 17.4.5 Cafe Order Status Logs Table
+
+```sql
+CREATE TABLE cafe_order_status_logs (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    order_id INT NOT NULL,
+
+    -- Status Change
+    previous_status VARCHAR(50),
+    new_status VARCHAR(50) NOT NULL,
+    status_notes TEXT,
+
+    -- Action Tracking
+    action_by INT NULL, -- Admin yang melakukan perubahan
+    action_type ENUM('system', 'admin', 'customer') DEFAULT 'system',
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (order_id) REFERENCES cafe_orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (action_by) REFERENCES users(id) ON DELETE SET NULL,
+
+    INDEX idx_order_id (order_id),
+    INDEX idx_new_status (new_status),
+    INDEX idx_action_type (action_type)
+);
+```
+
+### 17.5 Business Rules
+
+#### 17.5.1 Barcode System Rules
+
+- **Unique Barcodes**: Setiap barcode harus unique
+- **Location-Based Menu**: Menu dapat difilter berdasarkan lokasi
+- **Active/Inactive Locations**: Lokasi dapat diaktifkan/nonaktifkan
+- **QR Code Generation**: QR code otomatis generate untuk setiap barcode
+
+#### 17.5.2 Dynamic Menu Management Rules
+
+- **Menu Creation**: Admin dapat menambah menu dengan semua detail lengkap
+- **Image Requirements**: Foto menu wajib dengan kualitas minimum
+- **Pricing Rules**: Harga jual harus lebih tinggi dari harga dasar
+- **Margin Calculation**: Margin otomatis dihitung (selling_price - base_cost)
+- **Menu Code**: Kode menu otomatis generate berdasarkan kategori
+- **Stock Integration**: Setiap menu terhubung dengan inventory system
+- **Menu Status**: Menu aktif hanya jika stock tersedia dan status active
+- **Validation**: Validasi data menu sebelum save
+
+#### 17.5.3 Stock Management Rules
+
+- **Real-time Tracking**: Stock update real-time setiap transaksi
+- **Stock Validation**: Tidak bisa order jika stock habis
+- **Low Stock Alerts**: Alert ketika stock di bawah threshold
+- **Transaction Recording**: Semua transaksi stock harus tercatat
+- **Negative Stock Prevention**: Tidak boleh ada stock negatif
+- **Reorder Points**: Setting otomatis reorder point
+- **Waste Tracking**: Tracking stock yang terbuang/expired
+
+#### 17.5.3 Order Processing Rules
+
+- **Order Number Generation**: Nomor order unique dan sequential
+- **Payment Verification**: Semua pembayaran harus diverifikasi admin
+- **Status Progression**: Status order harus progresif (tidak bisa mundur)
+- **Delivery Confirmation**: Pesanan selesai setelah customer konfirmasi
+
+#### 17.5.4 Special Notes Rules
+
+- **Per-Item Notes**: Setiap item dapat memiliki catatan berbeda
+- **Character Limits**: Batasan karakter untuk catatan
+- **Note Validation**: Validasi konten catatan
+- **Kitchen Instructions**: Catatan diteruskan ke kitchen
+
+### 17.6 User Interface Design
+
+#### 17.6.1 Mobile Menu Interface
+
+- **Barcode Scanner**: Interface scan barcode/QR code
+- **Menu Grid**: Grid layout untuk menu items dengan foto
+- **Availability Indicators**: Indicator tersedia/habis berdasarkan stock
+- **Quick Add**: Tombol cepat untuk tambah ke cart
+- **Search & Filter**: Pencarian dan filter menu berdasarkan kategori
+- **Menu Details**: Modal/detail view dengan informasi lengkap menu
+
+#### 17.6.2 Admin Menu Management Interface
+
+- **Menu Creation Form**: Form lengkap untuk tambah menu baru
+- **Image Upload**: Upload dan crop foto menu
+- **Pricing Calculator**: Kalkulator margin otomatis
+- **Stock Configuration**: Konfigurasi stock untuk menu baru
+- **Menu List**: List menu dengan filter dan search
+- **Bulk Operations**: Import/export menu untuk efisiensi
+- **Menu Preview**: Preview menu seperti yang dilihat customer
+
+#### 17.6.2 Cart Management Interface
+
+- **Cart Preview**: Preview item dalam keranjang
+- **Quantity Controls**: Kontrol quantity (+/-)
+- **Special Notes Input**: Input catatan untuk setiap item
+- **Total Calculation**: Kalkulasi total real-time
+- **Checkout Button**: Tombol lanjut ke checkout
+
+#### 17.6.3 Payment Upload Interface
+
+- **Payment Instructions**: Instruksi pembayaran
+- **File Upload**: Upload bukti pembayaran
+- **Order Summary**: Summary pesanan
+- **Payment Status**: Status pembayaran real-time
+
+#### 17.6.4 Admin Order Dashboard
+
+- **Order Queue**: Antrian pesanan baru
+- **Payment Verification**: Interface verifikasi pembayaran
+- **Kitchen Orders**: Pesanan untuk kitchen
+- **Delivery Management**: Manajemen delivery
+- **Order History**: Riwayat pesanan
+
+#### 17.6.5 Customer Order Tracking
+
+- **Order Status**: Status pesanan real-time
+- **Estimated Time**: Estimasi waktu selesai
+- **Payment Status**: Status pembayaran
+- **Delivery Confirmation**: Konfirmasi penerimaan
+
+#### 17.6.6 Stock Management Interface
+
+- **Inventory Dashboard**: Dashboard overview stock semua menu
+- **Stock Levels**: Display stock level untuk setiap menu
+- **Low Stock Alerts**: Highlight menu dengan stock menipis
+- **Stock Transactions**: Input transaksi stock (purchase, waste, adjustment)
+- **Reorder Management**: Setting reorder point dan quantity
+- **Stock Reports**: Generate laporan stock movement
+- **Analytics**: Chart dan analisis pergerakan stock
+
+### 17.7 Integration Points
+
+#### 17.7.1 Payment System Integration
+
+- **Manual Payment**: Integrasi dengan sistem pembayaran manual
+- **Payment Verification**: Verifikasi pembayaran oleh admin
+- **Receipt Generation**: Generate receipt otomatis
+- **Payment Status Sync**: Sync status pembayaran
+
+#### 17.7.2 Notification System Integration
+
+- **Order Status Notifications**: Notifikasi perubahan status
+- **Payment Confirmations**: Konfirmasi pembayaran
+- **Delivery Notifications**: Notifikasi pesanan siap
+- **Admin Alerts**: Alert untuk admin
+
+#### 17.7.3 User Management Integration
+
+- **Customer Profile**: Integrasi dengan profil customer
+- **Member Benefits**: Apply member benefits pada pesanan
+- **Order History**: Riwayat pesanan di profil customer
+- **Guest User Support**: Support untuk guest users
+
+### 17.8 Status Management System
+
+#### 17.8.1 Customer Status Display
+
+- **Pending**: Pesanan baru, menunggu konfirmasi pembayaran
+- **Payment Verified**: Pembayaran sudah diverifikasi
+- **Preparing**: Makanan sedang disiapkan
+- **Ready**: Makanan siap diantar
+- **Delivered**: Makanan sudah diantar
+- **Completed**: Customer sudah konfirmasi penerimaan
+
+#### 17.8.2 Admin Status Management
+
+- **Pending Verification**: Pesanan baru, perlu verifikasi pembayaran
+- **Payment Confirmed**: Pembayaran sudah dikonfirmasi
+- **In Kitchen**: Pesanan sedang disiapkan di kitchen
+- **Ready for Delivery**: Makanan siap untuk diantar
+- **Out for Delivery**: Makanan sedang dalam perjalanan
+- **Delivered**: Makanan sudah diantar ke customer
+- **Completed**: Customer sudah konfirmasi penerimaan
+
+#### 17.8.3 Status Transition Rules
+
+- **Automatic Transitions**: Beberapa status berubah otomatis
+- **Manual Confirmation**: Status tertentu memerlukan konfirmasi manual
+- **Customer Confirmation**: Status final memerlukan konfirmasi customer
+- **Admin Override**: Admin dapat override status jika diperlukan
+
+### 17.9 Notification System
+
+#### 17.9.1 Customer Notifications
+
+- **Order Confirmation**: Konfirmasi pesanan diterima
+- **Payment Confirmation**: Konfirmasi pembayaran diterima
+- **Preparation Started**: Notifikasi makanan mulai disiapkan
+- **Food Ready**: Notifikasi makanan siap
+- **Delivery Confirmation**: Konfirmasi makanan sudah diantar
+
+#### 17.9.2 Admin Notifications
+
+- **New Order Alert**: Alert pesanan baru
+- **Payment Verification Request**: Request verifikasi pembayaran
+- **Low Stock Alerts**: Alert stok menipis
+- **Order Status Updates**: Update status pesanan
+
+### 17.10 Performance Considerations
+
+#### 17.10.1 Mobile Performance
+
+- **Fast Loading**: Menu loading cepat
+- **Offline Capability**: Basic functionality offline
+- **Image Optimization**: Optimasi gambar menu
+- **Caching**: Cache menu dan pricing data
+
+#### 17.10.2 Real-time Features
+
+- **Live Order Updates**: Update status pesanan real-time
+- **Stock Synchronization**: Sync stok real-time
+- **Payment Status**: Status pembayaran real-time
+- **Delivery Tracking**: Tracking delivery real-time
+
+### 17.11 Monitoring & Analytics
+
+#### 17.11.1 Order Analytics
+
+- **Order Volume**: Volume pesanan per periode
+- **Popular Items**: Item yang paling sering dipesan
+- **Peak Hours**: Jam sibuk ordering
+- **Average Order Value**: Nilai rata-rata pesanan
+
+#### 17.11.2 Customer Behavior Analytics
+
+- **Barcode Usage**: Analisis penggunaan barcode
+- **Cart Abandonment**: Tingkat abandonment keranjang
+- **Payment Methods**: Preferensi metode pembayaran
+- **Special Notes Patterns**: Pattern catatan khusus
+
+#### 17.11.3 Menu Performance Analytics
+
+- **Best Selling Items**: Menu yang paling laris
+- **Margin Analysis**: Analisis margin per menu dan kategori
+- **Stock Turnover**: Analisis perputaran stock
+- **Waste Analysis**: Analisis stock yang terbuang
+- **Menu Popularity**: Popularitas menu berdasarkan order
+- **Category Performance**: Performance per kategori menu
+
+### 17.12 Compliance & Legal
+
+#### 17.12.1 Food Safety
+
+- **Allergen Information**: Informasi alergen yang jelas
+- **Preparation Guidelines**: Panduan persiapan makanan
+- **Temperature Control**: Kontrol suhu makanan
+- **Hygiene Standards**: Standar kebersihan
+
+### 17.13 Future Enhancements
+
+#### 17.13.1 Advanced Features
+
+- **AI Menu Recommendations**: Rekomendasi menu berdasarkan preference
+- **Voice Ordering**: Ordering melalui voice command
+- **Tablet Menu**: Tablet interface untuk ordering
+- **Kitchen Display System**: Sistem display untuk kitchen
+
+## 18. System Integration & Architecture Overview
 
 ---
 

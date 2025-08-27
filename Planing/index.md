@@ -2,7 +2,7 @@
 
 ## Overview
 
-Dokumen ini berisi analisa komprehensif untuk pengembangan sistem manajemen kolam renang syariah yang mencakup manajemen member, reservasi, jadwal renang, dan mini cafe berdasarkan informasi dari Raujan Pool Syariah dengan **Dynamic Pricing System**, **Guest Booking System**, **Google SSO Integration**, **Rating & Review System**, **Check-in & Attendance System**, **Promotional Pricing System**, **Manual Payment System**, **Dynamic Member Quota Management**, **Member Daily Swimming Limit**, **Private Pool Rental System**, dan **Mobile-First Web Application** yang memungkinkan semua besaran biaya dapat dikonfigurasi secara fleksibel, mendukung booking untuk guest users tanpa registrasi, dan menyediakan sistem manajemen kolam renang yang lengkap.
+Dokumen ini berisi analisa komprehensif untuk pengembangan sistem manajemen kolam renang syariah yang mencakup manajemen member, reservasi, jadwal renang, dan mini cafe berdasarkan informasi dari Raujan Pool Syariah dengan **Dynamic Pricing System**, **Guest Booking System**, **Google SSO Integration**, **Rating & Review System**, **Check-in & Attendance System**, **Promotional Pricing System**, **Manual Payment System**, **Dynamic Member Quota Management**, **Member Daily Swimming Limit**, **Private Pool Rental System**, **Cafe System with Barcode Integration & Dynamic Menu Management**, dan **Mobile-First Web Application** yang memungkinkan semua besaran biaya dapat dikonfigurasi secara fleksibel, mendukung booking untuk guest users tanpa registrasi, dan menyediakan sistem manajemen kolam renang yang lengkap.
 
 ## Daftar Dokumen Analisa
 
@@ -134,6 +134,7 @@ Dokumen ini berisi analisa komprehensif untuk pengembangan sistem manajemen kola
 ### Specialized Services
 
 - **Private Pool Rental System**: Sewa kolam pribadi (1h 30min standard, 30min bonus untuk new customer)
+- **Cafe System with Barcode Integration**: Barcode scanning, dynamic menu management, stock integration, margin calculation, cart management, special notes, comprehensive status tracking
 - **Promotional Pricing System**: Flexible campaigns dengan berbagai tipe promosi
 - **Manual Payment System**: Transfer bank dengan upload bukti dan admin verification
 - **Mini Cafe Management**: Menu, stock management, dan order processing
@@ -218,17 +219,17 @@ Dokumen ini berisi analisa komprehensif untuk pengembangan sistem manajemen kola
 
 ## Status Dokumen
 
-| Dokumen                   | Status     | Versi | Tanggal Update | Dynamic Pricing | Guest Booking | Google SSO | Laravel Stack | Calendar Flow | Rating System | Check-in System | Promo System | Manual Payment | Member Quota | Daily Limit | Private Pool |
-| ------------------------- | ---------- | ----- | -------------- | --------------- | ------------- | ---------- | ------------- | ------------- | ------------- | --------------- | ------------ | -------------- | ------------ | ----------- | ------------ |
-| 01 - Analisa Kebutuhan    | ✅ Selesai | 1.2   | 26/08/2025     | ✅              | ✅            | ✅         | ✅            | ✅            | ✅            | ✅              | ✅           | ✅             | ✅           | ✅          | ✅           |
-| 02 - Analisa Domain       | ✅ Selesai | 1.3   | 26/08/2025     | ✅ Dynamic      | ✅            | ✅         | ✅            | ✅            | ✅            | ✅              | ✅           | ✅             | ✅           | ✅          | ✅           |
-| 03 - Analisa Fitur        | ✅ Selesai | 1.6   | 26/08/2025     | ✅ Dynamic      | ✅ Guest      | ✅ SSO     | ✅            | ✅ Calendar   | ✅ Rating     | ✅ Check-in     | ✅ Promo     | ✅ Manual      | ✅ Quota     | ✅ Daily    | ✅ Private   |
-| 04 - Arsitektur Sistem    | ✅ Selesai | 1.3   | 26/08/2025     | ✅              | ✅            | ✅         | ✅ Laravel    | ✅            | ✅            | ✅              | ✅           | ✅             | ✅           | ✅          | ✅           |
-| 05 - Desain Database      | ✅ Selesai | 1.6   | 26/08/2025     | ✅ Pricing      | ✅ Guest      | ✅ SSO     | ✅            | ✅ Calendar   | ✅ Rating     | ✅ Check-in     | ✅ Promo     | ✅ Manual      | ✅ Quota     | ✅ Daily    | ✅ Private   |
-| 06 - UML Diagrams         | ✅ Selesai | 1.3   | 26/08/2025     | ✅              | ✅            | ✅         | ✅            | ✅ Calendar   | ✅ Rating     | ✅ Check-in     | ✅ Promo     | ✅ Manual      | ✅ Quota     | ✅ Daily    | ✅ Private   |
-| 07 - UI Design            | ✅ Selesai | 1.3   | 26/08/2025     | ✅              | ✅            | ✅         | ✅            | ✅ Calendar   | ✅ Rating     | ✅ Check-in     | ✅ Promo     | ✅ Manual      | ✅ Quota     | ✅ Daily    | ✅ Private   |
-| 08 - Implementasi Testing | ✅ Selesai | 1.4   | 26/08/2025     | ✅              | ✅            | ✅         | ✅ Laravel    | ✅ Calendar   | ✅ Rating     | ✅ Check-in     | ✅ Promo     | ✅ Manual      | ✅ Quota     | ✅ Daily    | ✅ Private   |
-| 09 - Risiko dan Mitigasi  | ✅ Selesai | 1.2   | 26/08/2025     | ✅              | ✅            | ✅         | ✅            | ✅            | ✅ Rating     | ✅ Check-in     | ✅ Promo     | ✅ Manual      | ✅ Quota     | ✅ Daily    | ✅ Private   |
+| Dokumen                   | Status     | Versi | Tanggal Update | Dynamic Pricing | Guest Booking | Google SSO | Laravel Stack | Calendar Flow | Rating System | Check-in System | Promo System | Manual Payment | Member Quota | Daily Limit | Private Pool | Cafe System |
+| ------------------------- | ---------- | ----- | -------------- | --------------- | ------------- | ---------- | ------------- | ------------- | ------------- | --------------- | ------------ | -------------- | ------------ | ----------- | ------------ | ----------- |
+| 01 - Analisa Kebutuhan    | ✅ Selesai | 1.2   | 26/08/2025     | ✅              | ✅            | ✅         | ✅            | ✅            | ✅            | ✅              | ✅           | ✅             | ✅           | ✅          | ✅           | ✅          |
+| 02 - Analisa Domain       | ✅ Selesai | 1.3   | 26/08/2025     | ✅ Dynamic      | ✅            | ✅         | ✅            | ✅            | ✅            | ✅              | ✅           | ✅             | ✅           | ✅          | ✅           | ✅          |
+| 03 - Analisa Fitur        | ✅ Selesai | 1.7   | 26/08/2025     | ✅ Dynamic      | ✅ Guest      | ✅ SSO     | ✅            | ✅ Calendar   | ✅ Rating     | ✅ Check-in     | ✅ Promo     | ✅ Manual      | ✅ Quota     | ✅ Daily    | ✅ Private   | ✅ Cafe     |
+| 04 - Arsitektur Sistem    | ✅ Selesai | 1.3   | 26/08/2025     | ✅              | ✅            | ✅         | ✅ Laravel    | ✅            | ✅            | ✅              | ✅           | ✅             | ✅           | ✅          | ✅           | ✅          |
+| 05 - Desain Database      | ✅ Selesai | 1.7   | 26/08/2025     | ✅ Pricing      | ✅ Guest      | ✅ SSO     | ✅            | ✅ Calendar   | ✅ Rating     | ✅ Check-in     | ✅ Promo     | ✅ Manual      | ✅ Quota     | ✅ Daily    | ✅ Private   | ✅ Cafe     |
+| 06 - UML Diagrams         | ✅ Selesai | 1.4   | 26/08/2025     | ✅              | ✅            | ✅         | ✅            | ✅ Calendar   | ✅ Rating     | ✅ Check-in     | ✅ Promo     | ✅ Manual      | ✅ Quota     | ✅ Daily    | ✅ Private   | ✅ Cafe     |
+| 07 - UI Design            | ✅ Selesai | 1.3   | 26/08/2025     | ✅              | ✅            | ✅         | ✅            | ✅ Calendar   | ✅ Rating     | ✅ Check-in     | ✅ Promo     | ✅ Manual      | ✅ Quota     | ✅ Daily    | ✅ Private   | ✅ Cafe     |
+| 08 - Implementasi Testing | ✅ Selesai | 1.4   | 26/08/2025     | ✅              | ✅            | ✅         | ✅ Laravel    | ✅ Calendar   | ✅ Rating     | ✅ Check-in     | ✅ Promo     | ✅ Manual      | ✅ Quota     | ✅ Daily    | ✅ Private   | ✅ Cafe     |
+| 09 - Risiko dan Mitigasi  | ✅ Selesai | 1.2   | 26/08/2025     | ✅              | ✅            | ✅         | ✅            | ✅            | ✅ Rating     | ✅ Check-in     | ✅ Promo     | ✅ Manual      | ✅ Quota     | ✅ Daily    | ✅ Private   | ✅ Cafe     |
 
 ## Komponen Diagram
 
@@ -381,7 +382,7 @@ graph TB
 
 ## Next Steps
 
-Setelah dokumen analisa komprehensif ini selesai dengan semua sistem terintegrasi (**Dynamic Pricing**, **Guest Booking**, **Google SSO**, **Mobile-First Web App**, **Rating System**, **Check-in & Attendance**, **Promotional Pricing**, **Manual Payment**, **Dynamic Member Quota**, **Member Daily Swimming Limit**, dan **Private Pool Rental System**), langkah selanjutnya adalah:
+Setelah dokumen analisa komprehensif ini selesai dengan semua sistem terintegrasi (**Dynamic Pricing**, **Guest Booking**, **Google SSO**, **Mobile-First Web App**, **Rating System**, **Check-in & Attendance**, **Promotional Pricing**, **Manual Payment**, **Dynamic Member Quota**, **Member Daily Swimming Limit**, **Private Pool Rental System**, dan **Cafe System with Barcode Integration**), langkah selanjutnya adalah:
 
 1. **Review dan Approval**: Diskusikan dengan stakeholder untuk semua sistem
 2. **Detailed Design**: Membuat wireframe dan mockup detail untuk semua interface
@@ -532,6 +533,36 @@ Setelah dokumen analisa komprehensif ini selesai dengan semua sistem terintegras
 - Revenue optimization
 - Performance monitoring
 
+## Cafe System with Barcode Implementation Priority
+
+### Phase 1: Barcode Integration
+
+- Barcode generation dan QR code system
+- Location-based menu filtering
+- Mobile barcode scanning interface
+- Automatic menu display
+
+### Phase 2: Menu & Cart Management
+
+- Menu management system dengan real-time availability
+- Cart management dengan special notes per item
+- Stock tracking integration
+- Price calculation system
+
+### Phase 3: Order Processing
+
+- Order creation dan management
+- Payment integration dengan manual transfer
+- Admin order dashboard
+- Kitchen order management
+
+### Phase 4: Status Tracking & Delivery
+
+- Comprehensive status management system
+- Real-time status updates
+- Delivery confirmation system
+- Analytics dan reporting
+
 ## Bukti Booking untuk Guest Users
 
 ### Multiple Proof Methods
@@ -590,9 +621,9 @@ Untuk pertanyaan atau klarifikasi terkait dokumen analisa ini, khususnya tentang
 
 ---
 
-**Versi**: 2.0  
+**Versi**: 2.1  
 **Tanggal**: 26 Agustus 2025  
-**Status**: Complete dengan semua sistem terintegrasi: Dynamic Pricing, Guest Booking, Google SSO, Mobile-First Web App, Core Booking Flow, Rating System, Check-in & Attendance, Promotional Pricing, Manual Payment, Dynamic Member Quota, Member Daily Swimming Limit, Private Pool Rental System, dan Comprehensive System Integration  
+**Status**: Complete dengan semua sistem terintegrasi: Dynamic Pricing, Guest Booking, Google SSO, Mobile-First Web App, Core Booking Flow, Rating System, Check-in & Attendance, Promotional Pricing, Manual Payment, Dynamic Member Quota, Member Daily Swimming Limit, Private Pool Rental System, Cafe System with Barcode Integration, dan Comprehensive System Integration  
 **Berdasarkan**: PDF Raujan Pool Syariah  
 **Key Features**:
 
@@ -611,6 +642,7 @@ Untuk pertanyaan atau klarifikasi terkait dokumen analisa ini, khususnya tentang
 - 👥 **Dynamic member quota management dengan sistem antrian**
 - 🏊‍♂️ **Member daily swimming limit (1x/hari gratis, additional session berbayar)**
 - 🏊‍♀️ **Private pool rental system (1h 30min standard, 30min bonus untuk new customer, dynamic additional charges)**
+- 🍽️ **Cafe system dengan barcode integration, dynamic menu management, stock integration, margin calculation, cart management, special notes, dan comprehensive status tracking**
 
 ### Core Booking Flow System
 

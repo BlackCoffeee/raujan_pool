@@ -2546,9 +2546,703 @@ END //
 DELIMITER ;
 ```
 
+## 4. Cafe System Tables
+
+### 4.1 Cafe Menu Table
+
+```sql
+CREATE TABLE cafe_menu (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    menu_name VARCHAR(100) NOT NULL,
+    description TEXT,
+    category ENUM('food', 'beverage', 'snack', 'dessert') NOT NULL,
+
+    -- Pricing Management
+    base_cost DECIMAL(10,2) NOT NULL, -- Harga dasar (modal)
+    selling_price DECIMAL(10,2) NOT NULL, -- Harga jual
+    margin_percentage DECIMAL(5,2) GENERATED ALWAYS AS ((selling_price - base_cost) / selling_price * 100) STORED,
+    margin_amount DECIMAL(10,2) GENERATED ALWAYS AS (selling_price - base_cost) STORED,
+
+    -- Availability Management
+    is_available BOOLEAN DEFAULT TRUE,
+    is_active BOOLEAN DEFAULT TRUE, -- Menu aktif/tidak
+    max_order_quantity INT DEFAULT 10, -- Maksimal quantity per order
+
+    -- Menu Details
+    image_url VARCHAR(255),
+    preparation_time INT DEFAULT 15, -- minutes
+    is_hot_item BOOLEAN DEFAULT FALSE,
+    is_vegetarian BOOLEAN DEFAULT FALSE,
+    is_halal BOOLEAN DEFAULT TRUE,
+
+    -- Configuration
+    can_add_notes BOOLEAN DEFAULT TRUE,
+    max_notes_length INT DEFAULT 200,
+    allergens TEXT,
+    dietary_info TEXT,
+    cooking_instructions TEXT,
+
+    -- Admin Management
+    created_by INT NULL,
+    updated_by INT NULL,
+    menu_code VARCHAR(20) UNIQUE, -- Kode menu untuk tracking
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
+
+    INDEX idx_category (category),
+    INDEX idx_is_available (is_available),
+    INDEX idx_is_active (is_active),
+    INDEX idx_menu_code (menu_code),
+    INDEX idx_margin_percentage (margin_percentage)
+);
+```
+
+### 4.2 Cafe Orders Table
+
+```sql
+CREATE TABLE cafe_orders (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    order_number VARCHAR(20) UNIQUE NOT NULL,
+
+    -- Customer Information
+    customer_id INT NULL,
+    guest_customer_id INT NULL,
+    customer_name VARCHAR(100),
+    phone_number VARCHAR(20),
+    table_number VARCHAR(10),
+
+    -- Order Details
+    total_amount DECIMAL(10,2) NOT NULL,
+    tax_amount DECIMAL(10,2) DEFAULT 0.00,
+    discount_amount DECIMAL(10,2) DEFAULT 0.00,
+    final_amount DECIMAL(10,2) NOT NULL,
+
+    -- Order Status
+    order_status ENUM('pending', 'payment_confirmed', 'preparing', 'ready', 'delivered', 'completed', 'cancelled') DEFAULT 'pending',
+    payment_status ENUM('pending', 'verified', 'confirmed', 'rejected') DEFAULT 'pending',
+
+    -- Delivery Information
+    delivery_location VARCHAR(100),
+    special_instructions TEXT,
+
+    -- Timestamps
+    order_date DATETIME NOT NULL,
+    payment_confirmed_at DATETIME NULL,
+    preparation_started_at DATETIME NULL,
+    ready_at DATETIME NULL,
+    delivered_at DATETIME NULL,
+    completed_at DATETIME NULL,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (customer_id) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (guest_customer_id) REFERENCES guest_users(id) ON DELETE SET NULL,
+
+    INDEX idx_order_number (order_number),
+    INDEX idx_order_status (order_status),
+    INDEX idx_payment_status (payment_status),
+    INDEX idx_order_date (order_date)
+);
+```
+
+### 4.3 Cafe Order Items Table
+
+```sql
+CREATE TABLE cafe_order_items (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    order_id INT NOT NULL,
+    menu_id INT NOT NULL,
+
+    -- Item Details
+    quantity INT NOT NULL,
+    unit_price DECIMAL(10,2) NOT NULL,
+    total_price DECIMAL(10,2) NOT NULL,
+
+    -- Special Notes
+    special_notes TEXT,
+    is_special_order BOOLEAN DEFAULT FALSE,
+
+    -- Item Status
+    item_status ENUM('ordered', 'preparing', 'ready', 'delivered') DEFAULT 'ordered',
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (order_id) REFERENCES cafe_orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (menu_id) REFERENCES cafe_menu(id) ON DELETE RESTRICT,
+
+    INDEX idx_order_id (order_id),
+    INDEX idx_menu_id (menu_id),
+    INDEX idx_item_status (item_status)
+);
+```
+
+### 4.4 Barcode Locations Table
+
+```sql
+CREATE TABLE barcode_locations (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    location_name VARCHAR(100) NOT NULL,
+    barcode_value VARCHAR(50) UNIQUE NOT NULL,
+    qr_code_url VARCHAR(255),
+
+    -- Location Details
+    area_description TEXT,
+    menu_category_filter VARCHAR(50), -- Filter menu berdasarkan area
+    is_active BOOLEAN DEFAULT TRUE,
+
+    -- Configuration
+    auto_redirect BOOLEAN DEFAULT TRUE,
+    custom_welcome_message TEXT,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    INDEX idx_barcode_value (barcode_value),
+    INDEX idx_is_active (is_active)
+);
+```
+
+### 4.5 Cafe Order Status Logs Table
+
+```sql
+CREATE TABLE cafe_order_status_logs (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    order_id INT NOT NULL,
+
+    -- Status Change
+    previous_status VARCHAR(50),
+    new_status VARCHAR(50) NOT NULL,
+    status_notes TEXT,
+
+    -- Action Tracking
+    action_by INT NULL, -- Admin yang melakukan perubahan
+    action_type ENUM('system', 'admin', 'customer') DEFAULT 'system',
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (order_id) REFERENCES cafe_orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (action_by) REFERENCES users(id) ON DELETE SET NULL,
+
+    INDEX idx_order_id (order_id),
+    INDEX idx_new_status (new_status),
+    INDEX idx_action_type (action_type)
+);
+```
+
+### 4.6 Cafe Inventory Table
+
+```sql
+CREATE TABLE cafe_inventory (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    menu_id INT NOT NULL,
+
+    -- Stock Management
+    current_stock INT DEFAULT 0,
+    min_stock_threshold INT DEFAULT 5,
+    max_stock_capacity INT DEFAULT 100,
+    reserved_stock INT DEFAULT 0, -- Stock yang sudah di-reserve untuk order
+
+    -- Stock Tracking
+    units_of_measure VARCHAR(20) DEFAULT 'pcs', -- pcs, kg, liter, dll
+    reorder_point INT DEFAULT 10,
+    reorder_quantity INT DEFAULT 20,
+
+    -- Cost Tracking
+    average_cost DECIMAL(10,2), -- Rata-rata biaya per unit
+    last_purchase_cost DECIMAL(10,2),
+    last_purchase_date DATE,
+
+    -- Status
+    is_low_stock BOOLEAN GENERATED ALWAYS AS (current_stock <= min_stock_threshold) STORED,
+    is_out_of_stock BOOLEAN GENERATED ALWAYS AS (current_stock <= 0) STORED,
+    stock_status ENUM('in_stock', 'low_stock', 'out_of_stock', 'discontinued') DEFAULT 'in_stock',
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (menu_id) REFERENCES cafe_menu(id) ON DELETE CASCADE,
+
+    INDEX idx_menu_id (menu_id),
+    INDEX idx_current_stock (current_stock),
+    INDEX idx_stock_status (stock_status),
+    INDEX idx_is_low_stock (is_low_stock)
+);
+```
+
+### 4.7 Cafe Stock Transactions Table
+
+```sql
+CREATE TABLE cafe_stock_transactions (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    menu_id INT NOT NULL,
+
+    -- Transaction Details
+    transaction_type ENUM('purchase', 'sale', 'adjustment', 'waste', 'transfer') NOT NULL,
+    quantity INT NOT NULL,
+    unit_cost DECIMAL(10,2) NULL,
+    total_cost DECIMAL(10,2) GENERATED ALWAYS AS (quantity * IFNULL(unit_cost, 0)) STORED,
+
+    -- Reference Information
+    reference_type ENUM('order', 'purchase_order', 'manual_adjustment', 'waste_report') NULL,
+    reference_id INT NULL, -- ID dari order atau purchase order
+
+    -- Stock Before/After
+    stock_before INT NOT NULL,
+    stock_after INT NOT NULL,
+
+    -- Notes
+    transaction_notes TEXT,
+    transaction_date DATETIME NOT NULL,
+
+    -- Admin Tracking
+    processed_by INT NULL,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (menu_id) REFERENCES cafe_menu(id) ON DELETE CASCADE,
+    FOREIGN KEY (processed_by) REFERENCES users(id) ON DELETE SET NULL,
+
+    INDEX idx_menu_id (menu_id),
+    INDEX idx_transaction_type (transaction_type),
+    INDEX idx_transaction_date (transaction_date),
+    INDEX idx_reference_type (reference_type),
+    INDEX idx_reference_id (reference_id)
+);
+```
+
+### 4.8 Cafe Menu Categories Table
+
+```sql
+CREATE TABLE cafe_menu_categories (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    category_name VARCHAR(50) NOT NULL,
+    category_description TEXT,
+    display_order INT DEFAULT 0,
+    is_active BOOLEAN DEFAULT TRUE,
+
+    -- Category Settings
+    can_add_notes BOOLEAN DEFAULT TRUE,
+    default_preparation_time INT DEFAULT 15,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    INDEX idx_category_name (category_name),
+    INDEX idx_display_order (display_order),
+    INDEX idx_is_active (is_active)
+);
+```
+
+## 5. Cafe System Stored Procedures
+
+### 5.1 Create Cafe Order Procedure
+
+```sql
+DELIMITER //
+CREATE PROCEDURE CreateCafeOrder(
+    IN p_customer_id INT NULL,
+    IN p_guest_customer_id INT NULL,
+    IN p_customer_name VARCHAR(100),
+    IN p_phone_number VARCHAR(20),
+    IN p_delivery_location VARCHAR(100),
+    IN p_special_instructions TEXT,
+    IN p_total_amount DECIMAL(10,2),
+    OUT p_order_id INT,
+    OUT p_order_number VARCHAR(20),
+    OUT p_status_message VARCHAR(255)
+)
+BEGIN
+    DECLARE v_order_number VARCHAR(20);
+    DECLARE v_order_date DATETIME;
+
+    SET v_order_date = NOW();
+    SET v_order_number = CONCAT('CAFE-', DATE_FORMAT(v_order_date, '%Y%m%d'), '-', LPAD((SELECT COUNT(*) + 1 FROM cafe_orders WHERE DATE(order_date) = CURDATE()), 4, '0'));
+
+    INSERT INTO cafe_orders (
+        order_number, customer_id, guest_customer_id, customer_name,
+        phone_number, delivery_location, special_instructions, total_amount,
+        final_amount, order_date
+    ) VALUES (
+        v_order_number, p_customer_id, p_guest_customer_id, p_customer_name,
+        p_phone_number, p_delivery_location, p_special_instructions, p_total_amount,
+        p_total_amount, v_order_date
+    );
+
+    SET p_order_id = LAST_INSERT_ID();
+    SET p_order_number = v_order_number;
+    SET p_status_message = 'Cafe order created successfully';
+END //
+DELIMITER ;
+```
+
+### 5.2 Add Cafe Order Item Procedure
+
+```sql
+DELIMITER //
+CREATE PROCEDURE AddCafeOrderItem(
+    IN p_order_id INT,
+    IN p_menu_id INT,
+    IN p_quantity INT,
+    IN p_special_notes TEXT,
+    OUT p_item_id INT,
+    OUT p_status_message VARCHAR(255)
+)
+BEGIN
+    DECLARE v_unit_price DECIMAL(10,2);
+    DECLARE v_total_price DECIMAL(10,2);
+
+    -- Get menu price
+    SELECT price INTO v_unit_price
+    FROM cafe_menu
+    WHERE id = p_menu_id AND is_available = TRUE;
+
+    IF v_unit_price IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Menu item not available';
+    END IF;
+
+    SET v_total_price = v_unit_price * p_quantity;
+
+    INSERT INTO cafe_order_items (
+        order_id, menu_id, quantity, unit_price, total_price, special_notes
+    ) VALUES (
+        p_order_id, p_menu_id, p_quantity, v_unit_price, v_total_price, p_special_notes
+    );
+
+    SET p_item_id = LAST_INSERT_ID();
+    SET p_status_message = 'Order item added successfully';
+END //
+DELIMITER ;
+```
+
+### 5.6 Create Cafe Menu Procedure
+
+```sql
+DELIMITER //
+CREATE PROCEDURE CreateCafeMenu(
+    IN p_menu_name VARCHAR(100),
+    IN p_description TEXT,
+    IN p_category ENUM('food', 'beverage', 'snack', 'dessert'),
+    IN p_base_cost DECIMAL(10,2),
+    IN p_selling_price DECIMAL(10,2),
+    IN p_image_url VARCHAR(255),
+    IN p_preparation_time INT,
+    IN p_is_hot_item BOOLEAN,
+    IN p_is_vegetarian BOOLEAN,
+    IN p_allergens TEXT,
+    IN p_dietary_info TEXT,
+    IN p_cooking_instructions TEXT,
+    IN p_admin_id INT,
+    OUT p_menu_id INT,
+    OUT p_menu_code VARCHAR(20),
+    OUT p_status_message VARCHAR(255)
+)
+BEGIN
+    DECLARE v_menu_code VARCHAR(20);
+
+    -- Generate menu code
+    SET v_menu_code = CONCAT(UPPER(LEFT(p_category, 1)), '-',
+                            DATE_FORMAT(NOW(), '%y%m'), '-',
+                            LPAD((SELECT COUNT(*) + 1 FROM cafe_menu WHERE category = p_category), 3, '0'));
+
+    INSERT INTO cafe_menu (
+        menu_name, description, category, base_cost, selling_price,
+        image_url, preparation_time, is_hot_item, is_vegetarian,
+        allergens, dietary_info, cooking_instructions, created_by, menu_code
+    ) VALUES (
+        p_menu_name, p_description, p_category, p_base_cost, p_selling_price,
+        p_image_url, p_preparation_time, p_is_hot_item, p_is_vegetarian,
+        p_allergens, p_dietary_info, p_cooking_instructions, p_admin_id, v_menu_code
+    );
+
+    SET p_menu_id = LAST_INSERT_ID();
+    SET p_menu_code = v_menu_code;
+    SET p_status_message = 'Menu created successfully';
+END //
+DELIMITER ;
+```
+
+### 5.7 Update Cafe Menu Procedure
+
+```sql
+DELIMITER //
+CREATE PROCEDURE UpdateCafeMenu(
+    IN p_menu_id INT,
+    IN p_menu_name VARCHAR(100),
+    IN p_description TEXT,
+    IN p_category ENUM('food', 'beverage', 'snack', 'dessert'),
+    IN p_base_cost DECIMAL(10,2),
+    IN p_selling_price DECIMAL(10,2),
+    IN p_image_url VARCHAR(255),
+    IN p_preparation_time INT,
+    IN p_is_hot_item BOOLEAN,
+    IN p_is_vegetarian BOOLEAN,
+    IN p_allergens TEXT,
+    IN p_dietary_info TEXT,
+    IN p_cooking_instructions TEXT,
+    IN p_admin_id INT,
+    OUT p_status_message VARCHAR(255)
+)
+BEGIN
+    UPDATE cafe_menu
+    SET menu_name = p_menu_name,
+        description = p_description,
+        category = p_category,
+        base_cost = p_base_cost,
+        selling_price = p_selling_price,
+        image_url = p_image_url,
+        preparation_time = p_preparation_time,
+        is_hot_item = p_is_hot_item,
+        is_vegetarian = p_is_vegetarian,
+        allergens = p_allergens,
+        dietary_info = p_dietary_info,
+        cooking_instructions = p_cooking_instructions,
+        updated_by = p_admin_id,
+        updated_at = NOW()
+    WHERE id = p_menu_id;
+
+    SET p_status_message = 'Menu updated successfully';
+END //
+DELIMITER ;
+```
+
+### 5.8 Stock Management Procedures
+
+```sql
+DELIMITER //
+CREATE PROCEDURE UpdateMenuStock(
+    IN p_menu_id INT,
+    IN p_quantity_change INT,
+    IN p_transaction_type ENUM('purchase', 'sale', 'adjustment', 'waste', 'transfer'),
+    IN p_unit_cost DECIMAL(10,2),
+    IN p_reference_type ENUM('order', 'purchase_order', 'manual_adjustment', 'waste_report'),
+    IN p_reference_id INT,
+    IN p_transaction_notes TEXT,
+    IN p_admin_id INT,
+    OUT p_status_message VARCHAR(255)
+)
+BEGIN
+    DECLARE v_current_stock INT;
+    DECLARE v_new_stock INT;
+    DECLARE v_transaction_id INT;
+
+    -- Get current stock
+    SELECT current_stock INTO v_current_stock
+    FROM cafe_inventory WHERE menu_id = p_menu_id;
+
+    IF v_current_stock IS NULL THEN
+        -- Create inventory record if not exists
+        INSERT INTO cafe_inventory (menu_id, current_stock)
+        VALUES (p_menu_id, 0);
+        SET v_current_stock = 0;
+    END IF;
+
+    -- Calculate new stock
+    SET v_new_stock = v_current_stock + p_quantity_change;
+
+    -- Prevent negative stock
+    IF v_new_stock < 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Insufficient stock for this transaction';
+    END IF;
+
+    -- Update inventory
+    UPDATE cafe_inventory
+    SET current_stock = v_new_stock,
+        updated_at = NOW()
+    WHERE menu_id = p_menu_id;
+
+    -- Record transaction
+    INSERT INTO cafe_stock_transactions (
+        menu_id, transaction_type, quantity, unit_cost, reference_type,
+        reference_id, stock_before, stock_after, transaction_notes,
+        transaction_date, processed_by
+    ) VALUES (
+        p_menu_id, p_transaction_type, ABS(p_quantity_change), p_unit_cost, p_reference_type,
+        p_reference_id, v_current_stock, v_new_stock, p_transaction_notes,
+        NOW(), p_admin_id
+    );
+
+    SET p_status_message = 'Stock updated successfully';
+END //
+DELIMITER ;
+```
+
+### 5.9 Get Menu Analytics Procedure
+
+```sql
+DELIMITER //
+CREATE PROCEDURE GetMenuAnalytics(
+    IN p_start_date DATE,
+    IN p_end_date DATE
+)
+BEGIN
+    -- Menu performance summary
+    SELECT
+        cm.id,
+        cm.menu_name,
+        cm.category,
+        cm.selling_price,
+        cm.base_cost,
+        cm.margin_percentage,
+        cm.margin_amount,
+        COALESCE(SUM(coi.quantity), 0) as total_sold,
+        COALESCE(SUM(coi.total_price), 0) as total_revenue,
+        COALESCE(SUM(coi.quantity * cm.base_cost), 0) as total_cost,
+        COALESCE(SUM(coi.total_price - (coi.quantity * cm.base_cost)), 0) as total_profit
+    FROM cafe_menu cm
+    LEFT JOIN cafe_order_items coi ON cm.id = coi.menu_id
+    LEFT JOIN cafe_orders co ON coi.order_id = co.id
+    WHERE (co.order_date BETWEEN p_start_date AND p_end_date) OR co.id IS NULL
+    GROUP BY cm.id, cm.menu_name, cm.category, cm.selling_price, cm.base_cost
+    ORDER BY total_revenue DESC;
+
+    -- Low stock alerts
+    SELECT
+        cm.menu_name,
+        ci.current_stock,
+        ci.min_stock_threshold,
+        ci.reorder_point,
+        ci.stock_status
+    FROM cafe_inventory ci
+    JOIN cafe_menu cm ON ci.menu_id = cm.id
+    WHERE ci.is_low_stock = TRUE AND cm.is_active = TRUE;
+
+    -- Margin analysis
+    SELECT
+        AVG(margin_percentage) as average_margin_percentage,
+        AVG(margin_amount) as average_margin_amount,
+        MIN(margin_percentage) as min_margin_percentage,
+        MAX(margin_percentage) as max_margin_percentage
+    FROM cafe_menu
+    WHERE is_active = TRUE;
+END //
+DELIMITER ;
+```
+
+### 5.3 Update Cafe Order Status Procedure
+
+```sql
+DELIMITER //
+CREATE PROCEDURE UpdateCafeOrderStatus(
+    IN p_order_id INT,
+    IN p_new_status VARCHAR(50),
+    IN p_admin_id INT,
+    IN p_status_notes TEXT,
+    OUT p_status_message VARCHAR(255)
+)
+BEGIN
+    DECLARE v_previous_status VARCHAR(50);
+
+    -- Get current status
+    SELECT order_status INTO v_previous_status
+    FROM cafe_orders WHERE id = p_order_id;
+
+    -- Update order status
+    UPDATE cafe_orders
+    SET order_status = p_new_status,
+        CASE
+            WHEN p_new_status = 'payment_confirmed' THEN payment_confirmed_at = NOW()
+            WHEN p_new_status = 'preparing' THEN preparation_started_at = NOW()
+            WHEN p_new_status = 'ready' THEN ready_at = NOW()
+            WHEN p_new_status = 'delivered' THEN delivered_at = NOW()
+            WHEN p_new_status = 'completed' THEN completed_at = NOW()
+        END
+    WHERE id = p_order_id;
+
+    -- Log status change
+    INSERT INTO cafe_order_status_logs (
+        order_id, previous_status, new_status, status_notes, action_by, action_type
+    ) VALUES (
+        p_order_id, v_previous_status, p_new_status, p_status_notes, p_admin_id, 'admin'
+    );
+
+    SET p_status_message = 'Order status updated successfully';
+END //
+DELIMITER ;
+```
+
+### 5.4 Verify Cafe Payment Procedure
+
+```sql
+DELIMITER //
+CREATE PROCEDURE VerifyCafePayment(
+    IN p_order_id INT,
+    IN p_admin_id INT,
+    IN p_payment_amount DECIMAL(10,2),
+    IN p_verification_notes TEXT,
+    OUT p_status_message VARCHAR(255)
+)
+BEGIN
+    DECLARE v_order_amount DECIMAL(10,2);
+
+    -- Get order amount
+    SELECT final_amount INTO v_order_amount
+    FROM cafe_orders WHERE id = p_order_id;
+
+    -- Verify amount
+    IF p_payment_amount = v_order_amount THEN
+        UPDATE cafe_orders
+        SET payment_status = 'confirmed',
+            payment_confirmed_at = NOW()
+        WHERE id = p_order_id;
+
+        -- Update order status to payment confirmed
+        CALL UpdateCafeOrderStatus(p_order_id, 'payment_confirmed', p_admin_id, 'Payment verified by admin', p_status_message);
+
+        SET p_status_message = 'Payment verified successfully';
+    ELSE
+        UPDATE cafe_orders
+        SET payment_status = 'rejected'
+        WHERE id = p_order_id;
+
+        SET p_status_message = 'Payment amount mismatch';
+    END IF;
+END //
+DELIMITER ;
+```
+
+### 5.5 Get Cafe Orders by Status Procedure
+
+```sql
+DELIMITER //
+CREATE PROCEDURE GetCafeOrdersByStatus(
+    IN p_status VARCHAR(50),
+    OUT p_total_count INT
+)
+BEGIN
+    SELECT COUNT(*) INTO p_total_count
+    FROM cafe_orders
+    WHERE order_status = p_status;
+
+    SELECT
+        co.id,
+        co.order_number,
+        co.customer_name,
+        co.phone_number,
+        co.delivery_location,
+        co.total_amount,
+        co.order_status,
+        co.payment_status,
+        co.order_date,
+        GROUP_CONCAT(CONCAT(coi.quantity, 'x ', cm.menu_name) SEPARATOR ', ') as items
+    FROM cafe_orders co
+    LEFT JOIN cafe_order_items coi ON co.id = coi.order_id
+    LEFT JOIN cafe_menu cm ON coi.menu_id = cm.id
+    WHERE co.order_status = p_status
+    GROUP BY co.id
+    ORDER BY co.order_date DESC;
+END //
+DELIMITER ;
+```
+
 ---
 
-**Versi**: 1.6  
+**Versi**: 1.7  
 **Tanggal**: 26 Agustus 2025  
-**Status**: Complete dengan Dynamic Pricing, Guest Booking, Google SSO, Mobile-First Web App, Core Booking Flow, Manual Payment, Dynamic Member Quota & Member Daily Swimming Limit  
+**Status**: Complete dengan Dynamic Pricing, Guest Booking, Google SSO, Mobile-First Web App, Core Booking Flow, Manual Payment, Dynamic Member Quota, Member Daily Swimming Limit, Private Pool Rental System & Cafe System with Barcode Integration  
 **Berdasarkan**: PDF Raujan Pool Syariah

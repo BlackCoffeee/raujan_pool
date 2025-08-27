@@ -188,6 +188,23 @@ graph TB
                     UC119[Process Payment]
                     UC120[Send Notifications]
                 end
+
+                subgraph "Cafe System with Barcode"
+                    UC121[Scan Barcode/QR Code]
+                    UC122[Browse Menu]
+                    UC123[Add Item to Cart]
+                    UC124[Add Special Notes]
+                    UC125[Manage Cart]
+                    UC126[Process Payment]
+                    UC127[Verify Payment]
+                    UC128[Prepare Food]
+                    UC129[Deliver Order]
+                    UC130[Confirm Reception]
+                    UC131[Create Menu]
+                    UC132[Update Menu]
+                    UC133[Manage Stock]
+                    UC134[View Menu Analytics]
+                end
     end
 
     A1 -.-> UC1
@@ -373,6 +390,37 @@ graph TB
             A5 -.-> UC113
             A5 -.-> UC114
             A5 -.-> UC119
+
+            A1 -.-> UC127
+            A1 -.-> UC128
+            A1 -.-> UC129
+            A1 -.-> UC130
+
+            A3 -.-> UC127
+            A3 -.-> UC128
+            A3 -.-> UC129
+            A3 -.-> UC130
+
+            A4 -.-> UC121
+            A4 -.-> UC122
+            A4 -.-> UC123
+            A4 -.-> UC124
+            A4 -.-> UC125
+            A4 -.-> UC126
+            A4 -.-> UC130
+
+            A5 -.-> UC121
+            A5 -.-> UC122
+            A5 -.-> UC123
+            A5 -.-> UC124
+            A5 -.-> UC125
+            A5 -.-> UC126
+            A5 -.-> UC130
+
+            A1 -.-> UC131
+            A1 -.-> UC132
+            A1 -.-> UC133
+            A1 -.-> UC134
 
     %% Custom styling untuk lines dengan warna berbeda
     linkStyle 0,1,2,3,4,5,6,7 stroke:#ff6b6b,stroke-width:3px
@@ -1200,7 +1248,7 @@ sequenceDiagram
 
 ### 2.9 Private Pool Rental System Sequence Diagram
 
-```mermaid
+````mermaid
 sequenceDiagram
     participant C as Customer
     participant W as Web App
@@ -1276,9 +1324,99 @@ sequenceDiagram
     P->>D: Monitor duration (1h 30min or 2 hours)
     P->>H: Update usage statistics
     H->>D: Update analytics data
-    P-->>C: Time remaining notification
-    P-->>C: Session completion notification
-```
+                P-->>C: Time remaining notification
+            P-->>C: Session completion notification
+        ```
+
+        ### 2.7 Cafe System with Barcode Sequence Diagram
+
+        ```mermaid
+        sequenceDiagram
+            participant C as Customer
+            participant B as Barcode Scanner
+            participant M as Menu System
+            participant A as API Gateway
+            participant K as Kitchen System
+            participant P as Payment System
+            participant N as Notification Service
+
+            Note over C: Customer at pool area
+            Note over B: QR Code/Barcode Scanner
+            Note over M: React/Next.js Menu Interface
+            Note over A: Laravel API Gateway
+            Note over K: Kitchen Management System
+            Note over P: Manual Payment System
+            Note over N: FCM Push Service
+
+            C->>B: Scan barcode/QR code
+            B->>M: Redirect to menu page
+            M->>A: Get menu for location
+            A->>M: Return menu with availability
+            M-->>C: Display menu with availability
+
+            C->>M: Browse menu items
+            M->>A: Check item availability
+            A-->>M: Item availability status
+            M-->>C: Show available/unavailable items
+
+            C->>M: Add item to cart
+            M->>A: Add item to cart session
+            C->>M: Add special notes
+            M->>A: Store notes with item
+            C->>M: Set quantity
+            M->>A: Update cart
+
+            C->>M: Continue shopping
+            M-->>C: Updated cart display
+
+            C->>M: Review cart
+            M-->>C: Cart summary with total
+            C->>M: Proceed to payment
+            M->>P: Create payment request
+            P-->>M: Payment instructions
+            M-->>C: Payment upload interface
+
+            C->>M: Upload payment proof
+            M->>A: Submit order with payment proof
+            A->>K: Create kitchen order
+            A->>N: Send order notification
+            N-->>C: Order confirmation notification
+
+            Note over A: Admin Payment Verification
+            Note over A: Admin reviews payment proof
+            A->>P: Verify payment
+            P-->>A: Payment verification result
+            A->>K: Confirm payment to kitchen
+            K-->>A: Order preparation started
+
+            Note over K: Kitchen Preparation
+            K->>K: Prepare food items
+            K->>A: Update order status: preparing
+            A->>N: Send preparation notification
+            N-->>C: Food preparation started
+
+            K->>A: Update order status: ready
+            A->>N: Send ready notification
+            N-->>C: Food ready notification
+
+            Note over A: Delivery Process
+            A->>A: Assign delivery staff
+            A->>N: Send delivery notification
+            N-->>C: Delivery in progress
+
+            Note over C: Customer Receives Food
+            C->>M: Confirm food reception
+            M->>A: Update order status: delivered
+            A->>N: Send delivery confirmation
+            N-->>C: Order completed notification
+
+            Note over A: Order Completion
+            A->>A: Mark order as completed
+            A->>A: Update inventory
+            A->>A: Generate receipt
+            A->>N: Send completion notification
+            N-->>C: Thank you notification
+        ```
 
 ### 2.3 Core Booking Flow Sequence Diagram
 
@@ -1333,7 +1471,7 @@ graph TD
     P:::success
     Q:::success
     R:::start-end
-```
+````
 
 ### 4.2 Activity Diagram Booking Process
 
