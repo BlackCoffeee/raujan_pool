@@ -428,6 +428,7 @@ Untuk pertanyaan atau klarifikasi terkait dokumen analisa ini, khususnya tentang
 - ⚡ **Laravel backend + React/Next.js frontend stack**
 - ⭐ **Rating system bintang 1-5 untuk semua pelayanan**
 - ✅ **Check-in & attendance system dengan staff verification**
+- 🎁 **Promotional pricing system dengan flexible campaigns**
 
 ### Core Booking Flow System
 

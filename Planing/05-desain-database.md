@@ -1482,7 +1482,304 @@ END //
 DELIMITER ;
 ```
 
-### 5.10 Calculate Dynamic Price Procedure
+### 5.9 Apply Promotional Pricing Procedure
+
+```sql
+DELIMITER //
+CREATE PROCEDURE ApplyPromotionalPricing(
+    IN p_booking_id INT,
+    IN p_user_id INT,
+    IN p_booking_date DATE,
+    IN p_session_time ENUM('morning', 'afternoon'),
+    IN p_base_amount DECIMAL(10,2),
+    IN p_booking_type VARCHAR(50),
+    OUT p_best_promotion_id INT,
+    OUT p_discount_amount DECIMAL(10,2),
+    OUT p_final_amount DECIMAL(10,2),
+    OUT p_promotion_details JSON
+)
+BEGIN
+    DECLARE v_best_discount DECIMAL(10,2) DEFAULT 0;
+    DECLARE v_best_promotion_id INT DEFAULT NULL;
+    DECLARE v_user_type VARCHAR(50);
+    DECLARE v_is_member BOOLEAN DEFAULT FALSE;
+    DECLARE v_is_new_user BOOLEAN DEFAULT FALSE;
+    DECLARE v_promotion_calculated BOOLEAN DEFAULT FALSE;
+    DECLARE v_promotion_details JSON;
+
+    -- Get user type and status
+    SELECT
+        CASE
+            WHEN p_user_id IS NOT NULL THEN 'member'
+            ELSE 'guest'
+        END INTO v_user_type;
+
+    -- Check if member
+    IF p_user_id IS NOT NULL THEN
+        SELECT EXISTS(SELECT 1 FROM members WHERE user_id = p_user_id AND is_active = TRUE) INTO v_is_member;
+    END IF;
+
+    -- Check if new user (first booking)
+    SELECT EXISTS(
+        SELECT 1 FROM bookings
+        WHERE user_id = p_user_id AND created_at < DATE_SUB(NOW(), INTERVAL 30 DAY)
+    ) INTO v_is_new_user;
+
+    -- Find best promotion based on priority and eligibility
+    SELECT
+        pc.id,
+        CASE
+            WHEN pc.campaign_type = 'percentage_discount' THEN (p_base_amount * pc.discount_percentage / 100)
+            WHEN pc.campaign_type = 'fixed_discount' THEN pc.discount_amount
+            ELSE 0
+        END as calculated_discount,
+        JSON_OBJECT(
+            'campaign_id', pc.id,
+            'campaign_name', pc.campaign_name,
+            'campaign_type', pc.campaign_type,
+            'discount_percentage', pc.discount_percentage,
+            'discount_amount', pc.discount_amount,
+            'free_additional_persons', pc.free_additional_persons,
+            'description', pc.campaign_description
+        ) as promotion_info
+    INTO v_best_promotion_id, v_best_discount, v_promotion_details
+    FROM promotional_campaigns pc
+    WHERE pc.campaign_status = 'active'
+    AND pc.start_date <= p_booking_date
+    AND pc.end_date >= p_booking_date
+    AND (
+        (pc.day_of_week IS NULL) OR
+        (JSON_CONTAINS(pc.day_of_week, CAST(DAYOFWEEK(p_booking_date) AS JSON)))
+    )
+    AND (
+        (pc.target_user_type = 'all') OR
+        (pc.target_user_type = 'members_only' AND v_is_member) OR
+        (pc.target_user_type = 'guests_only' AND p_user_id IS NULL) OR
+        (pc.target_user_type = 'new_users' AND v_is_new_user) OR
+        (pc.target_user_type = 'returning_users' AND NOT v_is_new_user)
+    )
+    AND (
+        (pc.applicable_services IS NULL) OR
+        (JSON_CONTAINS(pc.applicable_services, JSON_QUOTE(p_booking_type)))
+    )
+    AND (
+        (pc.minimum_booking_value IS NULL) OR
+        (p_base_amount >= pc.minimum_booking_value)
+    )
+    AND (
+        (pc.total_usage_limit IS NULL) OR
+        (pc.usage_count < pc.total_usage_limit)
+    )
+    ORDER BY pc.priority_level DESC, v_best_discount DESC
+    LIMIT 1;
+
+    -- Set output parameters
+    SET p_best_promotion_id = v_best_promotion_id;
+    SET p_discount_amount = v_best_discount;
+    SET p_final_amount = p_base_amount - v_best_discount;
+    SET p_promotion_details = v_promotion_details;
+
+    -- Log promotion application if promotion found
+    IF v_best_promotion_id IS NOT NULL THEN
+        INSERT INTO campaign_usage_tracking (
+            campaign_id, booking_id, user_id,
+            original_amount, discounted_amount, discount_applied, final_amount,
+            promotion_source
+        ) VALUES (
+            v_best_promotion_id, p_booking_id, p_user_id,
+            p_base_amount, p_base_amount - v_best_discount, v_best_discount, p_final_amount,
+            'auto'
+        );
+
+        -- Update campaign usage count
+        UPDATE promotional_campaigns
+        SET usage_count = usage_count + 1
+        WHERE id = v_best_promotion_id;
+    END IF;
+END //
+DELIMITER ;
+```
+
+### 5.10 Create Promotional Campaign Procedure
+
+```sql
+DELIMITER //
+CREATE PROCEDURE CreatePromotionalCampaign(
+    IN p_campaign_name VARCHAR(200),
+    IN p_campaign_description TEXT,
+    IN p_campaign_type ENUM('percentage_discount', 'fixed_discount', 'free_additional_person', 'package_deal', 'combo_discount', 'loyalty_reward', 'referral_bonus'),
+    IN p_start_date DATE,
+    IN p_end_date DATE,
+    IN p_target_user_type ENUM('all', 'members_only', 'guests_only', 'new_users', 'returning_users'),
+    IN p_discount_percentage DECIMAL(5,2),
+    IN p_discount_amount DECIMAL(10,2),
+    IN p_free_additional_persons INT,
+    IN p_applicable_services JSON,
+    IN p_created_by INT,
+    OUT p_campaign_id INT
+)
+BEGIN
+    INSERT INTO promotional_campaigns (
+        campaign_name, campaign_description, campaign_type,
+        start_date, end_date, target_user_type,
+        discount_percentage, discount_amount, free_additional_persons,
+        applicable_services, created_by
+    ) VALUES (
+        p_campaign_name, p_campaign_description, p_campaign_type,
+        p_start_date, p_end_date, p_target_user_type,
+        p_discount_percentage, p_discount_amount, p_free_additional_persons,
+        p_applicable_services, p_created_by
+    );
+
+    SET p_campaign_id = LAST_INSERT_ID();
+END //
+DELIMITER ;
+```
+
+### 5.11 Get Campaign Analytics Procedure
+
+```sql
+DELIMITER //
+CREATE PROCEDURE GetCampaignAnalytics(
+    IN p_campaign_id INT,
+    IN p_start_date DATE,
+    IN p_end_date DATE
+)
+BEGIN
+    -- Campaign performance summary
+    SELECT
+        pc.campaign_name,
+        pc.campaign_type,
+        pc.campaign_status,
+        pc.start_date,
+        pc.end_date,
+        pc.usage_count,
+        pc.total_usage_limit,
+        ROUND((pc.usage_count / pc.total_usage_limit) * 100, 2) as usage_percentage
+    FROM promotional_campaigns pc
+    WHERE pc.id = p_campaign_id;
+
+    -- Daily usage breakdown
+    SELECT
+        DATE(cut.applied_at) as usage_date,
+        COUNT(*) as daily_usage,
+        SUM(cut.discount_applied) as total_discount_given,
+        COUNT(DISTINCT cut.user_id) as unique_users
+    FROM campaign_usage_tracking cut
+    WHERE cut.campaign_id = p_campaign_id
+    AND DATE(cut.applied_at) BETWEEN p_start_date AND p_end_date
+    GROUP BY DATE(cut.applied_at)
+    ORDER BY usage_date;
+
+    -- Revenue impact analysis
+    SELECT
+        SUM(cut.original_amount) as total_original_revenue,
+        SUM(cut.final_amount) as total_promoted_revenue,
+        SUM(cut.discount_applied) as total_discount_amount,
+        ROUND((SUM(cut.discount_applied) / SUM(cut.original_amount)) * 100, 2) as discount_percentage,
+        COUNT(*) as total_bookings,
+        AVG(cut.discount_applied) as avg_discount_per_booking
+    FROM campaign_usage_tracking cut
+    WHERE cut.campaign_id = p_campaign_id
+    AND DATE(cut.applied_at) BETWEEN p_start_date AND p_end_date;
+
+    -- User type breakdown
+    SELECT
+        CASE
+            WHEN cut.user_id IS NULL THEN 'Guest Users'
+            ELSE 'Member Users'
+        END as user_type,
+        COUNT(*) as usage_count,
+        SUM(cut.discount_applied) as total_discount,
+        AVG(cut.discount_applied) as avg_discount
+    FROM campaign_usage_tracking cut
+    WHERE cut.campaign_id = p_campaign_id
+    AND DATE(cut.applied_at) BETWEEN p_start_date AND p_end_date
+    GROUP BY user_type;
+END //
+DELIMITER ;
+```
+
+### 5.12 Update Campaign Analytics Procedure
+
+```sql
+DELIMITER //
+CREATE PROCEDURE UpdateCampaignAnalytics()
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE v_campaign_id INT;
+    DECLARE v_analytics_date DATE;
+    DECLARE v_total_bookings INT;
+    DECLARE v_bookings_with_promotion INT;
+    DECLARE v_total_revenue DECIMAL(12,2);
+    DECLARE v_revenue_with_promotion DECIMAL(12,2);
+    DECLARE v_total_discount DECIMAL(12,2);
+
+    -- Cursor for campaigns that need analytics update
+    DECLARE campaign_cursor CURSOR FOR
+        SELECT DISTINCT
+            pc.id as campaign_id,
+            DATE(cut.applied_at) as analytics_date
+        FROM promotional_campaigns pc
+        JOIN campaign_usage_tracking cut ON pc.id = cut.campaign_id
+        WHERE DATE(cut.applied_at) >= CURDATE() - INTERVAL 7 DAY
+        AND NOT EXISTS (
+            SELECT 1 FROM campaign_analytics ca
+            WHERE ca.campaign_id = pc.id
+            AND ca.analytics_date = DATE(cut.applied_at)
+        );
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    OPEN campaign_cursor;
+
+    analytics_loop: LOOP
+        FETCH campaign_cursor INTO v_campaign_id, v_analytics_date;
+
+        IF done THEN
+            LEAVE analytics_loop;
+        END IF;
+
+        -- Calculate analytics for this campaign and date
+        SELECT
+            COUNT(DISTINCT b.id) as total_bookings,
+            COUNT(DISTINCT CASE WHEN cut.campaign_id = v_campaign_id THEN b.id END) as bookings_with_promotion,
+            SUM(b.final_amount) as total_revenue,
+            SUM(CASE WHEN cut.campaign_id = v_campaign_id THEN b.final_amount ELSE 0 END) as revenue_with_promotion,
+            SUM(CASE WHEN cut.campaign_id = v_campaign_id THEN cut.discount_applied ELSE 0 END) as total_discount
+        INTO v_total_bookings, v_bookings_with_promotion, v_total_revenue, v_revenue_with_promotion, v_total_discount
+        FROM bookings b
+        LEFT JOIN campaign_usage_tracking cut ON b.id = cut.booking_id
+        WHERE DATE(b.created_at) = v_analytics_date;
+
+        -- Insert or update analytics
+        INSERT INTO campaign_analytics (
+            campaign_id, analytics_date, total_bookings, bookings_with_promotion,
+            conversion_rate, total_revenue, revenue_with_promotion, total_discount_given,
+            net_revenue
+        ) VALUES (
+            v_campaign_id, v_analytics_date, v_total_bookings, v_bookings_with_promotion,
+            CASE WHEN v_total_bookings > 0 THEN (v_bookings_with_promotion / v_total_bookings) * 100 ELSE 0 END,
+            v_total_revenue, v_revenue_with_promotion, v_total_discount,
+            v_revenue_with_promotion - v_total_discount
+        ) ON DUPLICATE KEY UPDATE
+            total_bookings = v_total_bookings,
+            bookings_with_promotion = v_bookings_with_promotion,
+            conversion_rate = CASE WHEN v_total_bookings > 0 THEN (v_bookings_with_promotion / v_total_bookings) * 100 ELSE 0 END,
+            total_revenue = v_total_revenue,
+            revenue_with_promotion = v_revenue_with_promotion,
+            total_discount_given = v_total_discount,
+            net_revenue = v_revenue_with_promotion - v_total_discount,
+            created_at = NOW();
+
+    END LOOP;
+
+    CLOSE campaign_cursor;
+END //
+DELIMITER ;
+```
+
+### 5.13 Calculate Dynamic Price Procedure
 
 ```sql
 DELIMITER //

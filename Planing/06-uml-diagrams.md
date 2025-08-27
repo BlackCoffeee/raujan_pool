@@ -55,11 +55,29 @@ graph TB
             UC28[Track Sales]
         end
 
-        subgraph "Reporting"
-            UC29[Generate Member Report]
-            UC30[Generate Booking Report]
-            UC31[Generate Sales Report]
-            UC32[View Analytics]
+        subgraph "Rating & Review System"
+            UC29[Rate Services]
+            UC30[Submit Reviews]
+            UC31[Manage Rating System]
+            UC32[View Rating Analytics]
+            UC33[Configure Rating Components]
+        end
+
+        subgraph "Promotional System"
+            UC34[Create Promotional Campaigns]
+            UC35[Manage Campaign Templates]
+            UC36[View Campaign Analytics]
+            UC37[Configure Dynamic Pricing]
+            UC38[Apply Promotional Pricing]
+        end
+
+        subgraph "Staff Management"
+            UC39[Process Check-in]
+            UC40[Manage Equipment]
+            UC41[Track Attendance]
+            UC42[Handle No-Shows]
+            UC43[Manage Staff]
+            UC44[Generate Reports]
         end
     end
 
@@ -67,10 +85,28 @@ graph TB
     A1 -.-> UC2
     A1 -.-> UC3
     A1 -.-> UC4
+    A1 -.-> UC5
     A1 -.-> UC21
     A1 -.-> UC22
     A1 -.-> UC23
     A1 -.-> UC24
+    A1 -.-> UC25
+    A1 -.-> UC26
+    A1 -.-> UC27
+    A1 -.-> UC31
+    A1 -.-> UC32
+    A1 -.-> UC33
+    A1 -.-> UC34
+    A1 -.-> UC35
+    A1 -.-> UC36
+    A1 -.-> UC37
+    A1 -.-> UC38
+    A1 -.-> UC39
+    A1 -.-> UC40
+    A1 -.-> UC41
+    A1 -.-> UC42
+    A1 -.-> UC43
+    A1 -.-> UC44
 
     A2 -.-> UC1
     A2 -.-> UC2
@@ -79,12 +115,16 @@ graph TB
     A2 -.-> UC12
     A2 -.-> UC13
     A2 -.-> UC14
+    A2 -.-> UC15
+    A2 -.-> UC39
+    A2 -.-> UC40
+    A2 -.-> UC41
+    A2 -.-> UC42
 
-    A3 -.-> UC16
-    A3 -.-> UC17
-    A3 -.-> UC18
-    A3 -.-> UC19
-    A3 -.-> UC20
+    A3 -.-> UC26
+    A3 -.-> UC27
+    A3 -.-> UC28
+    A3 -.-> UC40
 
     A4 -.-> UC2
     A4 -.-> UC4
@@ -92,8 +132,17 @@ graph TB
     A4 -.-> UC7
     A4 -.-> UC8
     A4 -.-> UC10
-    A4 -.-> UC16
-    A4 -.-> UC17
+    A4 -.-> UC11
+    A4 -.-> UC12
+    A4 -.-> UC13
+    A4 -.-> UC14
+    A4 -.-> UC18
+    A4 -.-> UC19
+    A4 -.-> UC24
+    A4 -.-> UC25
+    A4 -.-> UC29
+    A4 -.-> UC30
+    A4 -.-> UC38
     A4 -.-> UC5
 
     A5 -.-> UC6
@@ -102,8 +151,13 @@ graph TB
     A5 -.-> UC11
     A5 -.-> UC13
     A5 -.-> UC14
-    A5 -.-> UC16
-    A5 -.-> UC17
+    A5 -.-> UC18
+    A5 -.-> UC19
+    A5 -.-> UC24
+    A5 -.-> UC25
+    A5 -.-> UC29
+    A5 -.-> UC30
+    A5 -.-> UC38
 
     %% Custom styling untuk lines dengan warna berbeda
     linkStyle 0,1,2,3,4,5,6,7 stroke:#ff6b6b,stroke-width:3px
@@ -607,6 +661,171 @@ sequenceDiagram
         C->>O: Modify Order
     end
 ```
+
+### 2.4 Rating System Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant W as Web App
+    participant A as API Gateway
+    participant B as Rating Service
+    participant D as Database
+    participant N as Notification Service
+
+    Note over U: User completes service
+    Note over W: React/Next.js Frontend
+    Note over A: Laravel API Gateway
+    Note over B: Rating Service
+    Note over D: MySQL Database
+    Note over N: FCM Push Service
+
+    U->>W: Complete booking/session
+    W->>A: Trigger rating request
+    A->>B: Get user rating form
+    B->>D: Fetch user history
+    D-->>B: User history data
+    B-->>A: Rating form components
+    A-->>W: Display rating interface
+    W-->>U: Show rating form
+
+    U->>W: Rate different aspects
+    W->>A: Submit ratings
+    A->>B: Process rating submission
+    B->>D: Store rating data
+    B->>D: Update rating analytics
+    B->>N: Send feedback notification
+    N-->>U: Push notification
+    B-->>A: Rating confirmation
+    A-->>W: Success message
+    W-->>U: Rating submitted
+
+    Note over B: Rating Components
+    Note over B: Booking Experience
+    Note over B: Cafe Service
+    Note over B: Staff Service
+    Note over B: Facility Quality
+    Note over B: Overall Satisfaction
+```
+
+### 2.5 Promotional Pricing Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant W as Web App
+    participant A as API Gateway
+    participant P as Pricing Service
+    participant C as Campaign Service
+    participant D as Database
+    participant N as Notification Service
+
+    Note over U: User makes booking
+    Note over W: React/Next.js Frontend
+    Note over A: Laravel API Gateway
+    Note over P: Pricing Service
+    Note over C: Campaign Service
+    Note over D: MySQL Database
+    Note over N: FCM Push Service
+
+    U->>W: Select booking options
+    W->>A: Request booking pricing
+    A->>P: Calculate base price
+    P->>D: Get pricing config
+    D-->>P: Current pricing data
+    P-->>A: Base price calculated
+    A->>C: Check active promotions
+    C->>D: Get eligible campaigns
+    D-->>C: Campaign data
+    C->>C: Evaluate user eligibility
+    C->>C: Select best promotion
+    C-->>A: Promotion applied
+    A->>P: Apply promotional pricing
+    P->>D: Store promotion usage
+    P-->>A: Final promotional price
+    A-->>W: Display pricing options
+    W-->>U: Show promotional pricing
+
+    Note over C: Promotion Types
+    Note over C: Percentage Discount
+    Note over C: Fixed Amount
+    Note over C: Free Additional Person
+    Note over C: Package Deals
+    Note over C: Loyalty Rewards
+
+    U->>W: Confirm booking with promo
+    W->>A: Complete promotional booking
+    A->>P: Finalize pricing
+    A->>N: Send promotion confirmation
+    N-->>U: Promotional receipt
+    A-->>W: Booking confirmation
+    W-->>U: Promotional booking complete
+```
+
+### 2.6 Check-in Process Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant G as Guest/Member
+    participant S as Staff
+    participant W as Web App
+    participant A as API Gateway
+    participant C as Check-in Service
+    participant D as Database
+    participant E as Equipment Service
+    participant N as Notification Service
+
+    Note over G: Guest/Member arrives
+    Note over S: Staff at front desk
+    Note over W: React/Next.js Frontend
+    Note over A: Laravel API Gateway
+    Note over C: Check-in Service
+    Note over D: MySQL Database
+    Note over E: Equipment Management
+    Note over N: FCM Push Service
+
+    G->>S: Arrive at reception
+    S->>W: Access check-in interface
+    W->>A: Get today's bookings
+    A->>C: Fetch booking data
+    C->>D: Query bookings
+    D-->>C: Booking information
+    C-->>A: Today's bookings list
+    A-->>W: Display bookings
+    W-->>S: Show check-in screen
+
+    S->>G: Request identification
+    G->>S: Provide QR/Reference/ID
+    S->>W: Input verification method
+    W->>A: Verify booking
+    A->>C: Validate booking details
+    C->>D: Check booking status
+    D-->>C: Booking validation result
+    C-->>A: Booking verified
+    A-->>W: Confirmation
+    W-->>S: Booking confirmed
+
+    S->>W: Process check-in
+    W->>A: Record attendance
+    A->>C: Create attendance record
+    C->>D: Store attendance data
+    A->>E: Issue equipment
+    E->>D: Update equipment inventory
+    A->>N: Send check-in confirmation
+    N-->>G: Check-in receipt
+    A-->>W: Check-in complete
+    W-->>S: Success message
+    S->>G: Guide to facilities
+
+    Note over C: Verification Methods
+    Note over C: QR Code Scan
+    Note over C: Reference Number
+    Note over C: Phone/Email Search
+    Note over C: Member Card
+    Note over C: Manual Entry
+```
+
+### 2.3 Core Booking Flow Sequence Diagram
 
 ## 4. Activity Diagram
 

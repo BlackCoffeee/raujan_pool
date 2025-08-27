@@ -1160,134 +1160,323 @@ graph TD
 - **Marketing Insights**: Insight untuk marketing strategy
 - **Operational Efficiency**: Efisiensi operasional
 
-## 11. Modul Integrasi SSO dan Manajemen
+## 12. Promotional Pricing System
+
+### 12.1 Promotional Campaign Management
 
 ```mermaid
 graph TD
-    A[Admin Panel] --> B[System Configuration]
-    B --> C[Pricing Management]
-    C --> D[Rule Engine Management]
-    D --> E[User Management]
-    E --> F[Analytics Dashboard]
+    A[Promotional Campaign] --> B[Campaign Configuration]
+    A --> C[Pricing Rules Engine]
+    A --> D[Date & Time Management]
+    A --> E[Target Audience]
+    A --> F[Promotion Types]
 
-    subgraph "Configuration Modules"
-        C1[Global Settings]
-        C2[Pricing Configuration]
-        C3[Business Rules]
-        C4[Notification Settings]
-        C5[Security Settings]
-        C6[SSO Configuration]
-        C7[Proof System Settings]
-    end
+    B --> G[Campaign Details]
+    G --> H[Campaign Name]
+    G --> I[Campaign Description]
+    G --> J[Campaign Status]
+    G --> K[Priority Level]
+
+    C --> L[Pricing Rules]
+    L --> M[Discount Percentage]
+    L --> N[Fixed Discount Amount]
+    L --> O[Buy One Get One]
+    L --> P[Free Additional Person]
+    L --> Q[Package Deals]
+    L --> R[Member Exclusive]
+
+    D --> S[Date Management]
+    S --> T[Start Date]
+    S --> U[End Date]
+    S --> V[Specific Days]
+    S --> W[Time Slots]
+    S --> X[Seasonal Promotions]
+
+    E --> Y[Target Audience]
+    Y --> Z[All Users]
+    Y --> AA[Members Only]
+    Y --> BB[New Users]
+    Y --> CC[Returning Users]
+    Y --> DD[Guest Users Only]
+
+    F --> EE[Promotion Types]
+    EE --> FF[Price Discount]
+    EE --> GG[Free Additional Person]
+    EE --> HH[Package Bundles]
+    EE --> II[Combo Deals]
+    EE --> JJ[Loyalty Rewards]
+    EE --> KK[Referral Bonuses]
 ```
 
-#### 9.1.1 Admin Features
-
-- **Centralized Configuration**: Semua konfigurasi di satu tempat
-- **Role-based Access**: Akses berdasarkan role dan permission
-- **Configuration Templates**: Template konfigurasi yang dapat digunakan ulang
-- **Configuration History**: Riwayat perubahan konfigurasi
-- **Backup and Restore**: Backup dan restore konfigurasi
-
-### 9.2 SSO Configuration Management
+### 12.2 Promotional Pricing Rules Engine
 
 ```mermaid
 graph TD
-    A[SSO Management] --> B[Google OAuth Setup]
-    B --> C[Client ID Configuration]
-    C --> D[Redirect URI Setup]
-    D --> E[Scopes Configuration]
-    E --> F[Token Management]
+    A[Booking Request] --> B[Check Active Promotions]
+    B --> C{Match Promotion Criteria?}
 
-    subgraph "SSO Features"
-        S1[Google OAuth 2.0]
-        S2[Profile Sync Settings]
-        S3[Token Refresh Logic]
-        S4[Security Policies]
-        S5[User Mapping Rules]
+    C -->|No| D[Apply Regular Pricing]
+    C -->|Yes| E[Evaluate Promotions]
+
+    E --> F[Calculate All Eligible Promotions]
+    F --> G[Select Best Promotion]
+    G --> H[Apply Promotion Rules]
+
+    H --> I[Price Discount Promotions]
+    H --> J[Additional Person Promotions]
+    H --> K[Package Deal Promotions]
+    H --> L[Combo Promotions]
+    H --> M[Loyalty Promotions]
+
+    I --> N[Calculate Discounted Price]
+    J --> O[Add Free Additional Person]
+    K --> P[Apply Package Pricing]
+    L --> Q[Apply Combo Discount]
+    M --> R[Apply Loyalty Benefits]
+
+    N --> S[Final Price Calculation]
+    O --> S
+    P --> S
+    Q --> S
+    R --> S
+
+    S --> T[Display Promotional Price]
+    T --> U[User Confirmation]
+    U --> V[Booking Completion]
+
+    subgraph "Promotion Criteria"
+        PC1[Date Range Check]
+        PC2[Time Slot Check]
+        PC3[User Type Check]
+        PC4[Service Type Check]
+        PC5[Capacity Check]
+        PC6[Priority Check]
+    end
+
+    subgraph "Promotion Types"
+        PT1[Percentage Discount - 10%, 20%, 30%]
+        PT2[Fixed Amount Discount - Rp 50k, 100k]
+        PT3[Buy 1 Get 1 Free]
+        PT4[Free Additional Person - Bring 2 for Price of 1]
+        PT5[Package Deals - Pool + Cafe]
+        PT6[Seasonal Promotions - Rainy Day Discount]
+        PT7[Hourly Promotions - Off-Peak Discount]
+        PT8[Holiday Specials - Independence Day, New Year]
     end
 ```
 
-#### 9.2.1 SSO Management Features
-
-- **Google OAuth 2.0 Integration**: Setup dan konfigurasi OAuth
-- **Profile Synchronization**: Sync Google profile dengan local data
-- **Token Management**: Handle token refresh dan validation
-- **Security Configuration**: Configure security policies untuk SSO
-- **User Mapping**: Map Google users dengan local accounts
-
-### 9.3 Guest User Management
+### 12.3 Campaign Management Interface
 
 ```mermaid
 graph TD
-    A[Guest Management] --> B[Guest Registration Tracking]
-    B --> C[Conversion Analytics]
-    C --> D[Proof System Management]
-    D --> E[Verification Settings]
+    A[Admin Dashboard] --> B[Promotion Management]
+    B --> C[Create New Campaign]
+    B --> D[Manage Active Campaigns]
+    B --> E[View Campaign Analytics]
+    B --> F[Promotion Templates]
 
-    subgraph "Guest Features"
-        G1[Guest Booking Analytics]
-        G2[Conversion Rate Tracking]
-        G3[Proof Generation Settings]
-        G4[Verification Method Configuration]
-        G5[Security Settings]
-        G6[SSO Conversion Tracking]
+    C --> G[Campaign Wizard]
+    G --> H[Step 1: Basic Info]
+    G --> I[Step 2: Promotion Type]
+    G --> J[Step 3: Date & Time]
+    G --> K[Step 4: Target Audience]
+    G --> L[Step 5: Pricing Rules]
+    G --> M[Step 6: Review & Activate]
+
+    H --> N[Campaign Name]
+    H --> O[Campaign Description]
+    H --> P[Campaign Category]
+
+    I --> Q{Promotion Type}
+    Q -->|Discount| R[Percentage/Fixed Amount]
+    Q -->|Additional Person| S[Free Additional Person]
+    Q -->|Package| T[Service Combination]
+    Q -->|Combo| U[Multiple Service Discount]
+
+    J --> V[Date Selection]
+    V --> W[Specific Dates]
+    V --> X[Date Range]
+    V --> Y[Recurring Days]
+    V --> Z[Seasonal Period]
+
+    K --> AA[Audience Targeting]
+    AA --> BB[All Users]
+    AA --> CC[Members Only]
+    AA --> DD[Guest Only]
+    AA --> EE[New Users]
+
+    L --> FF[Pricing Configuration]
+    FF --> GG[Discount Amount/Percentage]
+    FF --> HH[Minimum Booking Value]
+    FF --> II[Maximum Discount]
+    FF --> JJ[Usage Limits]
+
+    subgraph "Campaign Templates"
+        CT1[Holiday Season Promotion]
+        CT2[New User Welcome Discount]
+        CT3[Member Loyalty Program]
+        CT4[Off-Peak Hour Discount]
+        CT5[Rainy Day Special]
+        CT6[Weekend Family Package]
+        CT7[Birthday Month Special]
+        CT8[Referral Program Bonus]
+    end
+
+    subgraph "Analytics Dashboard"
+        AD1[Campaign Performance]
+        AD2[Revenue Impact]
+        AD3[User Engagement]
+        AD4[Conversion Rates]
+        AD5[ROI Analysis]
+        AD6[Popular Promotions]
     end
 ```
 
-#### 9.3.1 Guest Management Features
+### 12.4 Dynamic Pricing Examples
 
-- **Guest Analytics**: Track guest booking patterns
-- **Conversion Tracking**: Monitor guest to member conversion
-- **SSO Conversion Analytics**: Track Google SSO conversion rates
-- **Proof System Configuration**: Configure proof generation settings
-- **Verification Management**: Manage verification methods
-- **Security Configuration**: Configure security measures
+```mermaid
+graph TD
+    A[Promotional Scenarios] --> B[Price Discount Promotions]
+    A --> C[Additional Person Promotions]
+    A --> D[Package Deals]
+    A --> E[Seasonal Promotions]
+    A --> F[Time-Based Promotions]
 
-### 9.4 Pricing Management Interface
+    B --> G[Reguler: Rp 100k → Promo: Rp 80k (20% off)]
+    B --> H[Private Silver: Rp 200k → Promo: Rp 150k (25% off)]
+    B --> I[Member: Rp 90k → Extra: Rp 70k (22% off)]
 
-```json
-{
-  "pricing_management": {
-    "membership_pricing": {
-      "monthly_base": "configurable_field",
-      "quarterly_base": "configurable_field",
-      "quarterly_discount": "configurable_field"
-    },
-    "session_pricing": {
-      "regular_weekday": "configurable_field",
-      "regular_weekend": "configurable_field",
-      "private_silver": "configurable_field",
-      "private_gold": "configurable_field"
-    },
-    "cafe_pricing": {
-      "cost_margin": "configurable_field",
-      "promotional_discount": "configurable_field"
-    },
-    "pricing_rules": {
-      "member_discount": "configurable_field",
-      "seasonal_adjustment": "configurable_field",
-      "promotional_rate": "configurable_field",
-      "google_user_benefits": "configurable_field"
-    },
-    "sso_configuration": {
-      "google_oauth_enabled": "configurable_field",
-      "auto_sync_profile": "configurable_field",
-      "google_user_benefits": "configurable_field"
-    },
-    "proof_system": {
-      "reference_format": "configurable_field",
-      "qr_code_enabled": "configurable_field",
-      "sms_confirmation": "configurable_field",
-      "email_receipt": "configurable_field"
-    }
-  }
-}
+    C --> J[Bring 2 People for Price of 1]
+    C --> K[Free Child with Adult Booking]
+    C --> L[Group of 3 = Pay for 2 Only]
+
+    D --> M[Pool + Cafe Combo: 15% off total]
+    D --> N[Weekend Family Package: 4 people = 3 people price]
+    D --> O[Member + Equipment Bundle: 20% off]
+
+    E --> P[Rainy Day: 30% off all bookings]
+    E --> Q[Holiday Season: Special rates]
+    E --> R[Back to School: Student discounts]
+
+    F --> G1[Off-Peak Hours: 10-12 AM = 25% off]
+    F --> H1[Happy Hours: 2-4 PM = 15% off]
+    F --> I1[Early Bird: 6-8 AM = 20% off]
+
+    subgraph "Real Examples"
+        RE1[Rainy Day Promo: "Hujan-hujan berenang lebih seru! 30% OFF"]
+        RE2[Weekend Family: "Quality time bersama keluarga! Bawa 2 bayar 1"]
+        RE3[Holiday Special: "Liburan seru di Raujan Pool! Special Rate"]
+        RE4[Member Exclusive: "Member setia dapat harga spesial!"]
+        RE5[New User Welcome: "Selamat datang! Discount 50% untuk pertama kali"]
+        RE6[Birthday Month: "Ulang tahun spesial! Free additional person"]
+    end
 ```
 
----
+#### 12.1.1 Promotion Types Detail
 
-**Versi**: 1.4  
-**Tanggal**: 26 Agustus 2025  
-**Status**: Updated dengan Google SSO Integration  
-**Berdasarkan**: PDF Raujan Pool Syariah
+**Price Discount Promotions:**
+
+- **Percentage Discount**: 10%, 20%, 30% off regular price
+- **Fixed Amount Discount**: Rp 50,000, Rp 100,000 off
+- **Tiered Discount**: Different discount levels based on booking value
+- **Member Exclusive Discount**: Extra discount for members only
+- **First-time User Discount**: Special pricing for new users
+
+**Additional Person Promotions:**
+
+- **Buy 1 Get 1**: Pay for 1 person, get 1 free
+- **Bring 2 for Price of 1**: Bring additional person at no extra cost
+- **Free Child with Adult**: Free child entry with adult booking
+- **Group Discounts**: Special pricing for groups (3+ people)
+- **Family Package**: Special rates for family bookings
+
+**Package Deal Promotions:**
+
+- **Pool + Cafe Combo**: Discount when booking pool and cafe together
+- **Equipment Bundle**: Pool + equipment rental at special rate
+- **Multi-session Package**: Discount for booking multiple sessions
+- **Weekend Package**: Special weekend rates for families
+- **Luxury Package**: Pool + private amenities at bundled price
+
+**Seasonal & Time-Based Promotions:**
+
+- **Rainy Day Special**: Discounts during rainy weather
+- **Off-Peak Hours**: Lower prices during less busy hours
+- **Holiday Specials**: Special rates during holidays
+- **Weekday vs Weekend**: Different pricing for different days
+- **Seasonal Campaigns**: Special promotions for seasons
+
+**Loyalty & Referral Promotions:**
+
+- **Member Points**: Earn points for future discounts
+- **Referral Bonus**: Discount for bringing friends
+- **Birthday Special**: Free additional person on birthday month
+- **Anniversary Discount**: Special rate on membership anniversary
+- **Returning Customer**: Special pricing for repeat customers
+
+#### 12.1.2 Campaign Management Features
+
+**Campaign Creation:**
+
+- **Campaign Wizard**: Step-by-step campaign creation
+- **Template Library**: Pre-built promotion templates
+- **Quick Setup**: One-click promotion activation
+- **Bulk Campaign**: Create multiple campaigns at once
+- **Campaign Scheduling**: Schedule campaigns for future dates
+
+**Campaign Configuration:**
+
+- **Flexible Date Range**: Specific dates, date ranges, recurring days
+- **Time-based Rules**: Specific hours, time slots, peak/off-peak
+- **User Targeting**: All users, members only, guests only, new users
+- **Service Targeting**: Specific services, packages, combinations
+- **Capacity Rules**: Minimum/maximum booking requirements
+
+**Pricing Rules Engine:**
+
+- **Multiple Rule Types**: Percentage, fixed amount, free additional
+- **Priority System**: Higher priority promotions applied first
+- **Stacking Rules**: How promotions can be combined
+- **Exclusion Rules**: What promotions cannot be combined
+- **Minimum/Maximum Limits**: Discount caps and minimums
+
+**Analytics & Reporting:**
+
+- **Campaign Performance**: Success metrics for each promotion
+- **Revenue Impact**: How promotions affect revenue
+- **User Engagement**: Which promotions are most popular
+- **ROI Analysis**: Return on investment for promotional spend
+- **A/B Testing**: Test different promotion strategies
+
+#### 12.1.3 User Experience Features
+
+**Promotion Discovery:**
+
+- **Promotional Banner**: Highlight active promotions on website
+- **Email Notifications**: Alert users about relevant promotions
+- **Push Notifications**: Real-time promotion alerts
+- **Social Media Integration**: Share promotions on social platforms
+- **Referral Links**: Track promotion sharing and conversions
+
+**Booking Integration:**
+
+- **Automatic Application**: Apply best promotion automatically
+- **Promotion Selection**: Let users choose from multiple promotions
+- **Preview Pricing**: Show price before and after promotion
+- **Promotion Summary**: Clear breakdown of applied discounts
+- **Terms & Conditions**: Transparent promotion terms
+
+**Member Benefits:**
+
+- **Exclusive Promotions**: Promotions only for members
+- **Early Access**: Members get first access to promotions
+- **Higher Discounts**: Better rates for loyal members
+- **Personalized Offers**: Custom promotions based on usage
+- **VIP Treatment**: Special services for high-tier members
+
+## 13. Modul Integrasi SSO dan Manajemen
+
+```
+
+```
