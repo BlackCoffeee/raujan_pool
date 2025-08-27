@@ -152,28 +152,33 @@ graph TB
         end
     end
 
-    A1 --> UC1
-    A1 --> UC8
-    A1 --> UC9
-    A1 --> UC10
-    A1 --> UC11
-    A1 --> UC12
-    A1 --> UC13
-    A1 --> UC14
-    A1 --> UC15
-    A1 --> UC16
-    A1 --> UC17
-    A1 --> UC18
+    A1 -.-> UC1
+    A1 -.-> UC8
+    A1 -.-> UC9
+    A1 -.-> UC10
+    A1 -.-> UC11
+    A1 -.-> UC12
+    A1 -.-> UC13
+    A1 -.-> UC14
+    A1 -.-> UC15
+    A1 -.-> UC16
+    A1 -.-> UC17
+    A1 -.-> UC18
 
-    A2 --> UC2
-    A2 --> UC3
-    A2 --> UC5
-    A2 --> UC6
-    A2 --> UC7
+    A2 -.-> UC2
+    A2 -.-> UC3
+    A2 -.-> UC5
+    A2 -.-> UC6
+    A2 -.-> UC7
 
-    A3 --> UC4
-    A3 --> UC5
-    A3 --> UC6
+    A3 -.-> UC4
+    A3 -.-> UC5
+    A3 -.-> UC6
+
+    %% Custom styling untuk lines dengan warna berbeda
+    linkStyle 0,1,2,3,4,5,6,7,8,9,10,11 stroke:#45b7d1,stroke-width:3px
+    linkStyle 12,13,14,15,16 stroke:#ff6b6b,stroke-width:3px
+    linkStyle 17,18,19 stroke:#4ecdc4,stroke-width:3px
     A3 --> UC7
 ```
 
@@ -339,6 +344,14 @@ classDiagram
     Booking ||--o{ Session : includes
     CafeOrder ||--o{ CafeMenu : contains
     CafeMenu ||--|| CafeInventory : tracks
+
+    %% Custom styling untuk relationship lines
+    linkStyle 0,1 stroke:#ff6b6b,stroke-width:2px
+    linkStyle 2,3 stroke:#45b7d1,stroke-width:2px
+    linkStyle 4 stroke:#ffeaa7,stroke-width:2px
+    linkStyle 5,6 stroke:#4ecdc4,stroke-width:2px
+    linkStyle 7 stroke:#96ceb4,stroke-width:2px
+    linkStyle 8 stroke:#ff7675,stroke-width:2px
 ```
 
 ### 2.2 Class Diagram Cafe System
@@ -455,8 +468,6 @@ sequenceDiagram
     Note over N: FCM Push Service
 
     U->>W: Access web application
-    W->>U: Display landing page
-    U->>W: Click "Reservasi" button
     W->>A: Request calendar page
     A->>B: Get current month availability
     B->>D: Query booking data
@@ -622,6 +633,32 @@ graph TD
     O --> P[Send Welcome Email]
     P --> Q[Create Member Card]
     Q --> R[Registration Complete]
+
+    %% Custom styling untuk activity nodes
+    classDef start-end fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
+    classDef process fill:#4ecdc4,stroke:#333,stroke-width:2px,color:#fff
+    classDef decision fill:#ffeaa7,stroke:#333,stroke-width:2px,color:#000
+    classDef success fill:#96ceb4,stroke:#333,stroke-width:2px,color:#fff
+    classDef failure fill:#ff7675,stroke:#333,stroke-width:2px,color:#fff
+
+    A:::start-end
+    B:::process
+    C:::process
+    D:::process
+    E:::process
+    F:::process
+    G:::decision
+    H:::failure
+    I:::process
+    J:::process
+    K:::decision
+    L:::failure
+    M:::process
+    N:::success
+    O:::success
+    P:::success
+    Q:::success
+    R:::start-end
 ```
 
 ### 4.2 Activity Diagram Booking Process
