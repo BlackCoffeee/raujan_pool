@@ -1,498 +1,531 @@
-# Arsitektur Sistem - Kolam Renang Syariah
+# Arsitektur Sistem - Sistem Kolam Renang Syariah
 
 ## 1. Arsitektur Umum
 
-### 1.1 Arsitektur 3-Tier
+### 1.1 3-Tier Architecture (Mobile-First Web Application)
 
 ```mermaid
 graph TB
-    subgraph "Presentation Layer"
-        A1[Web Application]
-        A2[Mobile Application]
-        A3[Admin Dashboard]
-        A4[Staff Interface]
+    subgraph "Frontend Layer (Mobile-First Web)"
+        FW1[React/Next.js Web App]
+        FW2[Progressive Web App PWA]
+        FW3[Responsive Design]
+        FW4[Mobile-Optimized UI]
+    end
+
+    subgraph "API Gateway Layer"
+        AG1[Laravel API Gateway]
+        AG2[Authentication Service]
+        AG3[Rate Limiting]
+        AG4[CORS Handling]
+        AG5[Request Routing]
     end
 
     subgraph "Business Logic Layer"
-        B1[Member Management Service]
-        B2[Booking Service]
-        B3[Payment Service]
-        B4[Cafe Management Service]
-        B5[Notification Service]
-        B6[Reporting Service]
+        BL1[Laravel Backend Services]
+        BL2[User Management Service]
+        BL3[Booking Service]
+        BL4[Payment Service]
+        BL5[Cafe Management Service]
+        BL6[Notification Service]
+        BL7[Pricing Engine]
     end
 
     subgraph "Data Layer"
-        C1[Database]
-        C2[File Storage]
-        C3[Payment Gateway]
-        C4[Email/SMS Service]
-    end
-
-    A1 --> B1
-    A1 --> B2
-    A1 --> B3
-    A1 --> B4
-    A2 --> B1
-    A2 --> B2
-    A2 --> B3
-    A3 --> B1
-    A3 --> B2
-    A3 --> B4
-    A3 --> B6
-    A4 --> B1
-    A4 --> B2
-    A4 --> B4
-
-    B1 --> C1
-    B2 --> C1
-    B3 --> C1
-    B3 --> C3
-    B4 --> C1
-    B5 --> C4
-    B6 --> C1
-```
-
-### 1.2 Arsitektur Microservices
-
-```mermaid
-graph LR
-    subgraph "API Gateway"
-        G1[API Gateway]
-    end
-
-    subgraph "Core Services"
-        S1[Member Service]
-        S2[Booking Service]
-        S3[Payment Service]
-        S4[Cafe Service]
-        S5[Notification Service]
-        S6[Reporting Service]
+        DL1[MySQL Database]
+        DL2[Redis Cache]
+        DL3[File Storage S3]
+        DL4[Session Storage]
     end
 
     subgraph "External Services"
-        E1[Payment Gateway]
-        E2[Email Service]
-        E3[SMS Service]
-        E4[File Storage]
+        ES1[Google OAuth API]
+        ES2[Payment Gateways]
+        ES3[Push Notification Service]
+        ES4[Email Service]
+        ES5[SMS Gateway]
     end
 
-    subgraph "Data Layer"
-        D1[Member DB]
-        D2[Booking DB]
-        D3[Payment DB]
-        D4[Cafe DB]
-    end
+    FW1 --> AG1
+    FW2 --> AG1
+    FW3 --> AG1
+    FW4 --> AG1
 
-    G1 --> S1
-    G1 --> S2
-    G1 --> S3
-    G1 --> S4
-    G1 --> S5
-    G1 --> S6
+    AG1 --> BL1
+    AG2 --> BL1
+    AG3 --> BL1
+    AG4 --> BL1
+    AG5 --> BL1
 
-    S1 --> D1
-    S2 --> D2
-    S3 --> D3
-    S4 --> D4
+    BL1 --> DL1
+    BL1 --> DL2
+    BL1 --> DL3
+    BL1 --> DL4
 
-    S3 --> E1
-    S5 --> E2
-    S5 --> E3
-    S1 --> E4
-    S4 --> E4
+    BL1 --> ES1
+    BL1 --> ES2
+    BL1 --> ES3
+    BL1 --> ES4
+    BL1 --> ES5
 ```
 
-## 2. Teknologi Stack
-
-### 2.1 Frontend Technologies
-
-- **Web Application**
-
-  - React.js atau Vue.js
-  - Responsive design
-  - Progressive Web App (PWA)
-  - Real-time updates
-
-- **Mobile Application**
-
-  - React Native atau Flutter
-  - Cross-platform compatibility
-  - Offline capability
-  - Push notifications
-
-- **Admin Dashboard**
-  - React.js dengan Material-UI
-  - Real-time dashboard
-  - Advanced analytics
-  - Export functionality
-
-### 2.2 Backend Technologies
-
-- **API Framework**
-
-  - Node.js dengan Express.js
-  - RESTful API design
-  - GraphQL (optional)
-  - API documentation
-
-- **Database**
-
-  - MySQL atau PostgreSQL
-  - Redis untuk caching
-  - Database migration
-  - Backup automation
-
-- **Authentication**
-  - JWT tokens
-  - Role-based access control
-  - Multi-factor authentication
-  - Session management
-
-### 2.3 Infrastructure
-
-- **Hosting**
-
-  - Cloud hosting (AWS/Azure/GCP)
-  - Load balancing
-  - Auto-scaling
-  - CDN for static assets
-
-- **Monitoring**
-  - Application performance monitoring
-  - Error tracking
-  - Uptime monitoring
-  - Log management
-
-## 3. Database Design
-
-### 3.1 Database Schema Overview
+### 1.2 Microservices Architecture (Future Scalability)
 
 ```mermaid
-erDiagram
-    USERS ||--o{ MEMBERS : has
-    MEMBERS ||--o{ BOOKINGS : makes
-    BOOKINGS ||--o{ PAYMENTS : has
-    CAFE_ORDERS ||--o{ PAYMENTS : has
-    CAFE_MENU ||--o{ CAFE_ORDERS : contains
-    CAFE_INVENTORY ||--o{ CAFE_MENU : tracks
+graph TB
+    subgraph "Frontend Services"
+        FS1[Web App - React/Next.js]
+        FS2[Mobile App - React Native]
+        FS3[Admin Dashboard]
+        FS4[Staff Portal]
+    end
 
-    USERS {
-        int id PK
-        string username
-        string email
-        string password_hash
-        string role
-        boolean is_active
-        timestamp created_at
-        timestamp updated_at
-    }
+    subgraph "API Gateway"
+        AG1[Laravel API Gateway]
+        AG2[Load Balancer]
+        AG3[SSL Termination]
+    end
 
-    MEMBERS {
-        int id PK
-        int user_id FK
-        string member_code
-        string full_name
-        string phone
-        string address
-        date birth_date
-        string gender
-        string photo_url
-        string emergency_contact
-        boolean is_active
-        date membership_start
-        date membership_end
-        timestamp created_at
-        timestamp updated_at
-    }
+    subgraph "Core Services"
+        CS1[User Service - Laravel]
+        CS2[Booking Service - Laravel]
+        CS3[Payment Service - Laravel]
+        CS4[Notification Service - Laravel]
+        CS5[Pricing Service - Laravel]
+        CS6[Cafe Service - Laravel]
+    end
 
-    BOOKINGS {
-        int id PK
-        int member_id FK
-        string booking_type
-        date booking_date
-        string session_time
-        int adult_count
-        int child_count
-        string status
-        decimal total_amount
-        timestamp created_at
-        timestamp updated_at
-    }
+    subgraph "Data Services"
+        DS1[MySQL Primary]
+        DS2[MySQL Replica]
+        DS3[Redis Cache]
+        DS4[Session Redis]
+        DS5[S3 File Storage]
+    end
 
-    PAYMENTS {
-        int id PK
-        int booking_id FK
-        string payment_method
-        decimal amount
-        string status
-        string transaction_id
-        timestamp payment_date
-        timestamp created_at
-    }
+    subgraph "External Integrations"
+        EI1[Google OAuth]
+        EI2[Midtrans Payment]
+        EI3[Firebase Push Notification]
+        EI4[SendGrid Email]
+        EI5[Twilio SMS]
+    end
 
-    CAFE_MENU {
-        int id PK
-        string name
-        string description
-        decimal price
-        string category
-        string image_url
-        boolean is_available
-        timestamp created_at
-    }
+    FS1 --> AG1
+    FS2 --> AG1
+    FS3 --> AG1
+    FS4 --> AG1
 
-    CAFE_ORDERS {
-        int id PK
-        int member_id FK
-        string order_number
-        string status
-        decimal total_amount
-        timestamp order_date
-        timestamp created_at
-    }
+    AG1 --> CS1
+    AG1 --> CS2
+    AG1 --> CS3
+    AG1 --> CS4
+    AG1 --> CS5
+    AG1 --> CS6
 
-    CAFE_INVENTORY {
-        int id PK
-        int menu_id FK
-        int current_stock
-        int minimum_stock
-        string unit
-        timestamp last_updated
+    CS1 --> DS1
+    CS2 --> DS1
+    CS3 --> DS1
+    CS4 --> DS1
+    CS5 --> DS1
+    CS6 --> DS1
+
+    CS1 --> EI1
+    CS3 --> EI2
+    CS4 --> EI3
+    CS4 --> EI4
+    CS4 --> EI5
+```
+
+## 2. Technology Stack
+
+### 2.1 Frontend Stack
+
+```json
+{
+  "frontend": {
+    "framework": "React.js / Next.js",
+    "styling": "Tailwind CSS",
+    "state_management": "Redux Toolkit / Zustand",
+    "routing": "React Router v6",
+    "ui_components": "Headless UI / Radix UI",
+    "mobile_friendly": "Progressive Web App (PWA)",
+    "responsive_design": "Mobile-first approach",
+    "charts": "Chart.js / Recharts",
+    "forms": "React Hook Form",
+    "validation": "Yup / Zod",
+    "http_client": "Axios / React Query",
+    "notifications": "React-Toastify / Hot Toast"
+  }
+}
+```
+
+### 2.2 Backend Stack
+
+```json
+{
+  "backend": {
+    "framework": "Laravel 11",
+    "language": "PHP 8.2+",
+    "database": "MySQL 8.0",
+    "cache": "Redis 7.0",
+    "queue": "Laravel Queue + Redis",
+    "authentication": "Laravel Sanctum + JWT",
+    "file_upload": "Laravel Storage + AWS S3",
+    "validation": "Laravel Form Requests",
+    "api": "Laravel API Resources",
+    "testing": "Laravel Pest / PHPUnit",
+    "deployment": "Laravel Forge / Vapor"
+  }
+}
+```
+
+### 2.3 Infrastructure Stack
+
+```json
+{
+  "infrastructure": {
+    "hosting": "AWS EC2 / DigitalOcean",
+    "database": "AWS RDS MySQL",
+    "cache": "AWS ElastiCache Redis",
+    "storage": "AWS S3 + CloudFront",
+    "cdn": "CloudFlare",
+    "ssl": "Let's Encrypt / AWS Certificate Manager",
+    "monitoring": "Laravel Telescope + New Relic",
+    "logging": "Laravel Log + CloudWatch"
+  }
+}
+```
+
+### 2.4 External Services Integration
+
+```json
+{
+  "integrations": {
+    "authentication": {
+      "google_oauth": "Google OAuth 2.0 API",
+      "local_auth": "Laravel Sanctum"
+    },
+    "payment": {
+      "midtrans": "Midtrans Payment Gateway",
+      "manual_payment": "Custom Payment Tracker"
+    },
+    "notifications": {
+      "push": "Firebase Cloud Messaging (FCM)",
+      "email": "SendGrid / Laravel Mail",
+      "sms": "Twilio SMS API"
+    },
+    "file_storage": {
+      "aws_s3": "AWS S3 Bucket",
+      "cloudfront": "AWS CloudFront Distribution"
     }
+  }
+}
+```
+
+## 3. Mobile-First Web Application Architecture
+
+### 3.1 Progressive Web App (PWA) Features
+
+```mermaid
+graph TD
+    A[PWA Architecture] --> B[Service Worker]
+    B --> C[Offline Support]
+    B --> D[Push Notifications]
+    B --> E[Background Sync]
+
+    A --> F[App Manifest]
+    F --> G[Install Prompt]
+    F --> H[App-like Experience]
+
+    A --> I[Responsive Design]
+    I --> J[Mobile-First CSS]
+    I --> K[Touch-Friendly UI]
+    I --> L[Fast Loading]
+
+    A --> M[Modern Web APIs]
+    M --> N[Web Push API]
+    M --> O[Notifications API]
+    M --> P[Geolocation API]
+
+    subgraph "Mobile Features"
+        MF1[Touch Gestures]
+        MF2[Swipe Navigation]
+        MF3[Pull-to-Refresh]
+        MF4[Fast Tap Response]
+        MF5[Offline Booking Cache]
+    end
+
+    subgraph "Performance"
+        PERF1[Lazy Loading]
+        PERF2[Image Optimization]
+        PERF3[Code Splitting]
+        PERF4[Bundle Optimization]
+        PERF5[Critical CSS]
+    end
+```
+
+### 3.2 Responsive Design Strategy
+
+```json
+{
+  "responsive_breakpoints": {
+    "mobile": "320px - 767px",
+    "tablet": "768px - 1023px",
+    "desktop": "1024px+",
+    "large_desktop": "1440px+"
+  },
+  "design_principles": {
+    "mobile_first": "Design for mobile first, then enhance for larger screens",
+    "touch_friendly": "Minimum 44px touch targets",
+    "fast_loading": "Optimize for slow mobile connections",
+    "accessible": "WCAG 2.1 AA compliance",
+    "offline_capable": "Core functionality works offline"
+  }
+}
 ```
 
 ## 4. API Design
 
-### 4.1 RESTful API Endpoints
+### 4.1 Laravel API Architecture
 
 ```mermaid
 graph TD
-    subgraph "Member APIs"
-        M1[POST /api/members]
-        M2[GET /api/members]
-        M3[GET /api/members/:id]
-        M4[PUT /api/members/:id]
-        M5[DELETE /api/members/:id]
+    A[React/Next.js Client] --> B[Laravel API Gateway]
+    B --> C[Authentication Middleware]
+    C --> D[Rate Limiting]
+    D --> E[Request Validation]
+    E --> F[Controller Layer]
+    F --> G[Service Layer]
+    G --> H[Repository Layer]
+    H --> I[Database Layer]
+
+    subgraph "Laravel API Structure"
+        LA1[API Routes - api.php]
+        LA2[API Controllers]
+        LA3[API Resources]
+        LA4[Form Requests]
+        LA5[Service Classes]
+        LA6[Repository Pattern]
     end
 
-    subgraph "Booking APIs"
-        B1[POST /api/bookings]
-        B2[GET /api/bookings]
-        B3[GET /api/bookings/:id]
-        B4[PUT /api/bookings/:id]
-        B5[DELETE /api/bookings/:id]
-        B6[GET /api/bookings/availability]
-    end
-
-    subgraph "Payment APIs"
-        P1[POST /api/payments]
-        P2[GET /api/payments]
-        P3[GET /api/payments/:id]
-        P4[POST /api/payments/verify]
-    end
-
-    subgraph "Cafe APIs"
-        C1[GET /api/cafe/menu]
-        C2[POST /api/cafe/orders]
-        C3[GET /api/cafe/orders]
-        C4[PUT /api/cafe/orders/:id]
-        C5[GET /api/cafe/inventory]
+    subgraph "Authentication Flow"
+        AF1[Sanctum Token Auth]
+        AF2[JWT Tokens]
+        AF3[Google OAuth]
+        AF4[Guest Access]
     end
 ```
 
-### 4.2 API Response Format
+### 4.2 API Endpoints Structure
 
 ```json
 {
-  "success": true,
-  "data": {
-    "id": 1,
-    "member_code": "M001",
-    "full_name": "Ahmad Rahman",
-    "phone": "081234567890",
-    "membership_status": "active",
-    "membership_end": "2025-09-26"
+  "api_versioning": "v1",
+  "authentication": {
+    "login": "POST /api/v1/auth/login",
+    "register": "POST /api/v1/auth/register",
+    "google_login": "POST /api/v1/auth/google",
+    "logout": "POST /api/v1/auth/logout",
+    "refresh": "POST /api/v1/auth/refresh"
   },
-  "message": "Member retrieved successfully",
-  "timestamp": "2025-08-26T10:30:00Z"
+  "booking": {
+    "create": "POST /api/v1/bookings",
+    "list": "GET /api/v1/bookings",
+    "show": "GET /api/v1/bookings/{id}",
+    "update": "PUT /api/v1/bookings/{id}",
+    "cancel": "DELETE /api/v1/bookings/{id}"
+  },
+  "pricing": {
+    "config": "GET /api/v1/pricing/config",
+    "calculate": "POST /api/v1/pricing/calculate",
+    "admin_update": "PUT /api/v1/pricing/config"
+  },
+  "notifications": {
+    "subscribe": "POST /api/v1/notifications/subscribe",
+    "unsubscribe": "POST /api/v1/notifications/unsubscribe"
+  }
 }
 ```
 
-## 5. Security Architecture
+## 5. Push Notification Architecture
 
-### 5.1 Authentication & Authorization
+### 5.1 Firebase Cloud Messaging (FCM) Integration
 
 ```mermaid
 graph TD
-    A[User Login] --> B[Validate Credentials]
-    B --> C[Generate JWT Token]
-    C --> D[Store Token]
-    D --> E[API Request]
-    E --> F[Verify Token]
-    F --> G[Check Permissions]
-    G --> H[Allow/Deny Access]
+    A[Laravel Backend] --> B[Notification Service]
+    B --> C[Firebase Admin SDK]
+    C --> D[FCM API]
+    D --> E[Device Registration]
+    D --> F[Push Delivery]
 
-    subgraph "Security Layers"
-        I[Rate Limiting]
-        J[Input Validation]
-        K[SQL Injection Prevention]
-        L[XSS Protection]
+    A --> G[Event System]
+    G --> H[Notification Events]
+    H --> I[Queue Jobs]
+    I --> J[Background Processing]
+
+    subgraph "Notification Types"
+        NT1[Booking Confirmation]
+        NT2[Payment Reminder]
+        NT3[Session Reminder]
+        NT4[Price Updates]
+        NT5[Promotional Offers]
+    end
+
+    subgraph "Delivery Channels"
+        DC1[Push Notifications]
+        DC2[Email Notifications]
+        DC3[SMS Notifications]
+        DC4[In-App Notifications]
     end
 ```
 
-### 5.2 Data Protection
+### 5.2 Web Push Implementation
 
-- **Encryption**
+```javascript
+// Service Worker for Push Notifications
+self.addEventListener("push", function (event) {
+  const options = {
+    body: event.data.text(),
+    icon: "/icon-192x192.png",
+    badge: "/badge-72x72.png",
+    vibrate: [100, 50, 100],
+    data: {
+      dateOfArrival: Date.now(),
+      primaryKey: 1,
+    },
+    actions: [
+      {
+        action: "explore",
+        title: "View Booking",
+        icon: "/checkmark.png",
+      },
+      {
+        action: "close",
+        title: "Close",
+        icon: "/xmark.png",
+      },
+    ],
+  };
 
-  - Data at rest encryption
-  - Data in transit encryption (HTTPS)
-  - Password hashing (bcrypt)
-  - Sensitive data masking
+  event.waitUntil(self.registration.showNotification("Raujan Pool", options));
+});
+```
 
-- **Access Control**
-  - Role-based access control (RBAC)
-  - API key management
-  - Session management
-  - Audit logging
+## 6. Security Architecture
 
-## 6. Integration Architecture
+### 6.1 Laravel Security Features
 
-### 6.1 External Integrations
+```json
+{
+  "security_layers": {
+    "authentication": {
+      "sanctum": "Laravel Sanctum for API tokens",
+      "oauth": "Google OAuth 2.0 integration",
+      "jwt": "JWT tokens for mobile apps",
+      "session": "Secure session management"
+    },
+    "authorization": {
+      "gates": "Laravel Gates for authorization",
+      "policies": "Resource-based policies",
+      "middleware": "Role-based access control"
+    },
+    "validation": {
+      "form_requests": "Laravel Form Request validation",
+      "sanitization": "Input sanitization",
+      "sql_injection": "Eloquent ORM protection",
+      "xss": "Blade template protection"
+    },
+    "encryption": {
+      "hashing": "bcrypt password hashing",
+      "encryption": "Laravel encryption API",
+      "ssl": "HTTPS enforcement",
+      "cors": "Cross-origin resource sharing"
+    }
+  }
+}
+```
+
+## 7. Performance Optimization
+
+### 7.1 Frontend Optimizations
+
+```json
+{
+  "performance_strategies": {
+    "code_splitting": "React.lazy() for route-based splitting",
+    "lazy_loading": "Intersection Observer for images",
+    "caching": "Service worker cache strategies",
+    "bundling": "Webpack optimization",
+    "preloading": "Critical resource preloading"
+  },
+  "mobile_optimizations": {
+    "touch_optimized": "Large touch targets",
+    "fast_rendering": "Optimized CSS and JS",
+    "offline_support": "Service worker caching",
+    "responsive_images": "WebP format with fallbacks"
+  }
+}
+```
+
+### 7.2 Backend Optimizations
+
+```json
+{
+  "laravel_optimizations": {
+    "caching": "Redis caching for queries and sessions",
+    "database": "Query optimization and indexing",
+    "queue": "Background job processing",
+    "compression": "Gzip compression",
+    "cdn": "Static asset delivery via CDN"
+  },
+  "api_optimizations": {
+    "pagination": "API resource pagination",
+    "filtering": "Optional field filtering",
+    "rate_limiting": "API rate limiting",
+    "compression": "Response compression"
+  }
+}
+```
+
+## 8. Deployment Architecture
+
+### 8.1 Laravel Deployment
 
 ```mermaid
-graph LR
-    subgraph "Core System"
-        S1[Booking System]
-        S2[Payment System]
-        S3[Notification System]
+graph TD
+    A[Git Repository] --> B[CI/CD Pipeline]
+    B --> C[Automated Testing]
+    C --> D[Build Process]
+    D --> E[Deployment]
+    E --> F[Production Server]
+
+    subgraph "Server Stack"
+        SS1[Nginx Web Server]
+        SS2[PHP-FPM 8.2]
+        SS3[MySQL 8.0]
+        SS4[Redis 7.0]
+        SS5[SSL Certificate]
     end
 
-    subgraph "External Services"
-        E1[Payment Gateway]
-        E2[Email Service]
-        E3[SMS Service]
-        E4[File Storage]
+    subgraph "Monitoring"
+        M1[Laravel Telescope]
+        M2[New Relic APM]
+        M3[Server Monitoring]
+        M4[Error Tracking]
     end
-
-    S1 --> E4
-    S2 --> E1
-    S3 --> E2
-    S3 --> E3
 ```
-
-### 6.2 Payment Integration
-
-- **Payment Gateways**
-
-  - Midtrans
-  - Xendit
-  - Doku
-  - Manual payment tracking
-
-- **Payment Methods**
-  - Bank transfer
-  - E-wallet
-  - Credit/debit card
-  - Cash payment
-
-## 7. Deployment Architecture
-
-### 7.1 Production Environment
-
-```mermaid
-graph TB
-    subgraph "Load Balancer"
-        LB[NGINX Load Balancer]
-    end
-
-    subgraph "Application Servers"
-        AS1[App Server 1]
-        AS2[App Server 2]
-        AS3[App Server 3]
-    end
-
-    subgraph "Database"
-        DB1[Primary DB]
-        DB2[Replica DB]
-    end
-
-    subgraph "Cache Layer"
-        C1[Redis Cache]
-    end
-
-    subgraph "Storage"
-        S1[File Storage]
-        S2[Backup Storage]
-    end
-
-    LB --> AS1
-    LB --> AS2
-    LB --> AS3
-
-    AS1 --> DB1
-    AS2 --> DB1
-    AS3 --> DB1
-
-    AS1 --> C1
-    AS2 --> C1
-    AS3 --> C1
-
-    AS1 --> S1
-    AS2 --> S1
-    AS3 --> S1
-
-    DB1 --> DB2
-    DB1 --> S2
-```
-
-### 7.2 CI/CD Pipeline
-
-```mermaid
-graph LR
-    A[Code Commit] --> B[Automated Testing]
-    B --> C[Build Application]
-    C --> D[Deploy to Staging]
-    D --> E[Manual Testing]
-    E --> F[Deploy to Production]
-    F --> G[Health Check]
-    G --> H[Monitor]
-```
-
-## 8. Performance & Scalability
-
-### 8.1 Performance Optimization
-
-- **Caching Strategy**
-
-  - Redis for session data
-  - CDN for static assets
-  - Database query caching
-  - API response caching
-
-- **Database Optimization**
-  - Indexing strategy
-  - Query optimization
-  - Connection pooling
-  - Read replicas
-
-### 8.2 Scalability Considerations
-
-- **Horizontal Scaling**
-
-  - Load balancing
-  - Auto-scaling groups
-  - Database sharding
-  - Microservices architecture
-
-- **Monitoring & Alerting**
-  - Application performance monitoring
-  - Infrastructure monitoring
-  - Business metrics tracking
-  - Automated alerting
 
 ---
 
-**Versi**: 1.1  
+**Versi**: 1.2  
 **Tanggal**: 26 Agustus 2025  
-**Status**: Updated berdasarkan PDF Raujan Pool Syariah
+**Status**: Updated dengan Laravel + React/Next.js Stack  
+**Berdasarkan**: PDF Raujan Pool Syariah  
+**Key Features**:
+
+- 🖥️ **Laravel Backend** dengan API-first approach
+- 📱 **Mobile-First Web App** dengan PWA support
+- 🔔 **Push Notifications** via Firebase FCM
+- ⚡ **Performance Optimized** untuk mobile users

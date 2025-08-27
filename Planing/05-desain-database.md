@@ -2,56 +2,105 @@
 
 ## 1. Entity Relationship Diagram (ERD)
 
-### 1.1 ERD Utama dengan Dynamic Pricing
+### 1.1 ERD Utama dengan Dynamic Pricing, Guest Users, dan SSO
 
 ```mermaid
 erDiagram
-    USERS ||--o{ MEMBERS : has
+    USERS ||--o{ USER_PROFILES : has
+    USERS ||--o{ SSO_SESSIONS : has
+    USER_PROFILES ||--o{ MEMBERS : creates
+    USER_PROFILES ||--o{ GUEST_USERS : creates
     MEMBERS ||--o{ BOOKINGS : makes
+    GUEST_USERS ||--o{ BOOKINGS : makes
+    BOOKINGS ||--o{ BOOKING_PROOFS : generates
     BOOKINGS ||--o{ PAYMENTS : has
     CAFE_ORDERS ||--o{ PAYMENTS : has
     CAFE_MENU ||--o{ CAFE_ORDERS : contains
     CAFE_INVENTORY ||--o{ CAFE_MENU : tracks
-
+    
     %% Pricing Configuration Tables
     PRICING_CONFIG ||--o{ BOOKINGS : used_in
     PRICING_RULES ||--o{ PRICING_CONFIG : applies_to
     PRICING_HISTORY ||--o{ PRICING_CONFIG : tracks
-
+    
+    %% Authentication & Verification
+    VERIFICATION_ATTEMPTS ||--o{ BOOKING_PROOFS : tracks
+    AUTHENTICATION_LOGS ||--o{ USERS : logs
+    
     USERS {
         int id PK
         string username
         string email
         string password_hash
-        string role
+        string auth_provider
+        string auth_provider_id
+        boolean is_email_verified
         boolean is_active
+        string role
+        timestamp last_login_at
+        int login_count
         timestamp created_at
         timestamp updated_at
     }
-
+    
+    USER_PROFILES {
+        int id PK
+        int user_id FK
+        string full_name
+        string phone
+        string avatar_url
+        date date_of_birth
+        string gender
+        string address
+        string city
+        string postal_code
+        string emergency_contact
+        string profile_source
+        string google_profile_id
+        timestamp last_profile_sync
+        timestamp created_at
+        timestamp updated_at
+    }
+    
     MEMBERS {
         int id PK
         int user_id FK
+        int user_profile_id FK
         string member_code
-        string full_name
-        string phone
-        string address
-        date birth_date
-        string gender
-        string photo_url
-        string emergency_contact
         boolean is_active
         date membership_start
         date membership_end
         string membership_type
+        int pricing_package_id FK
+        string registration_method
+        int converted_from_guest_id FK
         timestamp created_at
         timestamp updated_at
     }
-
+    
+    GUEST_USERS {
+        int id PK
+        int user_profile_id FK
+        string full_name
+        string phone
+        string email
+        string emergency_contact
+        int total_visits
+        date last_visit_date
+        boolean is_converted_to_member
+        int converted_user_id FK
+        string conversion_method
+        timestamp conversion_date
+        timestamp created_at
+        timestamp updated_at
+    }
+    
     BOOKINGS {
         int id PK
         int member_id FK
+        int guest_user_id FK
         string booking_type
+        string booking_reference
         date booking_date
         string session_time
         int adult_count
@@ -61,10 +110,12 @@ erDiagram
         decimal discount_amount
         decimal final_amount
         int pricing_config_id FK
+        boolean is_checkin
+        timestamp checkin_time
         timestamp created_at
         timestamp updated_at
     }
-
+    
     PAYMENTS {
         int id PK
         int booking_id FK
@@ -75,7 +126,7 @@ erDiagram
         timestamp payment_date
         timestamp created_at
     }
-
+    
     CAFE_MENU {
         int id PK
         string name
@@ -87,7 +138,7 @@ erDiagram
         boolean is_halal
         timestamp created_at
     }
-
+    
     CAFE_ORDERS {
         int id PK
         int member_id FK
@@ -97,7 +148,7 @@ erDiagram
         timestamp order_date
         timestamp created_at
     }
-
+    
     CAFE_INVENTORY {
         int id PK
         int menu_id FK
@@ -106,7 +157,7 @@ erDiagram
         string unit
         timestamp last_updated
     }
-
+    
     %% Dynamic Pricing Tables
     PRICING_CONFIG {
         int id PK
@@ -123,7 +174,7 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
-
+    
     PRICING_RULES {
         int id PK
         string rule_name
@@ -135,7 +186,7 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
-
+    
     PRICING_HISTORY {
         int id PK
         int config_id FK
@@ -144,6 +195,59 @@ erDiagram
         string change_reason
         int changed_by FK
         timestamp changed_at
+    }
+    
+    %% SSO Tables
+    SSO_SESSIONS {
+        int id PK
+        int user_id FK
+        string provider
+        text access_token
+        text refresh_token
+        string token_type
+        timestamp expires_at
+        text scope
+        boolean is_active
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    AUTHENTICATION_LOGS {
+        int id PK
+        int user_id FK
+        string auth_method
+        string action
+        string ip_address
+        text user_agent
+        boolean success
+        string error_message
+        timestamp created_at
+    }
+    
+    %% Guest Proof System Tables
+    BOOKING_PROOFS {
+        int id PK
+        int booking_id FK
+        string proof_type
+        string reference_number
+        string qr_code_hash
+        string qr_code_image_url
+        string receipt_url
+        boolean is_verified
+        timestamp verification_time
+        int verified_by FK
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    VERIFICATION_ATTEMPTS {
+        int id PK
+        int booking_id FK
+        string attempt_method
+        string ip_address
+        text user_agent
+        boolean success
+        timestamp created_at
     }
 ```
 
@@ -227,7 +331,6 @@ erDiagram
 ### 2.1 Dynamic Pricing Tables
 
 #### 2.1.1 PRICING_CONFIG Table
-
 ```sql
 CREATE TABLE pricing_config (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -243,7 +346,7 @@ CREATE TABLE pricing_config (
     created_by INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
+    
     INDEX idx_category (category),
     INDEX idx_service_type (service_type),
     INDEX idx_effective_date (effective_date),
@@ -252,7 +355,6 @@ CREATE TABLE pricing_config (
 ```
 
 #### 2.1.2 PRICING_RULES Table
-
 ```sql
 CREATE TABLE pricing_rules (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -264,7 +366,7 @@ CREATE TABLE pricing_rules (
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
+    
     INDEX idx_rule_type (rule_type),
     INDEX idx_priority (priority),
     INDEX idx_is_active (is_active)
@@ -272,7 +374,6 @@ CREATE TABLE pricing_rules (
 ```
 
 #### 2.1.3 PRICING_HISTORY Table
-
 ```sql
 CREATE TABLE pricing_history (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -282,7 +383,7 @@ CREATE TABLE pricing_history (
     change_reason VARCHAR(255),
     changed_by INT NOT NULL,
     changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
+    
     FOREIGN KEY (config_id) REFERENCES pricing_config(id) ON DELETE CASCADE,
     FOREIGN KEY (changed_by) REFERENCES users(id),
     INDEX idx_config_id (config_id),
@@ -290,15 +391,213 @@ CREATE TABLE pricing_history (
 );
 ```
 
-### 2.2 Updated Core Tables
+### 2.2 Authentication dan SSO Tables
 
-#### 2.2.1 BOOKINGS Table (Updated)
+#### 2.2.1 USERS Table (Updated with SSO Support)
+```sql
+CREATE TABLE users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(50) UNIQUE,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NULL,
+    auth_provider ENUM('local', 'google', 'facebook') DEFAULT 'local',
+    auth_provider_id VARCHAR(255) NULL,
+    is_email_verified BOOLEAN DEFAULT FALSE,
+    is_active BOOLEAN DEFAULT TRUE,
+    role ENUM('admin', 'staff', 'member', 'guest') DEFAULT 'guest',
+    last_login_at TIMESTAMP NULL,
+    login_count INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    INDEX idx_email (email),
+    INDEX idx_auth_provider (auth_provider),
+    INDEX idx_auth_provider_id (auth_provider_id),
+    INDEX idx_is_active (is_active)
+);
+```
 
+#### 2.2.2 USER_PROFILES Table (Enhanced for SSO)
+```sql
+CREATE TABLE user_profiles (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    full_name VARCHAR(100) NOT NULL,
+    phone VARCHAR(15),
+    avatar_url VARCHAR(255),
+    date_of_birth DATE NULL,
+    gender ENUM('male', 'female', 'other') NULL,
+    address TEXT,
+    city VARCHAR(50),
+    postal_code VARCHAR(10),
+    emergency_contact VARCHAR(15),
+    profile_source ENUM('manual', 'google_sync', 'merged') DEFAULT 'manual',
+    google_profile_id VARCHAR(255) NULL,
+    last_profile_sync TIMESTAMP NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_user_id (user_id),
+    INDEX idx_google_profile_id (google_profile_id),
+    INDEX idx_profile_source (profile_source)
+);
+```
+
+#### 2.2.3 SSO_SESSIONS Table
+```sql
+CREATE TABLE sso_sessions (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    provider ENUM('google', 'facebook') NOT NULL,
+    access_token TEXT NOT NULL,
+    refresh_token TEXT,
+    token_type VARCHAR(50) DEFAULT 'Bearer',
+    expires_at TIMESTAMP NOT NULL,
+    scope TEXT,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_user_id (user_id),
+    INDEX idx_provider (provider),
+    INDEX idx_expires_at (expires_at),
+    INDEX idx_is_active (is_active)
+);
+```
+
+#### 2.2.4 AUTHENTICATION_LOGS Table
+```sql
+CREATE TABLE authentication_logs (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NULL,
+    auth_method ENUM('email_password', 'google_oauth', 'guest_access') NOT NULL,
+    action ENUM('login', 'logout', 'failed_login', 'password_reset', 'sso_login') NOT NULL,
+    ip_address VARCHAR(45),
+    user_agent TEXT,
+    success BOOLEAN DEFAULT TRUE,
+    error_message VARCHAR(255) NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_user_id (user_id),
+    INDEX idx_auth_method (auth_method),
+    INDEX idx_action (action),
+    INDEX idx_created_at (created_at)
+);
+```
+
+### 2.3 Guest User Management Tables
+
+#### 2.3.1 GUEST_USERS Table (Updated for SSO Conversion)
+```sql
+CREATE TABLE guest_users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_profile_id INT NULL,
+    full_name VARCHAR(100) NOT NULL,
+    phone VARCHAR(15) NOT NULL,
+    email VARCHAR(100),
+    emergency_contact VARCHAR(15),
+    total_visits INT DEFAULT 0,
+    last_visit_date DATE,
+    is_converted_to_member BOOLEAN DEFAULT FALSE,
+    converted_user_id INT NULL,
+    conversion_method ENUM('manual', 'google_sso') NULL,
+    conversion_date TIMESTAMP NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (user_profile_id) REFERENCES user_profiles(id) ON DELETE SET NULL,
+    FOREIGN KEY (converted_user_id) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_phone (phone),
+    INDEX idx_email (email),
+    INDEX idx_is_converted (is_converted_to_member),
+    INDEX idx_conversion_method (conversion_method)
+);
+```
+
+#### 2.3.2 BOOKING_PROOFS Table
+```sql
+CREATE TABLE booking_proofs (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    booking_id INT NOT NULL,
+    proof_type ENUM('qr_code', 'reference', 'receipt', 'sms', 'email') NOT NULL,
+    reference_number VARCHAR(20) UNIQUE NOT NULL,
+    qr_code_hash VARCHAR(255),
+    qr_code_image_url VARCHAR(255),
+    receipt_url VARCHAR(255),
+    is_verified BOOLEAN DEFAULT FALSE,
+    verification_time TIMESTAMP NULL,
+    verified_by INT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE,
+    FOREIGN KEY (verified_by) REFERENCES users(id),
+    INDEX idx_booking_id (booking_id),
+    INDEX idx_reference_number (reference_number),
+    INDEX idx_qr_code_hash (qr_code_hash),
+    INDEX idx_is_verified (is_verified)
+);
+```
+
+#### 2.3.3 VERIFICATION_ATTEMPTS Table
+```sql
+CREATE TABLE verification_attempts (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    booking_id INT NULL,
+    attempt_method ENUM('qr', 'reference', 'phone', 'email') NOT NULL,
+    ip_address VARCHAR(45),
+    user_agent TEXT,
+    success BOOLEAN,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE SET NULL,
+    INDEX idx_booking_id (booking_id),
+    INDEX idx_created_at (created_at),
+    INDEX idx_success (success)
+);
+```
+
+### 2.4 Updated Core Tables untuk SSO Support
+
+#### 2.4.1 MEMBERS Table (Updated with Profile Reference)
+```sql
+CREATE TABLE members (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    user_profile_id INT NOT NULL,
+    member_code VARCHAR(10) UNIQUE NOT NULL,
+    is_active BOOLEAN DEFAULT TRUE,
+    membership_start DATE NOT NULL,
+    membership_end DATE NOT NULL,
+    membership_type ENUM('monthly', 'quarterly') NOT NULL,
+    pricing_package_id INT NULL,
+    registration_method ENUM('manual', 'google_sso', 'guest_conversion') DEFAULT 'manual',
+    converted_from_guest_id INT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_profile_id) REFERENCES user_profiles(id) ON DELETE CASCADE,
+    FOREIGN KEY (pricing_package_id) REFERENCES pricing_config(id),
+    FOREIGN KEY (converted_from_guest_id) REFERENCES guest_users(id) ON DELETE SET NULL,
+    INDEX idx_member_code (member_code),
+    INDEX idx_is_active (is_active),
+    INDEX idx_membership_end (membership_end),
+    INDEX idx_registration_method (registration_method)
+);
+```
+
+#### 2.4.2 BOOKINGS Table (Updated with Guest Support)
 ```sql
 CREATE TABLE bookings (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    member_id INT NOT NULL,
+    member_id INT NULL,
+    guest_user_id INT NULL,
     booking_type ENUM('regular', 'private_silver', 'private_gold') NOT NULL,
+    booking_reference VARCHAR(20) UNIQUE NOT NULL,
     booking_date DATE NOT NULL,
     session_time ENUM('morning', 'afternoon') NOT NULL,
     adult_count INT NOT NULL DEFAULT 0,
@@ -308,47 +607,21 @@ CREATE TABLE bookings (
     discount_amount DECIMAL(10,2) DEFAULT 0.00,
     final_amount DECIMAL(10,2) NOT NULL,
     pricing_config_id INT NULL,
+    is_checkin BOOLEAN DEFAULT FALSE,
+    checkin_time TIMESTAMP NULL,
     notes TEXT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
+    
     FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE CASCADE,
+    FOREIGN KEY (guest_user_id) REFERENCES guest_users(id) ON DELETE CASCADE,
     FOREIGN KEY (pricing_config_id) REFERENCES pricing_config(id),
     INDEX idx_member_id (member_id),
+    INDEX idx_guest_user_id (guest_user_id),
+    INDEX idx_booking_reference (booking_reference),
     INDEX idx_booking_date (booking_date),
     INDEX idx_status (status),
     INDEX idx_booking_type (booking_type)
-);
-```
-
-#### 2.2.2 MEMBERS Table (Updated)
-
-```sql
-CREATE TABLE members (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    member_code VARCHAR(10) UNIQUE NOT NULL,
-    full_name VARCHAR(100) NOT NULL,
-    phone VARCHAR(15) UNIQUE NOT NULL,
-    address TEXT NOT NULL,
-    birth_date DATE NOT NULL,
-    gender ENUM('male', 'female') NOT NULL,
-    photo_url VARCHAR(255) NULL,
-    emergency_contact VARCHAR(15) NULL,
-    is_active BOOLEAN DEFAULT TRUE,
-    membership_start DATE NOT NULL,
-    membership_end DATE NOT NULL,
-    membership_type ENUM('monthly', 'quarterly') NOT NULL,
-    pricing_package_id INT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (pricing_package_id) REFERENCES pricing_config(id),
-    INDEX idx_member_code (member_code),
-    INDEX idx_phone (phone),
-    INDEX idx_is_active (is_active),
-    INDEX idx_membership_end (membership_end)
 );
 ```
 

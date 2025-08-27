@@ -84,7 +84,49 @@ graph TD
 - **Member Tier Pricing**: Harga berbeda untuk member vs non-member
 - **Promotional Booking Rates**: Harga khusus untuk periode tertentu
 
-### 2.2 Private Session Management
+### 2.2 Booking Proof System
+
+```mermaid
+graph TD
+    A[Booking Confirmed] --> B[Generate Proof]
+    B --> C[Create Reference Number]
+    C --> D[Generate QR Code]
+    D --> E[Send SMS Confirmation]
+    E --> F[Send Email Receipt]
+    F --> G[Store in Database]
+    
+    subgraph "Proof Methods"
+        P1[Booking Reference: RJS-YYYYMMDD-XXXX]
+        P2[QR Code with Booking Data]
+        P3[SMS Confirmation]
+        P4[Email Receipt with QR]
+        P5[Digital Receipt PDF]
+    end
+    
+    subgraph "Verification Methods"
+        V1[QR Code Scanner]
+        V2[Reference Number Search]
+        V3[Phone Number Lookup]
+        V4[Email Verification]
+    end
+```
+
+#### 2.3.1 Guest Proof Features
+- **Unique Reference Number**: Format RJS-YYYYMMDD-XXXX
+- **QR Code Generation**: Contains booking data untuk verification
+- **SMS Confirmation**: Immediate proof via phone
+- **Email Receipt**: Detailed confirmation dengan QR code
+- **Digital Receipt**: PDF format untuk professional look
+- **Multiple Verification**: Staff bisa verify dengan berbagai cara
+
+#### 2.3.2 Staff Verification Interface
+- **QR Code Scanner**: Fast verification dengan scan
+- **Reference Search**: Lookup booking by reference number
+- **Phone Search**: Search booking by phone number
+- **Real-time Validation**: Instant verification results
+- **Check-in Confirmation**: Update booking status
+
+### 2.4 Private Session Management
 
 ```mermaid
 graph TD
@@ -93,7 +135,7 @@ graph TD
     C --> D[Custom Duration Options]
     D --> E[Flexible Capacity Setup]
     E --> F[Custom Rate Calculation]
-
+    
     subgraph "Dynamic Private Packages"
         P1[Silver Package - Configurable]
         P2[Gold Package - Configurable]
@@ -105,7 +147,6 @@ graph TD
 ## 3. Modul Mini Cafe
 
 ### 3.1 Dynamic Menu Management
-
 ```mermaid
 graph TD
     A[Menu Management] --> B[Item Creation]
@@ -113,7 +154,7 @@ graph TD
     C --> D[Category Management]
     D --> E[Stock Integration]
     E --> F[Price Optimization]
-
+    
     subgraph "Dynamic Menu Pricing"
         M1[Base Price Configuration]
         M2[Cost-based Pricing]
@@ -124,7 +165,6 @@ graph TD
 ```
 
 #### 3.1.1 Configurable Cafe Features
-
 - **Flexible Menu Pricing**: Harga menu dapat diubah secara real-time
 - **Cost-based Pricing**: Harga otomatis berdasarkan cost + margin
 - **Promotional Menu**: Menu khusus dengan harga promosi
@@ -132,7 +172,6 @@ graph TD
 - **Dynamic Inventory Pricing**: Harga dapat disesuaikan berdasarkan stock
 
 ### 3.2 Order Processing System
-
 ```mermaid
 graph TD
     A[Order Creation] --> B[Menu Selection]
@@ -140,7 +179,7 @@ graph TD
     C --> D[Member Discount Application]
     D --> E[Real-time Total Calculation]
     E --> F[Order Confirmation]
-
+    
     subgraph "Dynamic Order Features"
         O1[Real-time Price Updates]
         O2[Member Pricing Tiers]
@@ -152,7 +191,6 @@ graph TD
 ## 4. Modul Dynamic Pricing Management
 
 ### 4.1 Pricing Configuration System
-
 ```mermaid
 graph TD
     A[Pricing Dashboard] --> B[Base Rate Management]
@@ -161,7 +199,7 @@ graph TD
     D --> E[Seasonal Adjustments]
     E --> F[Promotional Pricing]
     F --> G[Pricing Analytics]
-
+    
     subgraph "Configuration Modules"
         C1[Membership Pricing]
         C2[Session Pricing]
@@ -171,7 +209,6 @@ graph TD
 ```
 
 #### 4.1.1 Dynamic Pricing Features
-
 - **Real-time Price Updates**: Perubahan harga langsung aktif
 - **Scheduled Price Changes**: Harga dapat dijadwalkan untuk perubahan di masa depan
 - **Conditional Pricing Rules**: Harga berdasarkan kondisi tertentu
@@ -179,7 +216,6 @@ graph TD
 - **Price History Tracking**: Riwayat perubahan harga yang lengkap
 
 ### 4.2 Pricing Rule Engine
-
 ```mermaid
 graph TD
     A[Rule Creation] --> B[Define Conditions]
@@ -187,7 +223,7 @@ graph TD
     C --> D[Set Priority]
     D --> E[Test Rules]
     E --> F[Activate Rules]
-
+    
     subgraph "Rule Types"
         R1[Time-based Rules]
         R2[Seasonal Rules]
@@ -198,7 +234,6 @@ graph TD
 ```
 
 #### 4.2.1 Rule Engine Features
-
 - **Flexible Rule Creation**: Admin dapat membuat aturan pricing yang kompleks
 - **Rule Priority Management**: Aturan dengan prioritas tertinggi diterapkan terlebih dahulu
 - **Rule Testing**: Sistem memungkinkan testing aturan sebelum diaktifkan
@@ -208,7 +243,6 @@ graph TD
 ## 5. Modul Pembayaran
 
 ### 5.1 Flexible Payment Processing
-
 ```mermaid
 graph TD
     A[Payment Request] --> B[Dynamic Amount Calculation]
@@ -216,7 +250,8 @@ graph TD
     C --> D[Discount Application]
     D --> E[Tax Calculation]
     E --> F[Payment Processing]
-
+    F --> G[Receipt Generation]
+    
     subgraph "Dynamic Payment Features"
         P1[Configurable Tax Rates]
         P2[Flexible Discount Rules]
@@ -227,17 +262,41 @@ graph TD
 ```
 
 #### 5.1.1 Configurable Payment Features
-
 - **Dynamic Tax Configuration**: Pajak dapat diatur berdasarkan lokasi/regulasi
 - **Flexible Discount System**: Sistem diskon yang dapat dikonfigurasi
 - **Multiple Payment Gateways**: Integrasi dengan berbagai payment gateway
 - **Installment Plans**: Opsi cicilan dengan konfigurasi yang fleksibel
 - **Promotional Payment Terms**: Syarat pembayaran khusus untuk promosi
 
+### 5.2 Receipt and Proof System
+
+```mermaid
+graph TD
+    A[Payment Complete] --> B[Generate Receipt]
+    B --> C[Create Digital Receipt]
+    C --> D[Email Receipt]
+    D --> E[SMS Confirmation]
+    E --> F[Download Link]
+    
+    subgraph "Receipt Components"
+        R1[Pool Logo & Header]
+        R2[Booking/Payment Details]
+        R3[QR Code for Verification]
+        R4[Terms & Conditions]
+        R5[Contact Information]
+    end
+```
+
+#### 5.2.1 Receipt Features
+- **Digital Receipt PDF**: Professional receipt format
+- **QR Code Integration**: QR code untuk easy verification
+- **Multiple Formats**: PDF, email, SMS formats
+- **Branded Design**: Consistent dengan brand identity
+- **Download Options**: Easy download dan sharing
+
 ## 6. Modul Laporan dan Analytics
 
 ### 6.1 Dynamic Revenue Analytics
-
 ```mermaid
 graph TD
     A[Analytics Dashboard] --> B[Revenue Analysis]
@@ -245,7 +304,7 @@ graph TD
     C --> D[Package Analytics]
     D --> E[Trend Analysis]
     E --> F[Optimization Recommendations]
-
+    
     subgraph "Dynamic Analytics"
         A1[Real-time Revenue Tracking]
         A2[Pricing Impact Analysis]
@@ -256,7 +315,6 @@ graph TD
 ```
 
 #### 6.1.1 Configurable Reporting Features
-
 - **Custom Report Builder**: Admin dapat membuat laporan custom
 - **Dynamic KPIs**: KPI yang dapat dikonfigurasi sesuai kebutuhan
 - **Automated Insights**: Sistem memberikan insight otomatis
@@ -264,14 +322,13 @@ graph TD
 - **Real-time Dashboards**: Dashboard yang update secara real-time
 
 ### 6.2 Pricing Analytics
-
 ```mermaid
 graph TD
     A[Pricing Analytics] --> B[Price Performance Analysis]
     B --> C[Competitive Analysis]
     C --> D[Demand Elasticity]
     D --> E[Optimization Suggestions]
-
+    
     subgraph "Pricing Insights"
         I1[Price Sensitivity Analysis]
         I2[Optimal Price Points]
@@ -283,41 +340,65 @@ graph TD
 ## 7. Modul Notifikasi
 
 ### 7.1 Dynamic Notification System
-
 ```mermaid
 graph TD
     A[Notification Engine] --> B[Event Detection]
     B --> C[Rule Evaluation]
     C --> D[Message Generation]
     D --> E[Delivery Execution]
-
+    
     subgraph "Dynamic Notifications"
         N1[Price Change Alerts]
         N2[Promotional Notifications]
         N3[Package Update Notifications]
         N4[Seasonal Reminders]
+        N5[Booking Confirmations]
+        N6[SSO Login Notifications]
     end
 ```
 
 #### 7.1.1 Configurable Notification Features
-
 - **Customizable Templates**: Template notifikasi yang dapat disesuaikan
 - **Conditional Notifications**: Notifikasi berdasarkan kondisi tertentu
 - **Scheduled Notifications**: Notifikasi yang dijadwalkan
 - **Multi-channel Delivery**: Kirim ke email, SMS, push notification
 - **Notification Analytics**: Analisis efektivitas notifikasi
 
+### 7.2 Booking Confirmation System
+```mermaid
+graph TD
+    A[Booking Confirmed] --> B[Generate Notifications]
+    B --> C[SMS Confirmation]
+    B --> D[Email Receipt]
+    B --> E[QR Code Generation]
+    E --> F[Add to Receipts]
+    
+    subgraph "Confirmation Content"
+        C1[Booking Reference Number]
+        C2[Session Details]
+        C3[Payment Information]
+        C4[QR Code for Check-in]
+        C5[Pool Rules & Guidelines]
+    end
+```
+
+#### 7.2.1 Confirmation Features
+- **Immediate SMS**: Instant confirmation dengan reference number
+- **Detailed Email**: Complete booking details dengan receipt
+- **QR Code**: Easy verification untuk check-in
+- **Multiple Formats**: SMS, email, PDF receipt
+- **Customizable Content**: Template yang dapat disesuaikan
+
 ## 8. Modul Tata Tertib dan Compliance
 
 ### 8.1 Dynamic Policy Management
-
 ```mermaid
 graph TD
     A[Policy Management] --> B[Rule Creation]
     B --> C[Policy Distribution]
     C --> D[Compliance Monitoring]
     D --> E[Policy Updates]
-
+    
     subgraph "Dynamic Policies"
         P1[Configurable Rules]
         P2[Flexible Enforcement]
@@ -327,7 +408,6 @@ graph TD
 ```
 
 #### 8.1.1 Configurable Compliance Features
-
 - **Flexible Rule Configuration**: Aturan yang dapat disesuaikan
 - **Dynamic Policy Updates**: Update kebijakan secara real-time
 - **Compliance Monitoring**: Monitoring kepatuhan secara otomatis
@@ -337,7 +417,6 @@ graph TD
 ## 9. Admin Configuration Panel
 
 ### 9.1 Dynamic System Configuration
-
 ```mermaid
 graph TD
     A[Admin Panel] --> B[System Configuration]
@@ -345,26 +424,77 @@ graph TD
     C --> D[Rule Engine Management]
     D --> E[User Management]
     E --> F[Analytics Dashboard]
-
+    
     subgraph "Configuration Modules"
         C1[Global Settings]
         C2[Pricing Configuration]
         C3[Business Rules]
         C4[Notification Settings]
         C5[Security Settings]
+        C6[SSO Configuration]
+        C7[Proof System Settings]
     end
 ```
 
 #### 9.1.1 Admin Features
-
 - **Centralized Configuration**: Semua konfigurasi di satu tempat
 - **Role-based Access**: Akses berdasarkan role dan permission
 - **Configuration Templates**: Template konfigurasi yang dapat digunakan ulang
 - **Configuration History**: Riwayat perubahan konfigurasi
 - **Backup and Restore**: Backup dan restore konfigurasi
 
-### 9.2 Pricing Management Interface
+### 9.2 SSO Configuration Management
+```mermaid
+graph TD
+    A[SSO Management] --> B[Google OAuth Setup]
+    B --> C[Client ID Configuration]
+    C --> D[Redirect URI Setup]
+    D --> E[Scopes Configuration]
+    E --> F[Token Management]
+    
+    subgraph "SSO Features"
+        S1[Google OAuth 2.0]
+        S2[Profile Sync Settings]
+        S3[Token Refresh Logic]
+        S4[Security Policies]
+        S5[User Mapping Rules]
+    end
+```
 
+#### 9.2.1 SSO Management Features
+- **Google OAuth 2.0 Integration**: Setup dan konfigurasi OAuth
+- **Profile Synchronization**: Sync Google profile dengan local data
+- **Token Management**: Handle token refresh dan validation
+- **Security Configuration**: Configure security policies untuk SSO
+- **User Mapping**: Map Google users dengan local accounts
+
+### 9.3 Guest User Management
+```mermaid
+graph TD
+    A[Guest Management] --> B[Guest Registration Tracking]
+    B --> C[Conversion Analytics]
+    C --> D[Proof System Management]
+    D --> E[Verification Settings]
+    
+    subgraph "Guest Features"
+        G1[Guest Booking Analytics]
+        G2[Conversion Rate Tracking]
+        G3[Proof Generation Settings]
+        G4[Verification Method Configuration]
+        G5[Security Settings]
+        G6[SSO Conversion Tracking]
+    end
+```
+
+#### 9.3.1 Guest Management Features
+- **Guest Analytics**: Track guest booking patterns
+- **Conversion Tracking**: Monitor guest to member conversion
+- **SSO Conversion Analytics**: Track Google SSO conversion rates
+- **Proof System Configuration**: Configure proof generation settings
+- **Verification Management**: Manage verification methods
+- **Security Configuration**: Configure security measures
+
+### 9.4 Pricing Management Interface
 ```json
 {
   "pricing_management": {
@@ -386,7 +516,19 @@ graph TD
     "pricing_rules": {
       "member_discount": "configurable_field",
       "seasonal_adjustment": "configurable_field",
-      "promotional_rate": "configurable_field"
+      "promotional_rate": "configurable_field",
+      "google_user_benefits": "configurable_field"
+    },
+    "sso_configuration": {
+      "google_oauth_enabled": "configurable_field",
+      "auto_sync_profile": "configurable_field",
+      "google_user_benefits": "configurable_field"
+    },
+    "proof_system": {
+      "reference_format": "configurable_field",
+      "qr_code_enabled": "configurable_field",
+      "sms_confirmation": "configurable_field",
+      "email_receipt": "configurable_field"
     }
   }
 }
@@ -394,7 +536,7 @@ graph TD
 
 ---
 
-**Versi**: 1.2  
+**Versi**: 1.4  
 **Tanggal**: 26 Agustus 2025  
-**Status**: Updated dengan dynamic pricing features  
+**Status**: Updated dengan Google SSO Integration  
 **Berdasarkan**: PDF Raujan Pool Syariah

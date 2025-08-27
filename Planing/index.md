@@ -2,7 +2,7 @@
 
 ## Overview
 
-Dokumen ini berisi analisa komprehensif untuk pengembangan sistem manajemen kolam renang syariah yang mencakup manajemen member, reservasi, jadwal renang, dan mini cafe berdasarkan informasi dari Raujan Pool Syariah dengan **Dynamic Pricing System** yang memungkinkan semua besaran biaya dapat dikonfigurasi secara fleksibel.
+Dokumen ini berisi analisa komprehensif untuk pengembangan sistem manajemen kolam renang syariah yang mencakup manajemen member, reservasi, jadwal renang, dan mini cafe berdasarkan informasi dari Raujan Pool Syariah dengan **Dynamic Pricing System**, **Guest Booking System**, **Google SSO Integration**, dan **Mobile-First Web Application** yang memungkinkan semua besaran biaya dapat dikonfigurasi secara fleksibel dan mendukung booking untuk guest users tanpa registrasi.
 
 ## Daftar Dokumen Analisa
 
@@ -28,6 +28,8 @@ Dokumen ini berisi analisa komprehensif untuk pengembangan sistem manajemen kola
 
 - Modul manajemen member dengan **dynamic package selection**
 - Modul reservasi dan booking dengan **real-time price calculation**
+- **Guest Booking System** dengan **multiple proof methods**
+- **Google SSO Integration** untuk authentication
 - Modul mini cafe dengan **flexible menu pricing**
 - **Dynamic Pricing Management System**
 - Modul pembayaran dengan **configurable rates**
@@ -36,16 +38,20 @@ Dokumen ini berisi analisa komprehensif untuk pengembangan sistem manajemen kola
 
 ### 4. [Arsitektur Sistem](./04-arsitektur-sistem.md)
 
-- Arsitektur 3-tier dan microservices
-- Teknologi stack (frontend, backend, infrastructure)
+- Arsitektur **Mobile-First Web App** dengan **Progressive Web App (PWA)**
+- **Laravel Backend** dengan API-first approach
+- **React/Next.js Frontend** dengan TypeScript
 - Database design dan API design
-- Security architecture
+- Security architecture dengan **Google OAuth**
+- **Push Notifications** via Firebase FCM
 - Integration dan deployment strategy
-- Performance dan scalability
+- Performance dan scalability untuk mobile
 
 ### 5. [Desain Database (ERD)](./05-desain-database.md)
 
 - Entity Relationship Diagram utama dengan **Dynamic Pricing Tables**
+- **Guest User Management** dan **Booking Proof System**
+- **Google SSO Integration** tables
 - **Pricing Configuration** dan **Pricing Rules** system
 - Detail struktur tabel database dengan konfigurasi fleksibel
 - Index dan constraints
@@ -63,20 +69,21 @@ Dokumen ini berisi analisa komprehensif untuk pengembangan sistem manajemen kola
 
 ### 7. [User Interface Design](./07-user-interface-design.md)
 
-- Design system (color palette, typography, components)
-- Mobile application design
-- Web application design
+- **Mobile-First Design System** (color palette, typography, components)
+- **Progressive Web App** design
 - Responsive design strategy
 - Accessibility guidelines
 - Interactive elements dan animations
+- **Touch-Optimized** interface
 
 ### 8. [Implementasi dan Testing](./08-implementasi-testing.md)
 
-- Rencana implementasi dan timeline
-- Technology stack implementation
-- Testing strategy (unit, integration, E2E)
+- Rencana implementasi dan timeline dengan **Laravel + React/Next.js**
+- **Technology Stack Implementation**
+- Testing strategy (unit, integration, E2E) dengan **Pest** dan **Jest**
 - Quality assurance dan security
 - Deployment strategy dan CI/CD
+- **Performance Optimization** untuk mobile
 - Monitoring dan maintenance
 
 ### 9. [Analisa Risiko dan Mitigasi](./09-risiko-dan-mitigasi.md)
@@ -98,45 +105,47 @@ Dokumen ini berisi analisa komprehensif untuk pengembangan sistem manajemen kola
 - **Seasonal Adjustments**: Harga dapat berubah berdasarkan musim/waktu
 - **Promotional Pricing**: Sistem mendukung harga promosi yang fleksibel
 
-### Default Pricing Configuration
+### Guest Booking System
 
-- **Member**: Configurable base price (default: Rp 200.000/bulan atau Rp 500.000/3 bulan)
-- **Reguler**: Configurable rates (default: Rp 25.000/dewasa weekday, Rp 30.000/dewasa weekend)
-- **Private Silver**: Configurable package (default: Rp 200.000/sesi - 1,5 jam, 5 dewasa + 5 anak)
-- **Private Gold**: Configurable package (default: Rp 400.000/sesi - 3 jam, 10 dewasa + 10 anak)
-- **Cafe**: Dynamic menu pricing dengan cost-based calculation
+- **No Account Required**: Guest dapat booking tanpa registrasi
+- **Quick Booking Form**: Form sederhana (nama, phone, email)
+- **Multiple Proof Methods**: QR code, reference number, SMS, email receipt
+- **Easy Check-in**: Multiple verification methods untuk staff
+- **Conversion Path**: Prompt untuk create account (traditional atau Google SSO)
 
-### Kapasitas Operasional
+### Google SSO Integration
 
-- **Reguler**: Maksimal 20 orang/hari (10 per sesi) - **Configurable**
-- **Member**: Kuota maksimal 100 member aktif - **Configurable**
-- **Jadwal**: 2 sesi/hari (bergantian pagi/siang), libur Jumat - **Configurable**
-- **Private**: Bergantian pagi/siang, libur Minggu - **Configurable**
+- **Hybrid Authentication**: Traditional login atau Google SSO
+- **One-Tap Registration**: Quick registration dengan Google account
+- **Profile Synchronization**: Auto-fill data dari Google profile
+- **Seamless Conversion**: Guest to member via Google SSO
+- **Token Management**: Secure OAuth token handling
 
-### Fitur Utama dengan Dynamic Pricing
+### Mobile-First Web Application
 
-1. **Member Management**: Pendaftaran, profil, keanggotaan dengan **flexible pricing**
-2. **Booking System**: Reservasi dengan **real-time price calculation**
-3. **Dynamic Pricing Management**: **Admin panel** untuk mengatur semua harga
-4. **Payment System**: Multi-payment gateway dengan **configurable rates**
-5. **Cafe Management**: Menu, order, inventory dengan **dynamic pricing**
-6. **Reporting**: Analytics dan laporan bisnis dengan **pricing insights**
-7. **Mobile App**: Cross-platform application dengan **real-time pricing**
+- **Progressive Web App**: Install sebagai native app di mobile
+- **Offline Capability**: Core functionality works offline
+- **Push Notifications**: Real-time notifications via Firebase FCM
+- **Touch-Optimized**: Mobile-friendly touch interface
+- **Fast Loading**: Optimized untuk slow mobile connections
+- **Responsive Design**: Works perfectly on all screen sizes
 
 ### Technology Stack
 
-- **Frontend**: React.js, React Native, Tailwind CSS
-- **Backend**: Node.js, Express.js, MySQL, Redis
-- **Infrastructure**: AWS (EC2, RDS, S3, CloudFront)
+- **Frontend**: React.js / Next.js, Tailwind CSS, Progressive Web App (PWA)
+- **Backend**: Laravel 11, PHP 8.2+, MySQL 8.0, Redis 7.0
+- **Infrastructure**: AWS (EC2, RDS, S3, CloudFront), CloudFlare
 - **Payment**: Midtrans integration
-- **Monitoring**: CloudWatch, Sentry, New Relic
+- **Monitoring**: Laravel Telescope, New Relic, Sentry
+- **Push Notifications**: Firebase Cloud Messaging (FCM)
+- **Mobile-First**: Progressive Web App dengan responsive design
 
 ### Timeline Pengembangan
 
-- **Phase 1**: Foundation (Weeks 1-2)
-- **Phase 2**: Core Features (Weeks 3-6)
-- **Phase 3**: Additional Features (Weeks 7-11)
-- **Phase 4**: Testing & Deployment (Weeks 12-13)
+- **Phase 1**: Foundation (Weeks 1-2) - Laravel + Next.js setup
+- **Phase 2**: Core Features (Weeks 3-6) - Auth, Booking, Payment
+- **Phase 3**: Additional Features (Weeks 7-11) - Cafe, Pricing, Admin
+- **Phase 4**: Testing & Deployment (Weeks 12-13) - Mobile optimization, PWA
 
 ### Dynamic Pricing Benefits
 
@@ -145,6 +154,40 @@ Dokumen ini berisi analisa komprehensif untuk pengembangan sistem manajemen kola
 - **Competitive Advantage**: Responsif terhadap perubahan kompetisi
 - **Seasonal Management**: Mengelola fluktuasi musiman secara efektif
 - **Promotional Agility**: Cepat meluncurkan promosi dan penawaran khusus
+
+### Guest Booking Benefits
+
+- **Lower Barrier to Entry**: Lebih mudah untuk customer baru
+- **Higher Conversion Rate**: Lebih banyak booking karena low friction
+- **Immediate Revenue**: Langsung dapat pendapatan tanpa registrasi
+- **Guest to Member Conversion**: Natural path untuk member acquisition
+- **Multiple Verification Methods**: Flexible proof system untuk guest users
+
+### Google SSO Benefits
+
+- **Quick Registration**: One-tap registration tanpa form panjang
+- **Trust Factor**: User familiar dengan Google authentication
+- **Mobile-First**: Sesuai dengan target mobile app
+- **Conversion Rate**: Memudahkan guest to member conversion
+- **Profile Sync**: Otomatis sync data dari Google
+
+### Mobile-First Web App Benefits
+
+- **Progressive Web App**: Install sebagai app di mobile device
+- **Offline Capability**: Core functionality works offline
+- **Push Notifications**: Real-time notifications via FCM
+- **Touch-Optimized**: Mobile-friendly touch interface
+- **Fast Loading**: Optimized untuk slow mobile connections
+- **Responsive Design**: Works perfectly on all screen sizes
+
+### Laravel + React/Next.js Benefits
+
+- **Laravel Backend**: Robust PHP framework dengan built-in features
+- **API-First**: Clean RESTful API dengan Laravel Sanctum
+- **TypeScript Frontend**: Type-safe development dengan Next.js
+- **Server-Side Rendering**: Better SEO dan performance
+- **PWA Support**: Native app-like experience
+- **Mobile Optimization**: Built for mobile-first approach
 
 ### Risk Management
 
@@ -155,17 +198,17 @@ Dokumen ini berisi analisa komprehensif untuk pengembangan sistem manajemen kola
 
 ## Status Dokumen
 
-| Dokumen                   | Status     | Versi | Tanggal Update | Dynamic Pricing Support |
-| ------------------------- | ---------- | ----- | -------------- | ----------------------- |
-| 01 - Analisa Kebutuhan    | ✅ Selesai | 1.1   | 26/08/2025     | ✅                      |
-| 02 - Analisa Domain       | ✅ Selesai | 1.2   | 26/08/2025     | ✅ Dynamic Pricing      |
-| 03 - Analisa Fitur        | ✅ Selesai | 1.2   | 26/08/2025     | ✅ Dynamic Features     |
-| 04 - Arsitektur Sistem    | ✅ Selesai | 1.1   | 26/08/2025     | ✅                      |
-| 05 - Desain Database      | ✅ Selesai | 1.2   | 26/08/2025     | ✅ Pricing Tables       |
-| 06 - UML Diagrams         | ✅ Selesai | 1.1   | 26/08/2025     | ✅                      |
-| 07 - UI Design            | ✅ Selesai | 1.1   | 26/08/2025     | ✅                      |
-| 08 - Implementasi Testing | ✅ Selesai | 1.1   | 26/08/2025     | ✅                      |
-| 09 - Risiko dan Mitigasi  | ✅ Selesai | 1.1   | 26/08/2025     | ✅                      |
+| Dokumen                   | Status     | Versi | Tanggal Update | Dynamic Pricing | Guest Booking | Google SSO | Laravel Stack |
+| ------------------------- | ---------- | ----- | -------------- | --------------- | ------------- | ---------- | ------------- |
+| 01 - Analisa Kebutuhan    | ✅ Selesai | 1.1   | 26/08/2025     | ✅              | ✅            | ✅         | ✅            |
+| 02 - Analisa Domain       | ✅ Selesai | 1.2   | 26/08/2025     | ✅ Dynamic      | ✅            | ✅         | ✅            |
+| 03 - Analisa Fitur        | ✅ Selesai | 1.4   | 26/08/2025     | ✅ Dynamic      | ✅ Guest      | ✅ SSO     | ✅            |
+| 04 - Arsitektur Sistem    | ✅ Selesai | 1.2   | 26/08/2025     | ✅              | ✅            | ✅         | ✅ Laravel    |
+| 05 - Desain Database      | ✅ Selesai | 1.4   | 26/08/2025     | ✅ Pricing      | ✅ Guest      | ✅ SSO     | ✅            |
+| 06 - UML Diagrams         | ✅ Selesai | 1.1   | 26/08/2025     | ✅              | ✅            | ✅         | ✅            |
+| 07 - UI Design            | ✅ Selesai | 1.1   | 26/08/2025     | ✅              | ✅            | ✅         | ✅            |
+| 08 - Implementasi Testing | ✅ Selesai | 1.2   | 26/08/2025     | ✅              | ✅            | ✅         | ✅ Laravel    |
+| 09 - Risiko dan Mitigasi  | ✅ Selesai | 1.1   | 26/08/2025     | ✅              | ✅            | ✅         | ✅            |
 
 ## Komponen Diagram
 
@@ -203,6 +246,27 @@ graph TB
         P4[Admin Interface]
     end
 
+    subgraph "Guest Booking System"
+        G1[Guest Management]
+        G2[Proof Generation]
+        G3[Verification System]
+        G4[Conversion Path]
+    end
+
+    subgraph "Google SSO Integration"
+        S1[OAuth Flow]
+        S2[Profile Sync]
+        S3[Token Management]
+        S4[Security]
+    end
+
+    subgraph "Mobile-First Web App"
+        M1[Progressive Web App]
+        M2[Push Notifications]
+        M3[Offline Support]
+        M4[Touch Interface]
+    end
+
     A1 --> D1
     A2 --> D2
     A3 --> D3
@@ -218,17 +282,32 @@ graph TB
     D2 --> P2
     I1 --> P3
     D4 --> P4
+
+    A3 --> G1
+    D2 --> G2
+    I1 --> G3
+    A3 --> G4
+
+    A3 --> S1
+    D2 --> S2
+    I1 --> S3
+    A3 --> S4
+
+    A3 --> M1
+    D1 --> M2
+    I1 --> M3
+    D4 --> M4
 ```
 
 ## Next Steps
 
-Setelah dokumen analisa komprehensif ini selesai dengan **Dynamic Pricing System**, langkah selanjutnya adalah:
+Setelah dokumen analisa komprehensif ini selesai dengan **Dynamic Pricing System**, **Guest Booking System**, **Google SSO Integration**, dan **Mobile-First Web App**, langkah selanjutnya adalah:
 
 1. **Review dan Approval**: Diskusikan dengan stakeholder
-2. **Detailed Design**: Membuat wireframe dan mockup detail untuk **pricing admin interface**
-3. **Technical Specification**: Spesifikasi teknis detail untuk **dynamic pricing engine**
-4. **Development Setup**: Setup environment dan repository
-5. **Sprint Planning**: Perencanaan sprint development dengan **pricing features**
+2. **Detailed Design**: Membuat wireframe dan mockup detail untuk **pricing admin interface**, **guest booking flow**, dan **mobile-first UI**
+3. **Technical Specification**: Spesifikasi teknis detail untuk **dynamic pricing engine**, **proof generation system**, dan **PWA implementation**
+4. **Development Setup**: Setup Laravel + React/Next.js environment dan repository
+5. **Sprint Planning**: Perencanaan sprint development dengan **pricing features**, **guest features**, dan **mobile optimization**
 6. **Implementation**: Mulai implementasi sesuai timeline
 
 ## Dynamic Pricing Implementation Priority
@@ -254,14 +333,94 @@ Setelah dokumen analisa komprehensif ini selesai dengan **Dynamic Pricing System
 - Revenue maximization tools
 - Advanced reporting
 
+## Guest Booking Implementation Priority
+
+### Phase 1: Basic Guest System
+
+- Guest user management tables
+- Quick booking form
+- Basic proof generation (reference number, SMS)
+- Staff verification interface
+
+### Phase 2: Enhanced Proof System
+
+- QR code generation dan verification
+- Email receipt system
+- Digital receipt PDF
+- Multiple verification methods
+
+### Phase 3: Conversion System
+
+- Guest to member conversion tracking
+- Account creation prompts (traditional + Google SSO)
+- Member upgrade incentives
+- Conversion analytics
+
+## Google SSO Implementation Priority
+
+### Phase 1: Basic SSO Integration
+
+- Google OAuth 2.0 setup
+- User authentication flow
+- Profile synchronization
+- Token management
+
+### Phase 2: Enhanced SSO Features
+
+- Guest to member conversion via Google
+- Profile merge functionality
+- SSO analytics tracking
+- Security enhancements
+
+## Mobile-First Web App Implementation Priority
+
+### Phase 1: PWA Foundation
+
+- Service worker setup
+- Web app manifest
+- Basic offline functionality
+- Mobile-responsive design
+
+### Phase 2: Enhanced Mobile Features
+
+- Push notifications
+- Touch gesture optimization
+- Performance optimization
+- Advanced offline capabilities
+
+## Bukti Booking untuk Guest Users
+
+### Multiple Proof Methods
+
+1. **🎫 Booking Reference Number** - Format: RJS-YYYYMMDD-XXXX
+2. **📱 SMS Confirmation** - Instant proof via phone
+3. **📧 Email Receipt** - Detailed confirmation dengan QR code
+4. **📱 QR Code** - Easy verification untuk staff
+5. **📄 Digital Receipt** - Professional receipt format
+6. **📞 Phone Verification** - Backup method untuk staff
+
+### Verification Methods
+
+- **Primary**: QR code scan
+- **Secondary**: Reference number lookup
+- **Tertiary**: Phone number search
+- **Quaternary**: Email verification
+
 ## Kontak dan Support
 
-Untuk pertanyaan atau klarifikasi terkait dokumen analisa ini, khususnya tentang **Dynamic Pricing System**, silakan menghubungi tim development atau stakeholder terkait.
+Untuk pertanyaan atau klarifikasi terkait dokumen analisa ini, khususnya tentang **Dynamic Pricing System**, **Guest Booking System**, **Google SSO Integration**, dan **Mobile-First Web App**, silakan menghubungi tim development atau stakeholder terkait.
 
 ---
 
-**Versi**: 1.2  
+**Versi**: 1.4  
 **Tanggal**: 26 Agustus 2025  
-**Status**: Complete dengan Dynamic Pricing System  
+**Status**: Complete dengan Dynamic Pricing, Guest Booking, Google SSO & Mobile-First Web App  
 **Berdasarkan**: PDF Raujan Pool Syariah  
-**Key Feature**: ✨ **Semua besaran biaya dapat dikonfigurasi secara dinamis**
+**Key Features**:
+
+- ✨ **Semua besaran biaya dapat dikonfigurasi secara dinamis**
+- 🎫 **Sistem bukti booking lengkap untuk guest users**
+- 🔐 **Google SSO integration untuk seamless authentication**
+- 📱 **Mobile-first web app dengan PWA support**
+- 🔔 **Push notifications via Firebase FCM**
+- ⚡ **Laravel backend + React/Next.js frontend stack**
