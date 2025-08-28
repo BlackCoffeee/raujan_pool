@@ -700,57 +700,11 @@ classDiagram
         +generateReceipt()
     }
 
-    class CafeMenu {
-        -int id
-        -string name
-        -string description
-        -decimal price
-        -string category
-        -string image_url
-        -boolean is_available
-        -boolean is_halal
-        +isAvailable()
-        +updatePrice()
-        +checkStock()
-        +disableMenu()
-    }
-
-    class CafeOrder {
-        -int id
-        -int member_id
-        -string order_number
-        -string status
-        -decimal total_amount
-        -timestamp order_date
-        +placeOrder()
-        +updateStatus()
-        +calculateTotal()
-        +addMenuItem()
-        +removeMenuItem()
-    }
-
-    class CafeInventory {
-        -int id
-        -int menu_id
-        -int current_stock
-        -int minimum_stock
-        -string unit
-        -timestamp last_updated
-        +updateStock()
-        +checkLowStock()
-        +getStockLevel()
-        +addStock()
-        +removeStock()
-    }
-
     User ||--|| Member : has
     Member ||--o{ Booking : makes
-    Member ||--o{ CafeOrder : places
     Package ||--o{ Member : subscribes
     Booking ||--|| Payment : has
     Booking ||--o{ Session : includes
-    CafeOrder ||--o{ CafeMenu : contains
-    CafeMenu ||--|| CafeInventory : tracks
 ```
 
 ### 2.2 Class Diagram Cafe System
