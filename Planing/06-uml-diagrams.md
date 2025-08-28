@@ -8,11 +8,11 @@
 graph TB
     subgraph "Sistem Kolam Renang Syariah"
         subgraph "Actors"
-            A1[Admin]:::admin
-            A2[Staff Front Desk]:::staff
-            A3[Staff Cafe]:::staff
-            A4[Member]:::member
-            A5[Non-Member]:::guest
+            A1[Admin]
+            A2[Staff Front Desk]
+            A3[Staff Cafe]
+            A4[Member]
+            A5[Non-Member]
         end
 
         subgraph "Member Management"
@@ -528,12 +528,7 @@ graph TB
             A3 -.-> UC151
             A3 -.-> UC153
 
-    %% Custom styling untuk lines dengan warna berbeda
-    linkStyle 0,1,2,3,4,5,6,7 stroke:#ff6b6b,stroke-width:3px
-    linkStyle 8,9,10,11,12,13,14 stroke:#4ecdc4,stroke-width:3px
-    linkStyle 15,16,17,18,19 stroke:#4ecdc4,stroke-width:3px
-    linkStyle 20,21,22,23,24,25,26,27,28 stroke:#45b7d1,stroke-width:3px
-    linkStyle 29,30,31,32,33,34,35,36 stroke:#96ceb4,stroke-width:3px
+
 ```
 
 ### 1.2 Use Case Diagram Detail Member
@@ -599,9 +594,7 @@ graph TB
     A3 -.-> UC6
 
     %% Custom styling untuk lines dengan warna berbeda
-    linkStyle 0,1,2,3,4,5,6,7,8,9,10,11 stroke:#45b7d1,stroke-width:3px
-    linkStyle 12,13,14,15,16 stroke:#ff6b6b,stroke-width:3px
-    linkStyle 17,18,19 stroke:#4ecdc4,stroke-width:3px
+
     A3 --> UC7
 ```
 
@@ -647,15 +640,6 @@ classDiagram
         +checkMembershipStatus()
         +makeBooking()
     }
-
-    classDef user-class fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
-    classDef member-class fill:#45b7d1,stroke:#333,stroke-width:2px,color:#fff
-    classDef booking-class fill:#4ecdc4,stroke:#333,stroke-width:2px,color:#fff
-    classDef session-class fill:#96ceb4,stroke:#333,stroke-width:2px,color:#fff
-    classDef package-class fill:#ffeaa7,stroke:#333,stroke-width:2px,color:#000
-
-    User:::user-class
-    Member:::member-class
 
     class Package {
         -int id
@@ -767,14 +751,6 @@ classDiagram
     Booking ||--o{ Session : includes
     CafeOrder ||--o{ CafeMenu : contains
     CafeMenu ||--|| CafeInventory : tracks
-
-    %% Custom styling untuk relationship lines
-    linkStyle 0,1 stroke:#ff6b6b,stroke-width:2px
-    linkStyle 2,3 stroke:#45b7d1,stroke-width:2px
-    linkStyle 4 stroke:#ffeaa7,stroke-width:2px
-    linkStyle 5,6 stroke:#4ecdc4,stroke-width:2px
-    linkStyle 7 stroke:#96ceb4,stroke-width:2px
-    linkStyle 8 stroke:#ff7675,stroke-width:2px
 ```
 
 ### 2.2 Class Diagram Cafe System
@@ -1377,15 +1353,6 @@ classDiagram
     UserSession ||--|| SSOSession : authenticates_via
 ```
 
-%% Custom styling untuk semua class diagrams
-classDef core-class fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
-classDef business-class fill:#4ecdc4,stroke:#333,stroke-width:2px,color:#fff
-classDef data-class fill:#96ceb4,stroke:#333,stroke-width:2px,color:#fff
-classDef config-class fill:#ffeaa7,stroke:#333,stroke-width:2px,color:#000
-classDef analytics-class fill:#74b9ff,stroke:#333,stroke-width:2px,color:#fff
-
-````
-
 ## 3. Activity Diagram
 
 ### 3.1 Activity Diagram Member Registration
@@ -1413,7 +1380,7 @@ flowchart TD
     O --> R[Generate Member Card]
     R --> S[Send Welcome Email/SMS]
     S --> T[End]
-````
+```
 
 ### 3.2 Activity Diagram Booking Process
 
