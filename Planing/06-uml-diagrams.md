@@ -870,2065 +870,1515 @@ classDiagram
     CafeInventory ||--o{ StockAlert : generates
 ```
 
-## 3. Sequence Diagram
-
-### 3.1 Core Booking Flow Sequence
+### 2.3 Class Diagram Rating & Review System
 
 ```mermaid
-sequenceDiagram
-    participant U as User
-    participant W as Web App
-    participant A as API Gateway
-    participant B as Booking Service
-    participant D as Database
-    participant N as Notification Service
+classDiagram
+    class Rating {
+        -int id
+        -int user_id
+        -int booking_id
+        -int cafe_order_id
+        -decimal overall_rating
+        -string comments
+        -timestamp created_at
+        -boolean is_verified
+        +submitRating()
+        +updateRating()
+        +deleteRating()
+        +calculateAverageRating()
+    }
 
-    Note over U: Guest/Member User
-    Note over W: React/Next.js Frontend
-    Note over A: Laravel API Gateway
-    Note over B: Booking Service
-    Note over D: MySQL Database
-    Note over N: FCM Push Service
+    class RatingComponent {
+        -int id
+        -int rating_id
+        -string component_type
+        -decimal score
+        -string description
+        +setScore()
+        +getScore()
+        +getComponentType()
+    }
 
-    U->>W: Access web application
-    W->>A: Request calendar page
-    A->>B: Get current month availability
-    B->>D: Query booking data
-    D-->>B: Return availability data
-    B-->>A: Return calendar data
-    A-->>W: Return calendar response
-    W->>U: Display calendar interface
+    class StaffRating {
+        -int id
+        -int rating_id
+        -int staff_id
+        -decimal score
+        -string feedback
+        -timestamp rated_at
+        +rateStaff()
+        +getStaffRating()
+        +updateStaffRating()
+    }
 
-    Note over U,W: Calendar Navigation
-    U->>W: Navigate to next month
-    W->>A: Request next month data
-    A->>B: Get month availability
-    B->>D: Query month bookings
-    D-->>B: Return month data
-    B-->>A: Return availability
-    A-->>W: Return calendar data
-    W->>U: Update calendar display
+    class RatingAnalytics {
+        -int id
+        -string rating_type
+        -decimal average_rating
+        -int total_ratings
+        -int five_star_count
+        -int four_star_count
+        -int three_star_count
+        -int two_star_count
+        -int one_star_count
+        +updateAnalytics()
+        +getRatingDistribution()
+        +calculateGrowthRate()
+    }
 
-    Note over U,W: Date Selection
-    U->>W: Click available date
-    W->>A: Request session details
-    A->>B: Get session availability
-    B->>D: Query session capacity
-    D-->>B: Return session data
-    B-->>A: Return session details
-    A-->>W: Return session info
-    W->>U: Display session modal
-
-    Note over U,W: Session Selection
-    U->>W: Select morning/afternoon session
-    W->>A: Request session booking
-    A->>B: Validate session availability
-    B->>D: Check capacity
-    D-->>B: Return capacity status
-    B-->>A: Return validation result
-    A-->>W: Return session confirmation
-    W->>U: Display registration form
-
-    Note over U,W: User Registration
-    U->>W: Fill registration form
-    W->>A: Submit booking request
-    A->>B: Process booking
-    B->>D: Create booking record
-    D-->>B: Return booking ID
-    B->>N: Send confirmation notifications
-    N-->>B: Confirm notifications sent
-    B-->>A: Return booking confirmation
-    A-->>W: Return booking details
-    W->>U: Display confirmation page
+    Rating ||--o{ RatingComponent : has
+    Rating ||--|| StaffRating : includes
+    Rating ||--|| RatingAnalytics : contributes_to
 ```
 
-### 3.2 Sequence Diagram Member Registration
+### 2.4 Class Diagram Promotional System
 
 ```mermaid
-sequenceDiagram
-    participant M as Member
-    participant S as Staff
-    participant A as Admin
-    participant P as Payment System
-    participant N as Notification System
+classDiagram
+    class PromotionalCampaign {
+        -int id
+        -string campaign_name
+        -string campaign_type
+        -string description
+        -date start_date
+        -date end_date
+        -decimal discount_value
+        -string discount_type
+        -boolean is_active
+        -string targeting_rules
+        +createCampaign()
+        +updateCampaign()
+        +activateCampaign()
+        +deactivateCampaign()
+        +validateEligibility()
+        +applyDiscount()
+    }
 
-    M->>S: Request Registration
-    S->>M: Provide Registration Form
-    M->>S: Submit Form & Documents
-    S->>A: Verify Documents
-    A->>S: Document Verification Result
-    S->>M: Request Payment
-    M->>P: Make Payment
-    P->>S: Payment Confirmation
-    S->>A: Approve Registration
-    A->>N: Activate Member Account
-    N->>M: Send Welcome Email
-    N->>M: Generate Member Card
-    S->>M: Provide Member Card
+    class CampaignUsage {
+        -int id
+        -int campaign_id
+        -int user_id
+        -int booking_id
+        -decimal discount_applied
+        -timestamp used_at
+        +recordUsage()
+        +getUsageCount()
+        +validateUsageLimit()
+    }
+
+    class PromotionTemplate {
+        -int id
+        -string template_name
+        -string template_type
+        -string discount_structure
+        -string targeting_criteria
+        -boolean is_active
+        +createTemplate()
+        +applyTemplate()
+        +duplicateTemplate()
+    }
+
+    class CampaignAnalytics {
+        -int id
+        -int campaign_id
+        -int total_usage
+        -decimal total_discount_given
+        -int conversion_count
+        -decimal conversion_rate
+        +updateAnalytics()
+        +getCampaignPerformance()
+    }
+
+    PromotionalCampaign ||--o{ CampaignUsage : tracks
+    PromotionalCampaign ||--|| PromotionTemplate : based_on
+    PromotionalCampaign ||--|| CampaignAnalytics : generates
 ```
 
-### 3.2 Sequence Diagram Booking Process
+### 2.5 Class Diagram Manual Payment System
 
 ```mermaid
-sequenceDiagram
-    participant M as Member
-    participant B as Booking System
-    participant S as Session System
-    participant P as Payment System
-    participant N as Notification System
+classDiagram
+    class ManualPayment {
+        -int id
+        -int booking_id
+        -int user_id
+        -decimal amount
+        -string bank_account
+        -string transfer_reference
+        -string payment_proof_url
+        -string status
+        -timestamp payment_date
+        -timestamp verified_at
+        -int verified_by
+        +submitPayment()
+        +verifyPayment()
+        +rejectPayment()
+        +generatePaymentInstructions()
+    }
 
-    M->>B: Request Booking
-    B->>S: Check Availability
-    S->>B: Availability Status
-    alt Available
-        B->>M: Show Booking Form
-        M->>B: Submit Booking Details
-        B->>S: Reserve Slot
-        S->>B: Confirmation
-        B->>P: Process Payment
-        P->>B: Payment Result
-        alt Payment Success
-            B->>M: Booking Confirmation
-            B->>N: Send Confirmation Email
-            N->>M: Booking Details
-        else Payment Failed
-            B->>M: Payment Failed
-            S->>B: Release Slot
-        end
-    else Not Available
-        B->>M: Slot Unavailable
-        B->>M: Show Alternative Times
-    end
+    class BankAccountConfig {
+        -int id
+        -string bank_name
+        -string account_number
+        -string account_holder
+        -string branch_code
+        -boolean is_active
+        +addBankAccount()
+        +updateBankAccount()
+        +deactivateAccount()
+    }
+
+    class PaymentVerificationLog {
+        -int id
+        -int payment_id
+        -int admin_id
+        -string action_type
+        -string verification_notes
+        -timestamp verified_at
+        +logVerification()
+        +getVerificationHistory()
+    }
+
+    ManualPayment ||--|| BankAccountConfig : uses
+    ManualPayment ||--o{ PaymentVerificationLog : has
 ```
 
-### 3.3 Sequence Diagram Cafe Order
+### 2.6 Class Diagram Dynamic Member Quota Management
 
 ```mermaid
-sequenceDiagram
-    participant C as Customer
-    participant O as Order System
-    participant I as Inventory System
-    participant K as Kitchen
-    participant P as Payment System
+classDiagram
+    class MemberQuotaConfig {
+        -int id
+        -int max_members
+        -int current_members
+        -int grace_period_days
+        -int warning_period_days
+        -boolean is_active
+        +updateQuota()
+        +getAvailableSlots()
+        +checkQuotaFull()
+    }
 
-    C->>O: Browse Menu
-    O->>C: Show Available Menu
-    C->>O: Select Items
-    O->>I: Check Stock
-    I->>O: Stock Availability
-    alt Stock Available
-        O->>C: Confirm Order
-        C->>P: Make Payment
-        P->>O: Payment Confirmation
-        O->>I: Update Stock
-        I->>O: Stock Updated
-        O->>K: Send Order to Kitchen
-        K->>O: Order Ready
-        O->>C: Order Completed
-    else Low Stock
-        O->>C: Item Unavailable
-        C->>O: Modify Order
-    end
+    class MemberQueue {
+        -int id
+        -int user_id
+        -string queue_position
+        -date joined_date
+        -string status
+        -timestamp promoted_at
+        +joinQueue()
+        +updatePosition()
+        +promoteMember()
+        +leaveQueue()
+    }
+
+    class MemberExpiryTracking {
+        -int id
+        -int member_id
+        -date expiry_date
+        -date warning_sent_date
+        -date deactivation_date
+        -string status
+        +trackExpiry()
+        +sendWarning()
+        +deactivateMember()
+    }
+
+    class QuotaHistory {
+        -int id
+        -int quota_config_id
+        -int total_members
+        -int active_members
+        -int queue_length
+        -timestamp recorded_at
+        +recordHistory()
+        +getQuotaTrends()
+    }
+
+    MemberQuotaConfig ||--o{ MemberQueue : manages
+    MemberQuotaConfig ||--o{ MemberExpiryTracking : tracks
+    MemberQuotaConfig ||--o{ QuotaHistory : generates
 ```
 
-### 2.4 Rating System Sequence Diagram
+### 2.7 Class Diagram Member Daily Swimming Limit
 
 ```mermaid
-sequenceDiagram
-    participant U as User
-    participant W as Web App
-    participant A as API Gateway
-    participant B as Rating Service
-    participant D as Database
-    participant N as Notification Service
+classDiagram
+    class MemberDailyUsage {
+        -int id
+        -int member_id
+        -date usage_date
+        -int free_sessions_used
+        -int paid_sessions_used
+        -decimal total_paid_amount
+        +checkDailyLimit()
+        +updateUsage()
+        +resetDailyUsage()
+        +getUsageSummary()
+    }
 
-    Note over U: User completes service
-    Note over W: React/Next.js Frontend
-    Note over A: Laravel API Gateway
-    Note over B: Rating Service
-    Note over D: MySQL Database
-    Note over N: FCM Push Service
+    class MemberLimitOverride {
+        -int id
+        -int member_id
+        -int admin_id
+        -string override_reason
+        -timestamp override_date
+        -boolean is_active
+        +applyOverride()
+        +revokeOverride()
+        +getOverrideHistory()
+    }
 
-    U->>W: Complete booking/session
-    W->>A: Trigger rating request
-    A->>B: Get user rating form
-    B->>D: Fetch user history
-    D-->>B: User history data
-    B-->>A: Rating form components
-    A-->>W: Display rating interface
-    W-->>U: Show rating form
+    class MemberSessionHistory {
+        -int id
+        -int member_id
+        -int booking_id
+        -string session_type
+        -decimal session_cost
+        -timestamp session_date
+        +recordSession()
+        +getSessionHistory()
+    }
 
-    U->>W: Rate different aspects
-    W->>A: Submit ratings
-    A->>B: Process rating submission
-    B->>D: Store rating data
-    B->>D: Update rating analytics
-    B->>N: Send feedback notification
-    N-->>U: Push notification
-    B-->>A: Rating confirmation
-    A-->>W: Success message
-    W-->>U: Rating submitted
-
-    Note over B: Rating Components
-    Note over B: Booking Experience
-    Note over B: Cafe Service
-    Note over B: Staff Service
-    Note over B: Facility Quality
-    Note over B: Overall Satisfaction
+    MemberDailyUsage ||--o{ MemberLimitOverride : allows
+    MemberDailyUsage ||--o{ MemberSessionHistory : tracks
 ```
 
-### 2.5 Promotional Pricing Sequence Diagram
+### 2.8 Class Diagram Private Pool Rental System
 
 ```mermaid
-sequenceDiagram
-    participant U as User
-    participant W as Web App
-    participant A as API Gateway
-    participant P as Pricing Service
-    participant C as Campaign Service
-    participant D as Database
-    participant N as Notification Service
+classDiagram
+    class PrivatePoolBooking {
+        -int id
+        -int customer_id
+        -date booking_date
+        -time start_time
+        -time end_time
+        -int duration_minutes
+        -string customer_type
+        -decimal base_price
+        -decimal additional_charge
+        -decimal total_price
+        -string status
+        +createBooking()
+        +calculatePrice()
+        +extendBooking()
+        +completeBooking()
+    }
 
-    Note over U: User makes booking
-    Note over W: React/Next.js Frontend
-    Note over A: Laravel API Gateway
-    Note over P: Pricing Service
-    Note over C: Campaign Service
-    Note over D: MySQL Database
-    Note over N: FCM Push Service
+    class PrivatePoolPricingConfig {
+        -int id
+        -decimal base_hourly_rate
+        -decimal new_customer_bonus_minutes
+        -decimal returning_customer_charge
+        -int visit_threshold
+        -boolean is_active
+        +updatePricing()
+        +calculateCustomerPrice()
+    }
 
-    U->>W: Select booking options
-    W->>A: Request booking pricing
-    A->>P: Calculate base price
-    P->>D: Get pricing config
-    D-->>P: Current pricing data
-    P-->>A: Base price calculated
-    A->>C: Check active promotions
-    C->>D: Get eligible campaigns
-    D-->>C: Campaign data
-    C->>C: Evaluate user eligibility
-    C->>C: Select best promotion
-    C-->>A: Promotion applied
-    A->>P: Apply promotional pricing
-    P->>D: Store promotion usage
-    P-->>A: Final promotional price
-    A-->>W: Display pricing options
-    W-->>U: Show promotional pricing
+    class CustomerVisitHistory {
+        -int id
+        -int customer_id
+        -int visit_count
+        -decimal total_spent
+        -date first_visit
+        -date last_visit
+        +updateVisitHistory()
+        +getCustomerType()
+        +calculateVisitMetrics()
+    }
 
-    Note over C: Promotion Types
-    Note over C: Percentage Discount
-    Note over C: Fixed Amount
-    Note over C: Free Additional Person
-    Note over C: Package Deals
-    Note over C: Loyalty Rewards
-
-    U->>W: Confirm booking with promo
-    W->>A: Complete promotional booking
-    A->>P: Finalize pricing
-    A->>N: Send promotion confirmation
-    N-->>U: Promotional receipt
-    A-->>W: Booking confirmation
-    W-->>U: Promotional booking complete
+    PrivatePoolBooking ||--|| PrivatePoolPricingConfig : uses
+    PrivatePoolBooking ||--|| CustomerVisitHistory : tracks
 ```
 
-### 2.6 Check-in Process Sequence Diagram
+### 2.9 Class Diagram Barcode System
 
 ```mermaid
-sequenceDiagram
-    participant G as Guest/Member
-    participant S as Staff
-    participant W as Web App
-    participant A as API Gateway
-    participant C as Check-in Service
-    participant D as Database
-    participant E as Equipment Service
-    participant N as Notification Service
+classDiagram
+    class MenuBarcode {
+        -int id
+        -int menu_id
+        -string barcode_value
+        -string qr_code_url
+        -string barcode_image_url
+        -boolean is_active
+        -timestamp generated_at
+        +generateBarcode()
+        +updateBarcode()
+        +deactivateBarcode()
+        +getBarcodeData()
+    }
 
-    Note over G: Guest/Member arrives
-    Note over S: Staff at front desk
-    Note over W: React/Next.js Frontend
-    Note over A: Laravel API Gateway
-    Note over C: Check-in Service
-    Note over D: MySQL Database
-    Note over E: Equipment Management
-    Note over N: FCM Push Service
+    class BarcodeLocation {
+        -int id
+        -string location_name
+        -string location_code
+        -string description
+        -boolean is_active
+        -string menu_category_filter
+        +addLocation()
+        +updateLocation()
+        +getMenuByLocation()
+    }
 
-    G->>S: Arrive at reception
-    S->>W: Access check-in interface
-    W->>A: Get today's bookings
-    A->>C: Fetch booking data
-    C->>D: Query bookings
-    D-->>C: Booking information
-    C-->>A: Today's bookings list
-    A-->>W: Display bookings
-    W-->>S: Show check-in screen
+    class BarcodeScan {
+        -int id
+        -int menu_id
+        -int user_id
+        -string location_code
+        -timestamp scanned_at
+        -string device_info
+        +recordScan()
+        +getScanHistory()
+        +analyzeScanPatterns()
+    }
 
-    S->>G: Request identification
-    G->>S: Provide QR/Reference/ID
-    S->>W: Input verification method
-    W->>A: Verify booking
-    A->>C: Validate booking details
-    C->>D: Check booking status
-    D-->>C: Booking validation result
-    C-->>A: Booking verified
-    A-->>W: Confirmation
-    W-->>S: Booking confirmed
-
-    S->>W: Process check-in
-    W->>A: Record attendance
-    A->>C: Create attendance record
-    C->>D: Store attendance data
-    A->>E: Issue equipment
-    E->>D: Update equipment inventory
-    A->>N: Send check-in confirmation
-    N-->>G: Check-in receipt
-    A-->>W: Check-in complete
-    W-->>S: Success message
-    S->>G: Guide to facilities
-
-    Note over C: Verification Methods
-    Note over C: QR Code Scan
-    Note over C: Reference Number
-    Note over C: Phone/Email Search
-    Note over C: Member Card
-    Note over C: Manual Entry
+    MenuBarcode ||--|| BarcodeLocation : available_at
+    MenuBarcode ||--o{ BarcodeScan : generates
 ```
 
-### 2.7 Dynamic Member Quota Management Sequence Diagram
+### 2.10 Class Diagram Comprehensive Reporting System
 
 ```mermaid
-sequenceDiagram
-    participant U as User
-    participant W as Web App
-    participant A as API Gateway
-    participant Q as Quota Service
-    participant N as Notification Service
-    participant D as Database
+classDiagram
+    class Report {
+        -int id
+        -string report_type
+        -string report_name
+        -date report_date
+        -string report_format
+        -string report_url
+        -int generated_by
+        -timestamp generated_at
+        +generateReport()
+        +exportReport()
+        +scheduleReport()
+    }
 
-    Note over U: User wants to become member
-    Note over W: React/Next.js Frontend
-    Note over A: Laravel API Gateway
-    Note over Q: Quota Management Service
-    Note over N: FCM Push Service
-    Note over D: MySQL Database
+    class FinancialReport {
+        -int id
+        -int report_id
+        -decimal total_revenue
+        -decimal total_expenses
+        -decimal net_profit
+        -int transaction_count
+        -date period_start
+        -date period_end
+        +calculateMetrics()
+        +generatePandL()
+        +generateCashFlow()
+    }
 
-    U->>W: Request member registration
-    W->>A: Check quota availability
-    A->>Q: Get current quota status
-    Q->>D: Fetch quota configuration
-    D-->>Q: Current quota data
-    Q-->>A: Quota status (full/available)
-    A-->>W: Quota status response
+    class OperationalReport {
+        -int id
+        -int report_id
+        -int total_bookings
+        -int total_members
+        -int session_utilization
+        -int staff_performance_avg
+        -date report_period
+        +calculateUtilization()
+        +generateBookingAnalytics()
+        +generateMemberAnalytics()
+    }
 
-    alt Quota Available
-        W-->>U: Proceed with registration
-    else Quota Full
-        W-->>U: Offer to join queue
-        U->>W: Accept queue invitation
-        W->>A: Join member queue
-        A->>Q: Add to queue
-        Q->>D: Insert queue record
-        A->>N: Send queue confirmation
-        N-->>U: Queue position notification
-        A-->>W: Queue position details
-        W-->>U: Queue position confirmed
-    end
+    class CustomerAnalytics {
+        -int id
+        -int report_id
+        -int total_customers
+        -decimal retention_rate
+        -decimal satisfaction_score
+        -string demographics_data
+        -date analysis_period
+        +analyzeCustomerBehavior()
+        +calculateRetentionMetrics()
+        +generateDemographicsReport()
+    }
 
-    Note over Q: Member Expiry Processing (Daily Job)
-    Note over Q: Check for expired members
-    Q->>D: Get members expiring in 3 days
-    D-->>Q: List of expiring members
-    Q->>N: Send warning notifications
-    N-->>U: Expiry warning (3 days before)
+    class ReportSchedule {
+        -int id
+        -int report_id
+        -string schedule_type
+        -string frequency
+        -time delivery_time
+        -string recipients
+        -boolean is_active
+        +createSchedule()
+        +updateSchedule()
+        +executeScheduledReport()
+    }
 
-    Note over Q: Grace Period Processing
-    Note over Q: Check members in grace period
-    Q->>D: Get members past expiry date
-    D-->>Q: Members in grace period
-    Q->>D: Deactivate members (3 days after expiry)
-    Q->>Q: Trigger queue promotion
-    Q->>D: Get first in queue
-    D-->>Q: Queue member details
-    Q->>N: Send promotion offer
-    N-->>U: Promotion offer notification
-
-    Note over U: User receives promotion offer
-    U->>W: Respond to promotion
-    W->>A: Confirm/decline promotion
-    A->>Q: Process promotion response
-    Q->>D: Update member status
-
-    alt User Accepts
-        Q->>D: Activate member
-        A->>N: Send activation confirmation
-        N-->>U: Member activation success
-    else User Declines
-        Q->>Q: Promote next in queue
-        Q->>N: Send next promotion offer
-        N-->>U: Next user gets promotion offer
-    end
-
-    Note over Q: Admin Quota Management
-    Note over Q: Admin updates quota settings
-    A->>Q: Update quota configuration
-    Q->>D: Update quota limits
-    Q->>Q: Check for available promotions
-    Q->>N: Send quota change notifications
-    N-->>U: Quota change notification
+    Report ||--|| FinancialReport : includes
+    Report ||--|| OperationalReport : includes
+    Report ||--|| CustomerAnalytics : includes
+    Report ||--o{ ReportSchedule : schedules
 ```
 
-### 2.8 Member Daily Swimming Limit Sequence Diagram
+### 2.11 Class Diagram System Integration
 
 ```mermaid
-sequenceDiagram
-    participant M as Member
-    participant W as Web App
-    participant A as API Gateway
-    participant L as Limit Service
-    participant B as Booking Service
-    participant P as Payment Service
-    participant D as Database
+classDiagram
+    class Notification {
+        -int id
+        -int user_id
+        -string notification_type
+        -string title
+        -string message
+        -string status
+        -timestamp sent_at
+        -timestamp read_at
+        +sendNotification()
+        +markAsRead()
+        +getUnreadCount()
+    }
 
-    Note over M: Member wants to book session
-    Note over W: React/Next.js Frontend
-    Note over A: Laravel API Gateway
-    Note over L: Daily Limit Service
-    Note over B: Booking Management Service
-    Note over P: Payment Processing Service
-    Note over D: MySQL Database
+    class SystemLog {
+        -int id
+        -string action_type
+        -int user_id
+        -string description
+        -string ip_address
+        -timestamp created_at
+        +logAction()
+        +getActivityLog()
+        +exportLogs()
+    }
 
-    M->>W: Request to book session
-    W->>A: Check daily limit for member
-    A->>L: Get member daily usage
-    L->>D: Fetch daily usage record
-    D-->>L: Daily usage data
-    L-->>A: Daily limit status
-    A-->>W: Can book free session?
+    class UserSession {
+        -int id
+        -int user_id
+        -string session_token
+        -string device_info
+        -timestamp login_at
+        -timestamp logout_at
+        -boolean is_active
+        +createSession()
+        +validateSession()
+        +logoutSession()
+    }
 
-    alt Can Book Free Session
-        W-->>M: Free session available
-        M->>W: Confirm free booking
-        W->>A: Create free session booking
-        A->>B: Process free booking
-        B->>D: Insert booking record
-        A->>L: Update daily usage
-        L->>D: Update free sessions used
-        A-->>W: Booking confirmed (free)
-        W-->>M: Free session booked successfully
-    else Daily Limit Reached
-        W-->>M: Daily limit reached, additional session requires payment
-        M->>W: Confirm paid booking
-        W->>A: Create paid session booking
-        A->>B: Process paid booking
-        A->>P: Calculate additional session price
-        P->>D: Get pricing configuration
-        P-->>A: Additional session price
-        A-->>W: Payment required for additional session
-        W-->>M: Payment form displayed
+    class SSOSession {
+        -int id
+        -int user_id
+        -string provider
+        -string provider_user_id
+        -string access_token
+        -timestamp expires_at
+        +createSSOSession()
+        +refreshToken()
+        +validateSSO()
+    }
 
-        alt Member Completes Payment
-            M->>W: Complete payment
-            W->>A: Process payment
-            A->>P: Process manual payment
-            P->>D: Update payment record
-            A->>L: Update daily usage
-            L->>D: Update paid sessions used
-            A-->>W: Payment confirmed, booking created
-            W-->>M: Additional session booked successfully
-        end
-    end
-
-    Note over L: Daily Limit Reset (Midnight)
-    Note over L: Reset all member daily usage
-    L->>D: Reset daily usage counters
-    L->>D: Archive daily usage history
-
-    Note over A: Admin Override System
-    Note over A: Admin applies limit override
-    A->>L: Apply member limit override
-    L->>D: Insert override record
-    L->>D: Update daily usage with override
-    A->>L: Send override notification
-    L-->>M: Override applied notification
+    Notification ||--|| UserSession : sends_to
+    UserSession ||--o{ SystemLog : generates
+    UserSession ||--|| SSOSession : authenticates_via
 ```
 
-### 2.9 Private Pool Rental System Sequence Diagram
+%% Custom styling untuk semua class diagrams
+classDef core-class fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
+classDef business-class fill:#4ecdc4,stroke:#333,stroke-width:2px,color:#fff
+classDef data-class fill:#96ceb4,stroke:#333,stroke-width:2px,color:#fff
+classDef config-class fill:#ffeaa7,stroke:#333,stroke-width:2px,color:#000
+classDef analytics-class fill:#74b9ff,stroke:#333,stroke-width:2px,color:#fff
 
-````mermaid
-sequenceDiagram
-    participant C as Customer
-    participant W as Web App
-    participant A as API Gateway
-    participant P as Private Pool Service
-    participant H as Customer History Service
-    participant R as Pricing Service
-    participant D as Database
-
-    Note over C: Customer wants to book private pool
-    Note over W: React/Next.js Frontend
-    Note over A: Laravel API Gateway
-    Note over P: Private Pool Management Service
-    Note over H: Customer History Service
-    Note over R: Dynamic Pricing Service
-    Note over D: MySQL Database
-
-    C->>W: Access private pool booking
-    W->>A: Get pool availability
-    A->>P: Check pool availability
-    P->>D: Fetch availability calendar
-    D-->>P: Available time slots
-    P-->>A: Pool availability data
-    A-->>W: Available slots displayed
-    W-->>C: Select date and time
-
-    C->>W: Enter customer information
-    W->>A: Submit customer details
-    A->>H: Check customer history
-    H->>D: Query customer visit history
-    D-->>H: Customer history data
-    H-->>A: Customer classification (new/returning)
-
-    alt New Customer
-        A->>R: Calculate price with bonus
-        R->>D: Get pricing configuration
-        D-->>R: Pricing config (1h 30min + 30min bonus)
-        R->>A: Price calculation (base price only)
-        A-->>W: Price with 30min bonus time
-        W-->>C: Display price: Base Price (1h 33min total)
-    else Returning Customer
-        A->>R: Calculate price with additional charge
-        R->>D: Get visit count and pricing
-        D-->>R: Visit count and pricing config
-        R->>A: Price calculation (base + additional charge)
-        A-->>W: Price with additional charge
-        W-->>C: Display price: Base Price + Additional Charge
-    end
-
-    C->>W: Confirm booking
-    W->>A: Process private pool booking
-    A->>P: Create booking record
-    P->>D: Insert private pool booking
-    A->>H: Update customer history
-    H->>D: Update visit counter and spending
-    A->>R: Generate receipt
-    R-->>A: Receipt with price breakdown
-    A-->>W: Booking confirmation with receipt
-    W-->>C: Booking confirmed
-
-    Note over A: Admin Pricing Management
-    Note over A: Admin updates pricing configuration
-    A->>R: Update pricing rules
-    R->>D: Update pricing configuration
-    A->>R: Apply new pricing to future bookings
-    R-->>A: New pricing applied
-    A->>H: Send pricing update notifications
-    H-->>C: Pricing change notification
-
-    Note over P: Timer Management
-    Note over P: Track ongoing pool usage
-    P->>D: Start timer for booking
-    P->>D: Monitor duration (1h 30min or 2 hours)
-    P->>H: Update usage statistics
-    H->>D: Update analytics data
-                P-->>C: Time remaining notification
-            P-->>C: Session completion notification
-        ```
-
-        ### 2.7 Cafe System with Barcode Sequence Diagram
-
-        ```mermaid
-        sequenceDiagram
-            participant C as Customer
-            participant B as Barcode Scanner
-            participant M as Menu System
-            participant A as API Gateway
-            participant K as Kitchen System
-            participant P as Payment System
-            participant N as Notification Service
-
-            Note over C: Customer at pool area
-            Note over B: QR Code/Barcode Scanner
-            Note over M: React/Next.js Menu Interface
-            Note over A: Laravel API Gateway
-            Note over K: Kitchen Management System
-            Note over P: Manual Payment System
-            Note over N: FCM Push Service
-
-            C->>B: Scan barcode/QR code
-            B->>M: Redirect to menu page
-            M->>A: Get menu for location
-            A->>M: Return menu with availability
-            M-->>C: Display menu with availability
-
-            C->>M: Browse menu items
-            M->>A: Check item availability
-            A-->>M: Item availability status
-            M-->>C: Show available/unavailable items
-
-            C->>M: Add item to cart
-            M->>A: Add item to cart session
-            C->>M: Add special notes
-            M->>A: Store notes with item
-            C->>M: Set quantity
-            M->>A: Update cart
-
-            C->>M: Continue shopping
-            M-->>C: Updated cart display
-
-            C->>M: Review cart
-            M-->>C: Cart summary with total
-            C->>M: Proceed to payment
-            M->>P: Create payment request
-            P-->>M: Payment instructions
-            M-->>C: Payment upload interface
-
-            C->>M: Upload payment proof
-            M->>A: Submit order with payment proof
-            A->>K: Create kitchen order
-            A->>N: Send order notification
-            N-->>C: Order confirmation notification
-
-            Note over A: Admin Payment Verification
-            Note over A: Admin reviews payment proof
-            A->>P: Verify payment
-            P-->>A: Payment verification result
-            A->>K: Confirm payment to kitchen
-            K-->>A: Order preparation started
-
-            Note over K: Kitchen Preparation
-            K->>K: Prepare food items
-            K->>A: Update order status: preparing
-            A->>N: Send preparation notification
-            N-->>C: Food preparation started
-
-            K->>A: Update order status: ready
-            A->>N: Send ready notification
-            N-->>C: Food ready notification
-
-            Note over A: Delivery Process
-            A->>A: Assign delivery staff
-            A->>N: Send delivery notification
-            N-->>C: Delivery in progress
-
-            Note over C: Customer Receives Food
-            C->>M: Confirm food reception
-            M->>A: Update order status: delivered
-            A->>N: Send delivery confirmation
-            N-->>C: Order completed notification
-
-            Note over A: Order Completion
-            A->>A: Mark order as completed
-            A->>A: Update inventory
-            A->>A: Generate receipt
-            A->>N: Send completion notification
-            N-->>C: Thank you notification
-        ```
-
-### 2.3 Core Booking Flow Sequence Diagram
-
-## 4. Activity Diagram
-
-### 4.1 Activity Diagram Member Registration
-
-```mermaid
-graph TD
-    A[Start Registration] --> B[Fill Registration Form]
-    B --> C[Upload Documents]
-    C --> D[Choose Package]
-    D --> E[Submit Application]
-    E --> F[Staff Verification]
-    F --> G{Documents Valid?}
-    G -->|No| H[Request Correction]
-    H --> B
-    G -->|Yes| I[Calculate Payment]
-    I --> J[Payment Process]
-    J --> K{Payment Success?}
-    K -->|No| L[Payment Failed]
-    L --> M[Retry Payment]
-    M --> J
-    K -->|Yes| N[Activate Account]
-    N --> O[Generate Member Code]
-    O --> P[Send Welcome Email]
-    P --> Q[Create Member Card]
-    Q --> R[Registration Complete]
-
-    %% Custom styling untuk activity nodes
-    classDef start-end fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
-    classDef process fill:#4ecdc4,stroke:#333,stroke-width:2px,color:#fff
-    classDef decision fill:#ffeaa7,stroke:#333,stroke-width:2px,color:#000
-    classDef success fill:#96ceb4,stroke:#333,stroke-width:2px,color:#fff
-    classDef failure fill:#ff7675,stroke:#333,stroke-width:2px,color:#fff
-
-    A:::start-end
-    B:::process
-    C:::process
-    D:::process
-    E:::process
-    F:::process
-    G:::decision
-    H:::failure
-    I:::process
-    J:::process
-    K:::decision
-    L:::failure
-    M:::process
-    N:::success
-    O:::success
-    P:::success
-    Q:::success
-    R:::start-end
 ````
 
-### 4.2 Activity Diagram Booking Process
+## 3. Activity Diagram
+
+### 3.1 Activity Diagram Member Registration
 
 ```mermaid
-graph TD
-    A[Start Booking] --> B[Select Date]
-    B --> C[Choose Session Type]
-    C --> D{Type?}
-    D -->|Regular| E[Check Regular Availability]
-    D -->|Private| F[Select Private Package]
-    F --> G[Check Private Availability]
-    E --> H{Slot Available?}
-    G --> I{Slot Available?}
-    H -->|No| J[Show Alternative]
-    I -->|No| K[Show Alternative]
-    H -->|Yes| L[Fill Booking Details]
-    I -->|Yes| M[Fill Private Details]
-    L --> N[Calculate Amount]
-    M --> O[Calculate Private Amount]
-    N --> P[Payment Process]
-    O --> P
-    P --> Q{Payment Success?}
-    Q -->|No| R[Release Slot]
-    R --> S[Booking Failed]
-    Q -->|Yes| T[Confirm Booking]
-    T --> U[Send Confirmation]
-    U --> V[Booking Complete]
+flowchart TD
+    A[Start] --> B[User Access Registration Page]
+    B --> C[Fill Registration Form]
+    C --> D[Upload Required Documents]
+    D --> E[Choose Package]
+    E --> F[Calculate Total Cost]
+    F --> G[Proceed to Payment]
+    G --> H[Make Payment]
+    H --> I{Payment Successful?}
+    I -->|Yes| J[Generate Temporary Account]
+    I -->|No| K[Show Payment Error]
+    K --> L[Retry Payment]
+    L --> I
+    J --> M[Admin Review Documents]
+    M --> N{Documents Valid?}
+    N -->|Yes| O[Activate Member Account]
+    N -->|No| P[Request Document Correction]
+    P --> Q[User Upload Corrected Documents]
+    Q --> M
+    O --> R[Generate Member Card]
+    R --> S[Send Welcome Email/SMS]
+    S --> T[End]
+````
+
+### 3.2 Activity Diagram Booking Process
+
+```mermaid
+flowchart TD
+    A[Start] --> B[User Access Booking Page]
+    B --> C[View Calendar Interface]
+    C --> D{Navigate to Future Month?}
+    D -->|Yes| E[Forward Calendar]
+    D -->|No| F[Select Available Date]
+    E --> F
+    F --> G[View Session Details]
+    G --> H{Session Available?}
+    H -->|Yes| I[Select Session]
+    H -->|No| J[Show Alternative Sessions]
+    J --> I
+    I --> K[Choose User Type]
+    K --> L{Member or Guest?}
+    L -->|Member| M[Login to Account]
+    L -->|Guest| N[Fill Guest Form]
+    M --> O[Load Member Profile]
+    N --> O
+    O --> P[Calculate Total Cost]
+    P --> Q[Review Booking Details]
+    Q --> R{Details Correct?}
+    R -->|Yes| S[Proceed to Payment]
+    R -->|No| T[Edit Booking Details]
+    T --> P
+    S --> U[Select Payment Method]
+    U --> V{Payment Type?}
+    V -->|Manual Transfer| W[Show Transfer Instructions]
+    V -->|Other| X[Process Online Payment]
+    W --> Y[Upload Payment Proof]
+    X --> Z{Payment Successful?}
+    Z -->|Yes| AA[Generate Booking Confirmation]
+    Z -->|No| BB[Show Payment Error]
+    BB --> S
+    Y --> CC[Admin Verify Payment]
+    CC --> DD{Payment Verified?}
+    DD -->|Yes| AA
+    DD -->|No| EE[Request Payment Correction]
+    EE --> Y
+    AA --> FF[Send Confirmation Email/SMS]
+    FF --> GG[Generate QR Code]
+    GG --> HH[End]
 ```
 
-### 4.3 Activity Diagram Cafe Order
+### 3.3 Activity Diagram Cafe Order Process
 
 ```mermaid
-graph TD
-    A[Start Order] --> B[Browse Menu]
-    B --> C[Select Items]
-    C --> D[Check Stock]
-    D --> E{Stock Available?}
-    E -->|No| F[Remove Item]
-    F --> C
-    E -->|Yes| G[Add to Cart]
-    G --> H[Review Order]
-    H --> I{Order Valid?}
-    I -->|No| C
-    I -->|Yes| J[Process Payment]
-    J --> K{Payment Success?}
-    K -->|No| L[Order Failed]
-    K -->|Yes| M[Update Inventory]
-    M --> N[Send to Kitchen]
-    N --> O[Prepare Food]
-    O --> P[Order Ready]
-    P --> Q[Deliver Order]
-    Q --> R[Order Complete]
-```
-
-### 4.4 Activity Diagram Rating System
-
-```mermaid
-graph TD
-    A[User Completes Service] --> B[Trigger Rating Request]
-    B --> C[Display Rating Form]
-    C --> D[Rate Booking Experience]
-    D --> E[Rate Cafe Service]
-    E --> F[Rate Staff Service]
-    F --> G[Rate Facility Quality]
-    G --> H[Rate Overall Satisfaction]
-    H --> I[Add Comments]
-    I --> J[Submit Rating]
-    J --> K{Submit Success?}
-    K -->|No| L[Show Error Message]
-    L --> C
-    K -->|Yes| M[Store Rating Data]
-    M --> N[Update Analytics]
-    N --> O[Send Feedback Notification]
-    O --> P[Rating Complete]
-
-    %% Custom styling
-    classDef start-end fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
-    classDef process fill:#4ecdc4,stroke:#333,stroke-width:2px,color:#fff
-    classDef decision fill:#ffeaa7,stroke:#333,stroke-width:2px,color:#000
-    classDef success fill:#96ceb4,stroke:#333,stroke-width:2px,color:#fff
-    classDef failure fill:#ff7675,stroke:#333,stroke-width:2px,color:#fff
-
-    A:::start-end
-    B:::process
-    C:::process
-    D:::process
-    E:::process
-    F:::process
-    G:::process
-    H:::process
-    I:::process
-    J:::process
-    K:::decision
-    L:::failure
-    M:::success
-    N:::success
-    O:::success
-    P:::start-end
-```
-
-### 4.5 Activity Diagram Check-in Process
-
-```mermaid
-graph TD
-    A[Customer Arrives] --> B[Staff Access Check-in System]
-    B --> C[Display Today's Bookings]
-    C --> D[Request Identification]
-    D --> E{Identification Type?}
-    E -->|QR Code| F[Scan QR Code]
-    E -->|Reference Number| G[Enter Reference Number]
-    E -->|Phone/Email| H[Search by Phone/Email]
-    E -->|Member Card| I[Scan Member Card]
-    F --> J[Verify Booking Details]
-    G --> J
-    H --> J
-    I --> J
-    J --> K{Booking Valid?}
-    K -->|No| L[Show Error - No Booking]
-    L --> M[End Process]
-    K -->|Yes| N{Already Checked In?}
-    N -->|Yes| O[Show Error - Already Checked In]
-    O --> M
-    N -->|No| P[Process Check-in]
-    P --> Q[Record Attendance]
-    Q --> R[Issue Equipment]
-    R --> S[Send Confirmation]
-    S --> T[Check-in Complete]
-
-    %% Custom styling
-    classDef start-end fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
-    classDef process fill:#4ecdc4,stroke:#333,stroke-width:2px,color:#fff
-    classDef decision fill:#ffeaa7,stroke:#333,stroke-width:2px,color:#000
-    classDef success fill:#96ceb4,stroke:#333,stroke-width:2px,color:#fff
-    classDef failure fill:#ff7675,stroke:#333,stroke-width:2px,color:#fff
-
-    A:::start-end
-    B:::process
-    C:::process
-    D:::process
-    E:::decision
-    F:::process
-    G:::process
-    H:::process
-    I:::process
-    J:::process
-    K:::decision
-    L:::failure
-    M:::start-end
-    N:::decision
-    O:::failure
-    P:::success
-    Q:::success
-    R:::success
-    S:::success
-    T:::start-end
-```
-
-### 4.6 Activity Diagram Promotional Pricing
-
-```mermaid
-graph TD
-    A[User Makes Booking] --> B[Select Booking Options]
-    B --> C[Calculate Base Price]
-    C --> D[Check Active Promotions]
-    D --> E{Any Promotions Available?}
-    E -->|No| F[Apply Base Price]
-    E -->|Yes| G[Evaluate User Eligibility]
-    G --> H{User Eligible?}
-    H -->|No| F
-    H -->|Yes| I[Select Best Promotion]
-    I --> J[Apply Promotional Pricing]
-    J --> K[Display Promotional Price]
-    K --> L[User Confirms Booking]
-    L --> M[Store Promotion Usage]
-    M --> N[Send Promotion Confirmation]
-    N --> O[Promotional Booking Complete]
-    F --> P[Standard Booking Complete]
-
-    %% Custom styling
-    classDef start-end fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
-    classDef process fill:#4ecdc4,stroke:#333,stroke-width:2px,color:#fff
-    classDef decision fill:#ffeaa7,stroke:#333,stroke-width:2px,color:#000
-    classDef success fill:#96ceb4,stroke:#333,stroke-width:2px,color:#fff
-    classDef promo fill:#ff9ff3,stroke:#333,stroke-width:2px,color:#fff
-
-    A:::start-end
-    B:::process
-    C:::process
-    D:::process
-    E:::decision
-    F:::success
-    G:::process
-    H:::decision
-    I:::promo
-    J:::promo
-    K:::promo
-    L:::process
-    M:::process
-    N:::promo
-    O:::start-end
-    P:::start-end
-```
-
-### 4.7 Activity Diagram Manual Payment
-
-```mermaid
-graph TD
-    A[User Selects Manual Payment] --> B[Display Payment Instructions]
-    B --> C[Show Bank Account Details]
-    C --> D[User Makes Transfer]
-    D --> E[User Uploads Payment Proof]
-    E --> F[Submit Payment Proof]
-    F --> G{Proof Format Valid?}
-    G -->|No| H[Show Format Error]
-    H --> E
-    G -->|Yes| I[Store Payment Proof]
-    I --> J[Set Payment Status: Pending]
-    J --> K[Admin Reviews Payment]
-    K --> L{Payment Valid?}
-    L -->|No| M[Reject Payment]
-    M --> N[Notify User - Payment Rejected]
-    N --> O[User Uploads New Proof]
-    O --> E
-    L -->|Yes| P[Approve Payment]
-    P --> Q[Update Booking Status]
-    Q --> R[Send Payment Confirmation]
-    R --> S[Manual Payment Complete]
-
-    %% Custom styling
-    classDef start-end fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
-    classDef process fill:#4ecdc4,stroke:#333,stroke-width:2px,color:#fff
-    classDef decision fill:#ffeaa7,stroke:#333,stroke-width:2px,color:#000
-    classDef success fill:#96ceb4,stroke:#333,stroke-width:2px,color:#fff
-    classDef failure fill:#ff7675,stroke:#333,stroke-width:2px,color:#fff
-
-    A:::start-end
-    B:::process
-    C:::process
-    D:::process
-    E:::process
-    F:::process
-    G:::decision
-    H:::failure
-    I:::success
-    J:::success
-    K:::process
-    L:::decision
-    M:::failure
-    N:::failure
-    O:::process
-    P:::success
-    Q:::success
-    R:::success
-    S:::start-end
-```
-
-### 4.8 Activity Diagram Dynamic Member Quota
-
-```mermaid
-graph TD
-    A[User Requests Member Registration] --> B[Check Current Quota]
-    B --> C{Quota Available?}
-    C -->|Yes| D[Proceed with Registration]
-    C -->|No| E[Offer Queue Position]
-    E --> F{User Accepts Queue?}
-    F -->|No| G[Registration Cancelled]
-    F -->|Yes| H[Add to Member Queue]
-    H --> I[Send Queue Confirmation]
-    I --> J[Notify Queue Position]
-
-    %% Member Expiry Process
-    K[Daily Expiry Check] --> L[Find Expiring Members]
-    L --> M[Send 3-Day Warning]
-    M --> N{Membership Expired?}
-    N -->|No| O[Continue Active]
-    N -->|Yes| P[Grace Period - 3 Days]
-    P --> Q{Grace Period Ended?}
-    Q -->|No| R[Send Warning]
-    R --> P
-    Q -->|Yes| S[Deactivate Member]
-    S --> T[Check Queue for Promotion]
-    T --> U{Queue Available?}
-    U -->|No| V[Quota Remains Open]
-    U -->|Yes| W[Promote First in Queue]
-    W --> X{Send Promotion Offer}
-    X --> Y{User Accepts?}
-    Y -->|No| Z[Offer to Next in Queue]
-    Z --> W
-    Y -->|Yes| AA[Activate New Member]
-    AA --> BB[Member Quota Updated]
-
-    %% Custom styling
-    classDef start-end fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
-    classDef process fill:#4ecdc4,stroke:#333,stroke-width:2px,color:#fff
-    classDef decision fill:#ffeaa7,stroke:#333,stroke-width:2px,color:#000
-    classDef success fill:#96ceb4,stroke:#333,stroke-width:2px,color:#fff
-    classDef failure fill:#ff7675,stroke:#333,stroke-width:2px,color:#fff
-    classDef queue fill:#74b9ff,stroke:#333,stroke-width:2px,color:#fff
-
-    A:::start-end
-    B:::process
-    C:::decision
-    D:::success
-    E:::process
-    F:::decision
-    G:::failure
-    H:::queue
-    I:::queue
-    J:::queue
-    K:::process
-    L:::process
-    M:::process
-    N:::decision
-    O:::success
-    P:::process
-    Q:::decision
-    R:::process
-    S:::process
-    T:::process
-    U:::decision
-    V:::success
-    W:::queue
-    X:::process
-    Y:::decision
-    Z:::process
-    AA:::success
-    BB:::success
-```
-
-### 4.9 Activity Diagram Member Daily Swimming Limit
-
-```mermaid
-graph TD
-    A[Member Requests Booking] --> B[Check Daily Usage]
-    B --> C{Used Free Session Today?}
-    C -->|No| D[Allow Free Session]
-    D --> E[Create Free Booking]
-    E --> F[Update Daily Usage]
-    F --> G[Free Session Booked]
-    C -->|Yes| H[Require Additional Payment]
-    H --> I[Calculate Additional Price]
-    I --> J[Display Payment Required]
-    J --> K{Member Completes Payment?}
-    K -->|No| L[Booking Cancelled]
-    K -->|Yes| M[Process Additional Payment]
-    M --> N[Create Paid Booking]
-    N --> O[Update Daily Usage]
-    O --> P[Additional Session Booked]
-
-    %% Daily Reset Process
-    Q[Midnight Reset] --> R[Reset All Member Counters]
-    R --> S[Archive Daily Usage]
-    S --> T[Daily Reset Complete]
-
-    %% Admin Override
-    U[Admin Override Request] --> V[Validate Override]
-    V --> W{Override Valid?}
-    W -->|No| X[Override Denied]
-    W -->|Yes| Y[Apply Override]
-    Y --> Z[Update Member Usage]
-    Z --> AA[Send Override Notification]
-    AA --> BB[Override Complete]
-
-    %% Custom styling
-    classDef start-end fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
-    classDef process fill:#4ecdc4,stroke:#333,stroke-width:2px,color:#fff
-    classDef decision fill:#ffeaa7,stroke:#333,stroke-width:2px,color:#000
-    classDef success fill:#96ceb4,stroke:#333,stroke-width:2px,color:#fff
-    classDef failure fill:#ff7675,stroke:#333,stroke-width:2px,color:#fff
-    classDef paid fill:#fd79a8,stroke:#333,stroke-width:2px,color:#fff
-
-    A:::start-end
-    B:::process
-    C:::decision
-    D:::success
-    E:::success
-    F:::success
-    G:::start-end
-    H:::process
-    I:::process
-    J:::process
-    K:::decision
-    L:::failure
-    M:::paid
-    N:::paid
-    O:::paid
-    P:::start-end
-    Q:::process
-    R:::process
-    S:::process
-    T:::start-end
-    U:::process
-    V:::process
-    W:::decision
-    X:::failure
-    Y:::success
-    Z:::success
-    AA:::success
-    BB:::start-end
-```
-
-### 4.10 Activity Diagram Private Pool Rental
-
-```mermaid
-graph TD
-    A[Customer Requests Private Pool] --> B[Check Pool Availability]
-    B --> C[Select Date and Time]
-    C --> D[Enter Customer Details]
-    D --> E[Check Customer History]
-    E --> F{Customer Type?}
-    F -->|New Customer| G[Calculate Base Price + 30min Bonus]
-    F -->|Returning Customer| H[Calculate Base Price + Additional Charge]
-    G --> I[Display Price: Base Price (2 hours total)]
-    H --> J[Display Price: Base Price + Additional Charge]
-    I --> K[Customer Confirms Booking]
-    J --> K
-    K --> L[Process Payment]
-    L --> M{Payment Success?}
-    M -->|No| N[Booking Failed]
-    M -->|Yes| O[Create Private Booking]
-    O --> P[Start Timer Management]
-    P --> Q[Update Customer History]
-    Q --> R[Send Booking Confirmation]
-    R --> S[Private Pool Booking Complete]
-    N --> T[Booking Failed]
-
-    %% Timer Management
-    U[Timer Start] --> V[Monitor Duration]
-    V --> W{Time Remaining?}
-    W -->|Yes| X[Send Time Warning]
-    X --> V
-    W -->|No| Y[Send Session Complete]
-    Y --> Z[Timer Complete]
-
-    %% Custom styling
-    classDef start-end fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
-    classDef process fill:#4ecdc4,stroke:#333,stroke-width:2px,color:#fff
-    classDef decision fill:#ffeaa7,stroke:#333,stroke-width:2px,color:#000
-    classDef success fill:#96ceb4,stroke:#333,stroke-width:2px,color:#fff
-    classDef failure fill:#ff7675,stroke:#333,stroke-width:2px,color:#fff
-    classDef new-customer fill:#00cec9,stroke:#333,stroke-width:2px,color:#fff
-    classDef returning-customer fill:#fd79a8,stroke:#333,stroke-width:2px,color:#fff
-
-    A:::start-end
-    B:::process
-    C:::process
-    D:::process
-    E:::process
-    F:::decision
-    G:::new-customer
-    H:::returning-customer
-    I:::new-customer
-    J:::returning-customer
-    K:::process
-    L:::process
-    M:::decision
-    N:::failure
-    O:::success
-    P:::success
-    Q:::success
-    R:::success
-    S:::start-end
-    T:::start-end
-    U:::process
-    V:::process
-    W:::decision
-    X:::process
-    Y:::process
-    Z:::start-end
-```
-
-### 4.11 Activity Diagram Cafe System with Barcode
-
-```mermaid
-graph TD
-    A[Customer at Pool Area] --> B[Scan Barcode/QR Code]
-    B --> C[Redirect to Menu System]
-    C --> D[Display Available Menu]
-    D --> E[Browse Menu Items]
-    E --> F[Check Item Availability]
+flowchart TD
+    A[Start] --> B[User Scan Barcode/QR Code]
+    B --> C[System Load Menu Based on Location]
+    C --> D[Display Available Menu Items]
+    D --> E[User Browse Menu]
+    E --> F[Select Menu Item]
     F --> G{Item Available?}
-    G -->|No| H[Show Unavailable Status]
-    G -->|Yes| I[Add Item to Cart]
-    H --> E
-    I --> J[Set Quantity]
-    J --> K[Add Special Notes]
-    K --> L[Continue Shopping]
-    L --> E
-    L --> M[Review Cart]
-    M --> N[Cart Summary with Total]
-    N --> O[Proceed to Payment]
-    O --> P[Create Payment Request]
-    P --> Q[Show Payment Instructions]
-    Q --> R[Upload Payment Proof]
-    R --> S[Submit Order]
-    S --> T[Create Kitchen Order]
-    T --> U[Send Order Notification]
-    U --> V[Order Confirmation]
-
-    %% Admin Payment Verification
-    W[Admin Reviews Payment] --> X{Payment Valid?}
-    X -->|No| Y[Reject Payment]
-    Y --> Z[Notify Customer - Rejected]
-    Z --> AA[Customer Uploads New Proof]
-    AA --> S
-    X -->|Yes| BB[Confirm Payment]
-    BB --> CC[Notify Kitchen]
-    CC --> DD[Start Food Preparation]
-
-    %% Kitchen Process
-    DD --> EE[Prepare Food Items]
-    EE --> FF[Update Status: Preparing]
-    FF --> GG[Food Ready]
-    GG --> HH[Update Status: Ready]
-    HH --> II[Assign Delivery]
-    II --> JJ[Deliver to Customer]
-    JJ --> KK[Customer Confirms Reception]
-    KK --> LL[Update Status: Delivered]
-    LL --> MM[Cafe Order Complete]
-
-    %% Custom styling
-    classDef start-end fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
-    classDef process fill:#4ecdc4,stroke:#333,stroke-width:2px,color:#fff
-    classDef decision fill:#ffeaa7,stroke:#333,stroke-width:2px,color:#000
-    classDef success fill:#96ceb4,stroke:#333,stroke-width:2px,color:#fff
-    classDef failure fill:#ff7675,stroke:#333,stroke-width:2px,color:#fff
-    classDef kitchen fill:#a8e6cf,stroke:#333,stroke-width:2px,color:#fff
-    classDef delivery fill:#ffd3b6,stroke:#333,stroke-width:2px,color:#fff
-
-    A:::start-end
-    B:::process
-    C:::process
-    D:::process
-    E:::process
-    F:::process
-    G:::decision
-    H:::failure
-    I:::success
-    J:::success
-    K:::success
-    L:::success
-    M:::success
-    N:::success
-    O:::success
-    P:::success
-    Q:::success
-    R:::success
-    S:::success
-    T:::kitchen
-    U:::success
-    V:::success
-    W:::process
-    X:::decision
-    Y:::failure
-    Z:::failure
-    AA:::process
-    BB:::success
-    CC:::kitchen
-    DD:::kitchen
-    EE:::kitchen
-    FF:::kitchen
-    GG:::kitchen
-    HH:::kitchen
-    II:::delivery
-    JJ:::delivery
-    KK:::delivery
-    LL:::delivery
-    MM:::start-end
+    G -->|Yes| H[Add to Cart]
+    G -->|No| I[Show Out of Stock Message]
+    I --> E
+    H --> J[Add Special Notes/Requests]
+    J --> K[Update Cart Total]
+    K --> L{Add More Items?}
+    L -->|Yes| E
+    L -->|No| M[Review Cart]
+    M --> N{Cart Correct?}
+    N -->|Yes| O[Proceed to Payment]
+    N -->|No| P[Edit Cart]
+    P --> E
+    O --> Q[Select Payment Method]
+    Q --> R{Payment Type?}
+    R -->|Manual Transfer| S[Show Transfer Instructions]
+    R -->|Online Payment| T[Process Online Payment]
+    S --> U[Upload Payment Proof]
+    T --> V{Payment Successful?}
+    V -->|Yes| W[Generate Order Confirmation]
+    V -->|No| X[Show Payment Error]
+    X --> O
+    U --> Y[Admin Verify Payment]
+    Y --> Z{Payment Valid?}
+    Z -->|Yes| W
+    Z -->|No| AA[Request Payment Correction]
+    BB --> GG[Send Order to Kitchen]
+    FF --> GG
+    GG --> HH[Update Order Status: Preparing]
+    HH --> II[Kitchen Prepare Food]
+    II --> JJ[Update Order Status: Ready]
+    JJ --> KK[Staff Deliver Order]
+    KK --> LL[Customer Confirm Reception]
+    LL --> MM[Update Order Status: Delivered]
+    MM --> NN[End]
 ```
 
-### 4.12 Activity Diagram Dynamic Menu Management
+### 3.4 Activity Diagram Rating System
 
 ```mermaid
-graph TD
-    A[Admin Access Menu Management] --> B[Choose Action]
-    B --> C{Action Type?}
-    C -->|Create Menu| D[Open Menu Creation Form]
-    C -->|Edit Menu| E[Select Existing Menu]
-    C -->|Manage Stock| F[Access Stock Management]
-    C -->|View Analytics| G[Open Analytics Dashboard]
-
-    %% Menu Creation Flow
-    D --> H[Fill Menu Details]
-    H --> I[Upload Menu Image]
-    I --> J[Set Base Cost]
-    J --> K[Set Selling Price]
-    K --> L[Calculate Margin]
-    L --> M[Configure Stock Settings]
-    M --> N[Set Menu Categories]
-    N --> O[Add Cooking Instructions]
-    O --> P[Set Allergen Info]
-    P --> Q[Save Menu]
-    Q --> R[Generate Menu Barcode]
-    R --> S[Create Inventory Record]
-    S --> T[Menu Created Successfully]
-
-    %% Menu Edit Flow
-    E --> U[Load Menu Details]
-    U --> V[Update Menu Information]
-    V --> W[Update Pricing]
-    W --> X[Update Stock Settings]
-    X --> Y[Save Changes]
-    Y --> Z[Menu Updated Successfully]
-
-    %% Stock Management Flow
-    F --> AA[View Current Stock]
-    AA --> BB[Check Low Stock Alerts]
-    BB --> CC{Stock Actions?}
-    CC -->|Update Stock| DD[Record Stock Transaction]
-    CC -->|Set Alerts| EE[Configure Stock Alerts]
-    CC -->|View History| FF[Display Stock History]
-    DD --> GG[Update Inventory]
-    GG --> HH[Stock Updated Successfully]
-    EE --> II[Alerts Configured]
-    FF --> JJ[History Displayed]
-
-    %% Analytics Flow
-    G --> KK[Load Menu Performance Data]
-    KK --> LL[Display Sales Analytics]
-    LL --> MM[Show Margin Analysis]
-    MM --> NN[Display Top Performers]
-    NN --> OO[Show Low Stock Items]
-    OO --> PP[Analytics Dashboard Complete]
-
-    %% Custom styling
-    classDef start-end fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
-    classDef process fill:#4ecdc4,stroke:#333,stroke-width:2px,color:#fff
-    classDef decision fill:#ffeaa7,stroke:#333,stroke-width:2px,color:#000
-    classDef success fill:#96ceb4,stroke:#333,stroke-width:2px,color:#fff
-    classDef failure fill:#ff7675,stroke:#333,stroke-width:2px,color:#fff
-    classDef barcode fill:#74b9ff,stroke:#333,stroke-width:2px,color:#fff
-    classDef stock fill:#fd79a8,stroke:#333,stroke-width:2px,color:#fff
-    classDef analytics fill:#00cec9,stroke:#333,stroke-width:2px,color:#fff
-
-    A:::start-end
-    B:::process
-    C:::decision
-    D:::success
-    E:::success
-    F:::stock
-    G:::analytics
-    H:::process
-    I:::process
-    J:::process
-    K:::process
-    L:::process
-    M:::process
-    N:::process
-    O:::process
-    P:::process
-    Q:::success
-    R:::barcode
-    S:::success
-    T:::start-end
-    U:::process
-    V:::process
-    W:::process
-    X:::process
-    Y:::success
-    Z:::start-end
-    AA:::stock
-    BB:::stock
-    CC:::decision
-    DD:::stock
-    EE:::stock
-    FF:::stock
-    GG:::success
-    HH:::start-end
-    II:::start-end
-    JJ:::start-end
-    KK:::analytics
-    LL:::analytics
-    MM:::analytics
-    NN:::analytics
-    OO:::analytics
-    PP:::start-end
+flowchart TD
+    A[Start] --> B[User Complete Service/Order]
+    B --> C[System Request Rating]
+    C --> D[User Access Rating Page]
+    D --> E[Select Overall Rating 1-5 Stars]
+    E --> F[Rate Individual Components]
+    F --> G[Rate Booking Experience]
+    G --> H[Rate Staff Service]
+    H --> I[Rate Facility Quality]
+    I --> J[Rate Cafe Service]
+    J --> K[Add Written Comments]
+    K --> L[Submit Rating]
+    L --> M[System Validate Rating]
+    M --> N{Rating Valid?}
+    N -->|Yes| O[Save Rating to Database]
+    N -->|No| P[Show Validation Error]
+    P --> E
+    O --> Q[Update Rating Analytics]
+    Q --> R[Calculate Average Ratings]
+    R --> S[Update Staff Performance Metrics]
+    S --> T[Generate Rating Summary]
+    T --> U[Send Thank You Message]
+    U --> V[End]
 ```
 
-### 4.13 Activity Diagram Barcode Generation & Download
+### 3.5 Activity Diagram Check-in Process
 
 ```mermaid
-graph TD
-    A[Menu Creation/Update] --> B[Trigger Barcode Generation]
-    B --> C[Generate Unique Barcode Value]
-    C --> D[Generate QR Code]
-    D --> E[Generate Barcode Image]
-    E --> F[Store Barcode Data]
-    F --> G[Barcode Generated Successfully]
-
-    %% Barcode Download Flow
-    H[Admin Requests Barcode Download] --> I{Download Type?}
-    I -->|Single Menu| J[Select Menu]
-    I -->|Bulk Export| K[Select Category/Filter]
-
-    J --> L[Generate Barcode File]
-    K --> M[Generate Bulk Barcode File]
-    L --> N[Create Download Package]
-    M --> N
-    N --> O[Include Menu Details]
-    O --> P[Format as PDF/PNG]
-    P --> Q[Provide Download Link]
-    Q --> R[Barcode Downloaded Successfully]
-
-    %% Barcode Management
-    S[Admin Manages Barcodes] --> T{Management Action?}
-    T -->|Activate| U[Set Barcode Active]
-    T -->|Deactivate| V[Set Barcode Inactive]
-    T -->|Regenerate| W[Generate New Barcode]
-    T -->|Preview| X[Show Barcode Preview]
-
-    U --> Y[Barcode Activated]
-    V --> Z[Barcode Deactivated]
-    W --> B
-    X --> AA[Display Preview]
-
-    %% Custom styling
-    classDef start-end fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
-    classDef process fill:#4ecdc4,stroke:#333,stroke-width:2px,color:#fff
-    classDef decision fill:#ffeaa7,stroke:#333,stroke-width:2px,color:#000
-    classDef success fill:#96ceb4,stroke:#333,stroke-width:2px,color:#fff
-    classDef barcode fill:#74b9ff,stroke:#333,stroke-width:2px,color:#fff
-    classDef download fill:#fd79a8,stroke:#333,stroke-width:2px,color:#fff
-
-    A:::start-end
-    B:::barcode
-    C:::barcode
-    D:::barcode
-    E:::barcode
-    F:::barcode
-    G:::start-end
-    H:::process
-    I:::decision
-    J:::download
-    K:::download
-    L:::download
-    M:::download
-    N:::download
-    O:::download
-    P:::download
-    Q:::download
-    R:::start-end
-    S:::process
-    T:::decision
-    U:::barcode
-    V:::barcode
-    W:::barcode
-    X:::download
-    Y:::success
-    Z:::success
-    AA:::start-end
+flowchart TD
+    A[Start] --> B[Customer Arrive at Pool]
+    B --> C[Present Booking Reference/QR Code]
+    C --> D[Staff Scan/Enter Reference]
+    D --> E[System Validate Booking]
+    E --> F{Booking Valid?}
+    F -->|No| G[Show Invalid Booking Error]
+    G --> H[Customer Resolution]
+    H --> C
+    F -->|Yes| I[Check Booking Status]
+    I --> J{Already Checked-in?}
+    J -->|Yes| K[Show Already Checked-in Message]
+    J -->|No| L[Verify Customer Identity]
+    L --> M{Identity Match?}
+    M -->|No| N[Request ID Verification]
+    N --> L
+    M -->|Yes| O[Process Check-in]
+    O --> P[Update Booking Status]
+    P --> Q[Issue Pool Equipment]
+    Q --> R[Record Check-in Time]
+    R --> S[Send Check-in Confirmation]
+    S --> T[Customer Access Pool]
+    T --> U[Monitor Pool Usage]
+    U --> V[Customer Request Check-out]
+    V --> W[Collect Pool Equipment]
+    W --> X[Record Check-out Time]
+    X --> Y[Update Attendance Record]
+    Y --> Z[Generate Usage Report]
+    Z --> AA[End]
 ```
 
-### 4.14 Activity Diagram Comprehensive Reporting
+### 3.6 Activity Diagram Promotional Pricing
 
 ```mermaid
-graph TD
-    A[Admin Access Reporting System] --> B[Select Report Type]
-    B --> C{Report Category?}
-    C -->|Financial| D[Financial Reports Dashboard]
-    C -->|Operational| E[Operational Reports Dashboard]
-    C -->|Customer| F[Customer Analytics Dashboard]
-    C -->|Inventory| G[Inventory Reports Dashboard]
-    C -->|Promotional| H[Promotional Reports Dashboard]
+flowchart TD
+    A[Start] --> B[Admin Access Promotional Management]
+    B --> C[Create New Campaign]
+    C --> D[Set Campaign Details]
+    D --> E[Campaign Name & Description]
+    E --> F[Select Campaign Type]
+    F --> G{Discount Type?}
+    G -->|Percentage| H[Set Discount Percentage]
+    G -->|Fixed Amount| I[Set Discount Amount]
+    G -->|Buy One Get One| J[Configure BOGO Rules]
+    H --> K[Set Campaign Duration]
+    I --> K
+    J --> K
+    K --> L[Configure Targeting Rules]
+    L --> M[Select Target Services]
+    M --> N[Set User Eligibility]
+    N --> O[Configure Time Restrictions]
+    O --> P[Activate Campaign]
+    P --> Q[System Apply Rules]
+    Q --> R[Monitor Campaign Performance]
+    R --> S[User Access Booking/Cafe]
+    S --> T[System Check Eligibility]
+    T --> U{Eligible for Promotion?}
+    U -->|Yes| V[Apply Promotional Pricing]
+    U -->|No| W[Show Regular Pricing]
+    V --> X[Display Promotional Offer]
+    X --> Y[User Accept Offer]
+    Y --> Z[Apply Discount]
+    Z --> AA[Complete Transaction]
+    AA --> BB[Update Campaign Usage]
+    BB --> CC[Generate Promotional Report]
+    CC --> DD[End]
+```
 
-    %% Financial Reports Flow
-    D --> I[Select Financial Report]
-    I --> J{Report Type?}
+### 3.7 Activity Diagram Manual Payment
+
+```mermaid
+flowchart TD
+    A[Start] --> B[User Select Manual Payment]
+    B --> C[System Display Payment Instructions]
+    C --> D[Show Bank Account Details]
+    D --> E[Generate Payment Reference]
+    E --> F[User Make Bank Transfer]
+    F --> G[User Upload Payment Proof]
+    G --> H[System Receive Payment Proof]
+    H --> I[Admin Notification: Payment Received]
+    I --> J[Admin Access Payment Verification]
+    J --> K[Admin Review Payment Proof]
+    K --> L{Proof Valid?}
+    L -->|No| M[Admin Reject Payment]
+    L -->|Yes| N[Admin Verify Amount]
+    M --> O[Send Rejection Notification]
+    O --> P[User Upload Corrected Proof]
+    P --> K
+    N --> Q{Amount Correct?}
+    Q -->|No| R[Admin Request Correction]
+    Q -->|Yes| S[Admin Confirm Payment]
+    R --> T[Send Correction Request]
+    T --> P
+    S --> U[Update Payment Status: Verified]
+    U --> V[Process Booking/Purchase]
+    V --> W[Send Confirmation Message]
+    W --> X[Generate Receipt]
+    X --> Y[End]
+```
+
+### 3.8 Activity Diagram Dynamic Member Quota
+
+```mermaid
+flowchart TD
+    A[Start] --> B[Admin Configure Member Quota]
+    B --> C[Set Maximum Member Limit]
+    C --> D[Configure Warning Period]
+    D --> E[Set Grace Period]
+    E --> F[Activate Quota System]
+    F --> G[User Request Membership]
+    G --> H{Current Members < Max Limit?}
+    H -->|Yes| I[Process Membership Registration]
+    H -->|No| J[Add User to Queue]
+    I --> K[Update Member Count]
+    K --> L[End]
+    J --> M[Assign Queue Position]
+    M --> N[Send Queue Confirmation]
+    N --> O[Monitor Member Expiry]
+    O --> P{Member Near Expiry?}
+    P -->|Yes| Q[Send Warning Notification]
+    Q --> R{Member Renew?}
+    R -->|Yes| S[Process Renewal]
+    R -->|No| T[Wait for Grace Period]
+    S --> U[Update Member Status]
+    U --> V[End]
+    T --> W{Grace Period Expired?}
+    W -->|Yes| X[Deactivate Membership]
+    W -->|No| T
+    X --> Y{Queue Has Waiting Users?}
+    Y -->|Yes| Z[Promote First in Queue]
+    Y -->|No| AA[Update Quota Statistics]
+    Z --> BB[Send Promotion Offer]
+    BB --> CC{User Accept?}
+    CC -->|Yes| DD[Process Membership]
+    CC -->|No| EE[Remove from Queue]
+    DD --> FF[Update Member Count]
+    EE --> GG[Update Queue Position]
+    FF --> HH[End]
+    GG --> AA
+```
+
+### 3.9 Activity Diagram Member Daily Swimming Limit
+
+```mermaid
+flowchart TD
+    A[Start] --> B[Member Access Booking]
+    B --> C[Select Session Date]
+    C --> D[System Check Daily Limit]
+    D --> E{Already Used Free Session Today?}
+    E -->|No| F[Book Free Session]
+    E -->|Yes| G[Check Additional Session Limit]
+    F --> H[Confirm Booking]
+    H --> I[Update Daily Usage]
+    I --> J[End]
+    G --> K{Want Additional Session?}
+    K -->|No| L[Show Limit Message]
+    K -->|Yes| M[Calculate Additional Cost]
+    L --> N[End]
+    M --> O[Display Cost Information]
+    O --> P{Member Accept Cost?}
+    P -->|Yes| Q[Process Additional Booking]
+    P -->|No| R[Cancel Booking]
+    Q --> S[Charge Normal Rate]
+    S --> T[Update Daily Usage]
+    T --> U[Add to Payment Record]
+    U --> V[End]
+    R --> W[End]
+```
+
+### 3.10 Activity Diagram Private Pool Rental
+
+```mermaid
+flowchart TD
+    A[Start] --> B[Customer Access Private Pool Booking]
+    B --> C[Select Rental Date & Time]
+    C --> D[System Check Customer History]
+    D --> E{New Customer?}
+    E -->|Yes| F[Apply New Customer Bonus]
+    E -->|No| G[Calculate Returning Customer Rate]
+    F --> H[Standard 1h 30min + 30min Bonus]
+    G --> I[Standard 1h 30min + Additional Charges]
+    H --> J[Calculate Total Price]
+    I --> J
+    J --> K[Display Price Breakdown]
+    K --> L{Customer Accept Price?}
+    L -->|Yes| M[Process Payment]
+    L -->|No| N[Cancel Booking]
+    M --> O{Payment Successful?}
+    O -->|Yes| P[Confirm Booking]
+    O -->|No| Q[Show Payment Error]
+    P --> R[Update Customer Visit History]
+    R --> S[Send Booking Confirmation]
+    S --> T[Rental Day Arrives]
+    T --> U[Customer Check-in]
+    U --> V[Start Rental Timer]
+    V --> W[Monitor Usage Time]
+    W --> X{Time Expiring Soon?}
+    X -->|Yes| Y[Send Time Warning]
+    X -->|No| Z{Time Expired?}
+    Y --> Z
+    Z -->|Yes| AA[End Rental Session]
+    Z -->|No| W
+    AA --> BB[Customer Check-out]
+    BB --> CC[Calculate Actual Usage]
+    CC --> DD[Generate Usage Report]
+    DD --> EE[Update Customer History]
+    EE --> FF[End]
+    Q --> GG[Retry Payment]
+    GG --> M
+    N --> HH[End]
+```
+
+### 3.11 Activity Diagram Cafe System with Barcode
+
+```mermaid
+flowchart TD
+    A[Start] --> B[Customer Arrive at Pool Area]
+    B --> C[Locate Menu Barcode/QR Code]
+    C --> D[Scan Barcode with Mobile Device]
+    D --> E[System Identify Location]
+    E --> F[Load Location-Specific Menu]
+    F --> G[Display Available Menu Items]
+    G --> H[Customer Browse Menu]
+    H --> I{Menu Items Available?}
+    I -->|Yes| J[Select Menu Item]
+    I -->|No| K[Show Out of Stock Items]
+    J --> L[Add Item to Cart]
+    K --> H
+    L --> M[Set Quantity]
+    M --> N[Add Special Notes/Requests]
+    N --> O[Update Cart Total]
+    O --> P{Add More Items?}
+    P -->|Yes| H
+    P -->|No| Q[Review Cart]
+    Q --> R{Cart Correct?}
+    R -->|Yes| S[Proceed to Checkout]
+    R -->|No| T[Edit Cart Items]
+    S --> U[Display Order Summary]
+    T --> H
+    U --> V[Select Payment Method]
+    V --> W{Payment Type?}
+    W -->|Manual Transfer| X[Show Transfer Instructions]
+    W -->|Online Payment| Y[Process Online Payment]
+    X --> Z[Customer Upload Proof]
+    Y --> AA{Payment Successful?}
+    AA -->|Yes| BB[Generate Order Confirmation]
+    AA -->|No| CC[Show Payment Error]
+    CC --> V
+    Z --> DD[Admin Verify Payment]
+    DD --> EE{Payment Valid?}
+    EE -->|Yes| BB
+    EE -->|No| FF[Request Payment Correction]
+    BB --> GG[Send Order to Kitchen]
+    FF --> Z
+    GG --> HH[Update Order Status: Preparing]
+    HH --> II[Kitchen Prepare Food]
+    II --> JJ[Update Order Status: Ready]
+    JJ --> KK[Staff Deliver Order]
+    KK --> LL[Customer Confirm Reception]
+    LL --> MM[Update Order Status: Delivered]
+    MM --> NN[End]
+```
+
+### 3.12 Activity Diagram Dynamic Menu Management
+
+```mermaid
+flowchart TD
+    A[Start] --> B[Admin Access Menu Management]
+    B --> C[Select Menu Action]
+    C --> D{Action Type?}
+    D -->|Create| E[Create New Menu Item]
+    D -->|Update| F[Select Existing Menu]
+    D -->|Delete| G[Select Menu to Delete]
+    E --> H[Fill Menu Details]
+    H --> I[Menu Name & Description]
+    I --> J[Upload Menu Image]
+    J --> K[Set Base Cost]
+    K --> L[Set Selling Price]
+    L --> M[Calculate Margin]
+    M --> N[Select Menu Category]
+    N --> O[Set Dietary Information]
+    O --> P[Add Cooking Instructions]
+    P --> Q[Set Stock Information]
+    Q --> R[Configure Menu Status]
+    R --> S[Save Menu Item]
+    F --> T[Load Menu Details]
+    T --> U[Update Menu Information]
+    U --> H
+    G --> V[Confirm Deletion]
+    V --> W{Confirm Deletion?}
+    W -->|Yes| X[Delete Menu Item]
+    W -->|No| Y[Cancel Deletion]
+    S --> Z[Update Inventory System]
+    X --> AA[Remove from Inventory]
+    Y --> B
+    Z --> BB[Generate Menu Analytics]
+    AA --> CC[Update Related Orders]
+    BB --> DD[End]
+    CC --> DD
+```
+
+### 3.13 Activity Diagram Barcode Generation & Download
+
+```mermaid
+flowchart TD
+    A[Start] --> B[Admin Access Barcode Management]
+    B --> C[Select Menu Item]
+    C --> D[Choose Barcode Action]
+    D --> E{Action Type?}
+    E -->|Generate| F[Generate New Barcode]
+    E -->|Download| G[Download Existing Barcode]
+    E -->|Regenerate| H[Regenerate Barcode]
+    F --> I[System Generate Barcode Value]
+    I --> J[Create QR Code]
+    J --> K[Generate Barcode Image]
+    K --> L[Save Barcode Data]
+    L --> M[Update Menu Record]
+    M --> N[Display Barcode Preview]
+    G --> O[Load Barcode Information]
+    O --> P[Select Download Format]
+    P --> Q{Format Type?}
+    Q -->|PNG| R[Generate PNG Barcode]
+    Q -->|PDF| S[Generate PDF Barcode]
+    Q -->|Bulk Export| T[Select Multiple Menus]
+    R --> U[Download PNG File]
+    S --> V[Download PDF File]
+    T --> W[Generate Bulk Barcode Package]
+    V --> X[End]
+    U --> X
+    W --> Y[Download ZIP Package]
+    Y --> X
+    H --> Z[Regenerate Barcode Value]
+    Z --> I
+    N --> AA[Barcode Ready for Use]
+    AA --> X
+```
+
+### 3.14 Activity Diagram Comprehensive Reporting
+
+```mermaid
+flowchart TD
+    A[Start] --> B[Admin Access Reporting System]
+    B --> C[Select Report Category]
+    C --> D{Report Category?}
+    D -->|Financial| E[Financial Reports]
+    D -->|Operational| F[Operational Reports]
+    D -->|Customer| G[Customer Analytics]
+    D -->|Inventory| H[Inventory Reports]
+    E --> I[Choose Financial Report Type]
+    I --> J{Financial Report Type?}
     J -->|Revenue| K[Generate Revenue Report]
-    J -->|Expense| L[Generate Expense Report]
-    J -->|Profit Loss| M[Generate P&L Statement]
+    J -->|Expenses| L[Generate Expense Report]
+    J -->|Profit & Loss| M[Generate P&L Report]
     J -->|Cash Flow| N[Generate Cash Flow Report]
     J -->|Tax| O[Generate Tax Report]
-    J -->|Budget| P[Generate Budget Analysis]
-
-    K --> Q[Apply Date Filters]
-    L --> Q
-    M --> Q
-    N --> Q
-    O --> Q
-    P --> Q
-    Q --> R[Generate Report Data]
-    R --> S[Apply Formatting]
-    S --> T[Display Report]
-    T --> U{Export Required?}
-    U -->|Yes| V[Export to PDF/Excel/CSV]
-    U -->|No| W[View Online]
-    V --> X[Report Exported Successfully]
-    W --> Y[Report Viewed Online]
-
-    %% Operational Reports Flow
-    E --> Z[Select Operational Report]
-    Z --> AA{Report Type?}
-    AA -->|Booking| BB[Generate Booking Analytics]
-    AA -->|Member| CC[Generate Member Reports]
-    AA -->|Session| DD[Generate Session Reports]
-    AA -->|Staff| EE[Generate Staff Reports]
-    AA -->|Facility| FF[Generate Facility Reports]
-
-    BB --> GG[Apply Filters]
-    CC --> GG
-    DD --> GG
-    EE --> GG
-    FF --> GG
-    GG --> HH[Generate Report Data]
-    HH --> II[Display Operational Report]
-    II --> JJ[Operational Report Complete]
-
-    %% Customer Analytics Flow
-    F --> KK[Select Customer Analytics]
-    KK --> LL{Analytics Type?}
-    LL -->|Behavior| MM[Generate Behavior Analysis]
-    LL -->|Retention| NN[Generate Retention Report]
-    LL -->|Satisfaction| OO[Generate Satisfaction Report]
-    LL -->|Demographics| PP[Generate Demographics Report]
-    LL -->|Peak Hours| QQ[Generate Peak Hours Analysis]
-
-    MM --> RR[Apply Customer Filters]
-    NN --> RR
-    OO --> RR
-    PP --> RR
-    QQ --> RR
-    RR --> SS[Generate Analytics Data]
-    SS --> TT[Display Customer Analytics]
-    TT --> UU[Customer Analytics Complete]
-
-    %% Custom styling
-    classDef start-end fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
-    classDef process fill:#4ecdc4,stroke:#333,stroke-width:2px,color:#fff
-    classDef decision fill:#ffeaa7,stroke:#333,stroke-width:2px,color:#000
-    classDef success fill:#96ceb4,stroke:#333,stroke-width:2px,color:#fff
-    classDef financial fill:#74b9ff,stroke:#333,stroke-width:2px,color:#fff
-    classDef operational fill:#fd79a8,stroke:#333,stroke-width:2px,color:#fff
-    classDef customer fill:#00cec9,stroke:#333,stroke-width:2px,color:#fff
-    classDef export fill:#a8e6cf,stroke:#333,stroke-width:2px,color:#fff
-
-    A:::start-end
-    B:::process
-    C:::decision
-    D:::financial
-    E:::operational
-    F:::customer
-    G:::process
-    H:::process
-    I:::financial
-    J:::decision
-    K:::financial
-    L:::financial
-    M:::financial
-    N:::financial
-    O:::financial
-    P:::financial
-    Q:::process
-    R:::process
-    S:::process
-    T:::financial
-    U:::decision
-    V:::export
-    W:::financial
-    X:::start-end
-    Y:::start-end
-    Z:::operational
-    AA:::decision
-    BB:::operational
-    CC:::operational
-    DD:::operational
-    EE:::operational
-    FF:::operational
-    GG:::process
-    HH:::process
-    II:::operational
-    JJ:::start-end
-    KK:::customer
-    LL:::decision
-    MM:::customer
-    NN:::customer
-    OO:::customer
-    PP:::customer
-    QQ:::customer
-    RR:::process
-    SS:::process
-    TT:::customer
-    UU:::start-end
+    F --> P[Choose Operational Report Type]
+    P --> Q{Operational Report Type?}
+    Q -->|Bookings| R[Generate Booking Analytics]
+    Q -->|Sessions| S[Generate Session Reports]
+    Q -->|Staff| T[Generate Staff Reports]
+    Q -->|Facilities| U[Generate Facility Reports]
+    G --> V[Choose Customer Report Type]
+    V --> W{Customer Report Type?}
+    W -->|Demographics| X[Generate Demographics Report]
+    W -->|Behavior| Y[Generate Behavior Analysis]
+    W -->|Satisfaction| Z[Generate Satisfaction Report]
+    H --> AA[Choose Inventory Report Type]
+    AA --> BB{Inventory Report Type?}
+    BB -->|Stock Levels| CC[Generate Stock Level Report]
+    BB -->|Movement| DD[Generate Stock Movement Report]
+    BB -->|Predictions| EE[Generate Stock Prediction Report]
+    K --> FF[Configure Report Parameters]
+    L --> FF
+    M --> FF
+    N --> FF
+    O --> FF
+    R --> FF
+    S --> FF
+    T --> FF
+    U --> FF
+    X --> FF
+    Y --> FF
+    Z --> FF
+    CC --> FF
+    DD --> FF
+    EE --> FF
+    FF --> GG[Set Date Range]
+    GG --> HH[Select Export Format]
+    HH --> II{Export Format?}
+    II -->|PDF| JJ[Generate PDF Report]
+    II -->|Excel| KK[Generate Excel Report]
+    II -->|CSV| LL[Generate CSV Report]
+    JJ --> MM[Download Report]
+    KK --> MM
+    LL --> MM
+    MM --> NN[Save Report History]
+    NN --> OO[Schedule Future Report]
+    OO --> PP[End]
 ```
 
-## 5. State Diagram
+## 4. Sequence Diagram
 
-### 5.1 State Diagram Booking Status
-
-```mermaid
-stateDiagram-v2
-    [*] --> Pending
-    Pending --> Confirmed : Payment Success
-    Pending --> Cancelled : Customer Cancels
-    Pending --> Failed : Payment Failed
-    Confirmed --> CheckedIn : Customer Arrives
-    Confirmed --> Cancelled : Customer Cancels
-    Confirmed --> NoShow : Customer Doesn't Show
-    CheckedIn --> Completed : Session Ends
-    CheckedIn --> Cancelled : Emergency Cancellation
-    Failed --> [*]
-    Cancelled --> [*]
-    NoShow --> [*]
-    Completed --> [*]
-```
-
-### 5.2 State Diagram Cafe Order
-
-```mermaid
-stateDiagram-v2
-    [*] --> Pending
-    Pending --> Preparing : Payment Confirmed
-    Pending --> Cancelled : Customer Cancels
-    Pending --> Failed : Payment Failed
-    Preparing --> Ready : Food Prepared
-    Preparing --> Cancelled : Kitchen Cancels
-    Ready --> Delivered : Customer Picks Up
-    Ready --> Cancelled : Customer Doesn't Pick
-    Failed --> [*]
-    Cancelled --> [*]
-    Delivered --> [*]
-```
-
-### 5.3 State Diagram Member Status
-
-```mermaid
-stateDiagram-v2
-    [*] --> Active
-    Active --> Expired : Membership Ends
-    Active --> Suspended : Violation
-    Active --> Cancelled : Member Cancels
-    Expired --> Active : Renewal
-    Expired --> Cancelled : No Renewal
-    Suspended --> Active : Violation Resolved
-    Suspended --> Cancelled : Member Cancels
-    Cancelled --> [*]
-```
-
-## 6. Component Diagram
-
-### 6.1 Component Diagram System Architecture
-
-```mermaid
-graph TB
-    subgraph "Frontend Layer"
-        A1[Web Application]
-        A2[Mobile Application]
-        A3[Admin Dashboard]
-    end
-
-    subgraph "API Gateway"
-        B1[API Gateway]
-    end
-
-    subgraph "Service Layer"
-        C1[Member Service]
-        C2[Booking Service]
-        C3[Payment Service]
-        C4[Cafe Service]
-        C5[Notification Service]
-        C6[Reporting Service]
-    end
-
-    subgraph "Data Layer"
-        D1[Member Database]
-        D2[Booking Database]
-        D3[Payment Database]
-        D4[Cafe Database]
-    end
-
-    subgraph "External Services"
-        E1[Payment Gateway]
-        E2[Email Service]
-        E3[SMS Service]
-        E4[File Storage]
-    end
-
-    A1 --> B1
-    A2 --> B1
-    A3 --> B1
-
-    B1 --> C1
-    B1 --> C2
-    B1 --> C3
-    B1 --> C4
-    B1 --> C5
-    B1 --> C6
-
-    C1 --> D1
-    C2 --> D2
-    C3 --> D3
-    C4 --> D4
-    C5 --> E2
-    C5 --> E3
-    C3 --> E1
-    C1 --> E4
-    C4 --> E4
-```
-
----
-
-**Versi**: 1.3  
-**Tanggal**: 26 Agustus 2025  
-**Status**: Complete dengan Dynamic Pricing, Guest Booking, Google SSO, Mobile-First Web App, Core Booking Flow, Manual Payment, Dynamic Member Quota & Member Daily Swimming Limit  
-**Berdasarkan**: PDF Raujan Pool Syariah
-
-### 2.10 Manual Payment System Sequence Diagram
+### 4.1 Sequence Diagram Member Registration
 
 ```mermaid
 sequenceDiagram
     participant U as User
-    participant W as Web App
-    participant A as API Gateway
-    participant P as Payment Service
-    participant B as Bank Config
-    participant D as Database
-    participant N as Notification Service
+    participant S as System
+    participant A as Admin
+    participant DB as Database
+    participant E as Email/SMS
 
-    Note over U: User selects manual payment
-    Note over W: React/Next.js Frontend
-    Note over A: Laravel API Gateway
-    Note over P: Manual Payment Service
-    Note over B: Bank Account Configuration
-    Note over D: MySQL Database
-    Note over N: FCM Push Service
+    U->>S: Access Registration Page
+    S->>U: Display Registration Form
 
-    U->>W: Select manual payment method
-    W->>A: Request payment instructions
-    A->>P: Get payment instructions
-    P->>B: Get bank account details
-    B-->>P: Bank account information
-    P-->>A: Payment instructions
-    A-->>W: Display payment instructions
-    W-->>U: Show bank account details
+    U->>S: Fill Registration Form
+    S->>DB: Validate User Data
+    DB->>S: Validation Results
 
-    U->>W: Upload payment proof
-    W->>A: Submit payment proof
-    A->>P: Process payment proof upload
-    P->>D: Store payment proof
-    P->>D: Set payment status: pending
-    P-->>A: Payment proof stored
-    A-->>W: Payment proof uploaded
-    W-->>U: Payment proof confirmation
+    U->>S: Upload Documents
+    S->>DB: Save Documents
+    DB->>S: Document URLs
 
-    Note over A: Admin Payment Verification
-    Note over A: Admin reviews payment proof
-    A->>P: Request payment verification
-    P->>D: Get payment proof data
-    D-->>P: Payment proof details
-    P->>P: Validate payment proof
-    P-->>A: Payment verification result
+    U->>S: Choose Package
+    S->>DB: Get Package Details
+    DB->>S: Package Information
 
-    alt Payment Valid
-        A->>P: Approve payment
-        P->>D: Update payment status: approved
-        A->>N: Send payment confirmation
-        N-->>U: Payment approved notification
-        A->>D: Update booking status
-        A-->>W: Payment approved
-        W-->>U: Booking confirmed
-    else Payment Invalid
-        A->>P: Reject payment
-        P->>D: Update payment status: rejected
-        A->>N: Send payment rejection
-        N-->>U: Payment rejected notification
-        A-->>W: Payment rejected
-        W-->>U: Re-upload payment proof
+    U->>S: Submit Registration
+    S->>DB: Create Temporary Account
+    DB->>S: Account Created
+
+    S->>A: Notify Admin: New Registration
+    A->>S: Access Admin Panel
+
+    A->>S: Review Documents
+    S->>DB: Get User Documents
+    DB->>S: Document Data
+
+    A->>S: Approve/Reject Registration
+    alt Registration Approved
+        S->>DB: Activate User Account
+        DB->>S: Account Activated
+        S->>DB: Generate Member Card
+        DB->>S: Member Card Data
+        S->>E: Send Welcome Email/SMS
+        E->>U: Welcome Message
+    else Registration Rejected
+        S->>E: Send Rejection Notice
+        E->>U: Rejection Details
+    end
+```
+
+### 4.2 Sequence Diagram Booking Process
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant S as System
+    participant C as Calendar
+    participant P as Payment
+    participant DB as Database
+    participant E as Email/SMS
+
+    U->>S: Access Booking Page
+    S->>C: Load Calendar Interface
+    C->>S: Current Month Data
+
+    U->>C: Navigate to Future Month
+    C->>S: Future Month Data
+    S->>U: Display Calendar
+
+    U->>S: Select Available Date
+    S->>DB: Get Session Availability
+    DB->>S: Session Data
+
+    S->>U: Display Session Options
+    U->>S: Select Session
+    S->>DB: Check Session Capacity
+    DB->>S: Capacity Status
+
+    U->>S: Choose User Type (Member/Guest)
+    alt Member User
+        U->>S: Login to Account
+        S->>DB: Validate Credentials
+        DB->>S: User Profile
+    else Guest User
+        U->>S: Fill Guest Form
+        S->>DB: Create Guest Record
+        DB->>S: Guest ID
     end
 
-    Note over P: Payment History Tracking
-    Note over P: Track all payment attempts
-    P->>D: Log payment verification
-    P->>D: Store verification details
-    P->>P: Generate payment report
+    S->>DB: Calculate Total Cost
+    DB->>S: Pricing Information
+    S->>U: Display Booking Summary
+
+    U->>S: Confirm Booking
+    S->>P: Initiate Payment Process
+
+    alt Manual Payment
+        P->>S: Show Transfer Instructions
+        S->>U: Payment Instructions
+        U->>S: Upload Payment Proof
+        S->>DB: Save Payment Proof
+        DB->>S: Proof Saved
+
+        S->>A: Notify Admin: Payment Pending
+
+        A->>S: Verify Payment
+        S->>DB: Update Payment Status
+        DB->>S: Status Updated
+    else Online Payment
+        P->>S: Process Online Payment
+        S->>DB: Save Payment Record
+        DB->>S: Payment Confirmed
+    end
+
+    S->>DB: Create Booking Record
+    DB->>S: Booking Confirmed
+    S->>DB: Generate QR Code
+    DB->>S: QR Code Data
+
+    S->>E: Send Confirmation
+    E->>U: Booking Confirmation
+    S->>U: Display Booking Details
 ```
 
-### 2.11 Dynamic Menu Management Sequence Diagram
+### 4.3 Sequence Diagram Cafe Order Process
+
+```mermaid
+sequenceDiagram
+    participant C as Customer
+    participant B as Barcode Scanner
+    participant S as System
+    participant M as Menu
+    participant P as Payment
+    participant K as Kitchen
+    participant DB as Database
+
+    C->>B: Scan Menu Barcode
+    B->>S: Barcode Data
+    S->>DB: Get Menu by Location
+    DB->>S: Menu Items
+    S->>M: Load Menu Interface
+
+    C->>M: Browse Menu Items
+    M->>S: Get Available Items
+    S->>DB: Check Stock Levels
+    DB->>S: Availability Data
+    S->>M: Display Available Items
+
+    C->>M: Select Menu Item
+    M->>S: Add Item to Cart
+    S->>DB: Update Cart
+    DB->>S: Cart Updated
+
+    C->>M: Add Special Notes
+    M->>S: Save Notes
+    S->>DB: Store Notes
+    DB->>S: Notes Saved
+
+    C->>M: Complete Order
+    M->>S: Submit Order
+    S->>P: Process Payment
+
+    P->>S: Payment Success
+    S->>DB: Create Order Record
+    DB->>S: Order Created
+
+    S->>K: Send Order to Kitchen
+    K->>S: Order Received
+
+    K->>S: Update Status: Preparing
+    S->>DB: Update Order Status
+    DB->>S: Status Updated
+
+    K->>S: Update Status: Ready
+    S->>C: Notify Customer: Order Ready
+
+    C->>S: Confirm Order Reception
+    S->>DB: Update Status: Delivered
+    DB->>S: Order Completed
+```
+
+### 4.4 Sequence Diagram Rating System
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant S as System
+    participant R as Rating Module
+    participant A as Analytics
+    participant DB as Database
+
+    U->>S: Complete Service/Order
+    S->>U: Request Rating
+
+    U->>S: Access Rating Page
+    S->>R: Load Rating Interface
+    R->>U: Display Rating Form
+
+    U->>R: Submit Overall Rating
+    U->>R: Rate Individual Components
+    U->>R: Add Comments
+    R->>S: Submit Rating Data
+
+    S->>DB: Validate Rating Data
+    DB->>S: Validation Results
+
+    S->>DB: Save Rating
+    DB->>S: Rating Saved
+
+    S->>A: Update Analytics
+    A->>DB: Calculate Average Ratings
+    DB->>A: Rating Calculations
+    A->>DB: Update Analytics Tables
+
+    S->>U: Send Thank You Message
+    S->>DB: Generate Rating Summary
+    DB->>S: Summary Data
+```
+
+### 4.5 Sequence Diagram Check-in Process
+
+```mermaid
+sequenceDiagram
+    participant C as Customer
+    participant S as Staff
+    participant SYS as System
+    participant DB as Database
+    participant E as Equipment
+
+    C->>S: Present Booking Reference
+    S->>SYS: Enter/Scan Reference
+    SYS->>DB: Validate Booking
+    DB->>SYS: Booking Data
+
+    SYS->>S: Display Booking Details
+    S->>C: Verify Identity
+
+    S->>SYS: Process Check-in
+    SYS->>DB: Update Booking Status
+    DB->>SYS: Status Updated
+
+    SYS->>E: Request Equipment
+    E->>S: Issue Equipment
+    S->>DB: Record Check-in Time
+    DB->>SYS: Time Recorded
+
+    SYS->>C: Confirm Check-in
+    SYS->>C: Provide Equipment
+
+    Note over C,SYS: Pool Usage Time
+
+    C->>S: Request Check-out
+    S->>E: Collect Equipment
+    S->>SYS: Process Check-out
+    SYS->>DB: Record Check-out Time
+    DB->>SYS: Time Recorded
+
+    SYS->>DB: Generate Usage Report
+    DB->>SYS: Report Data
+    SYS->>C: Confirm Check-out
+```
+
+### 4.6 Sequence Diagram Manual Payment System
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant S as System
+    participant A as Admin
+    participant B as Bank System
+    participant DB as Database
+
+    U->>S: Select Manual Payment
+    S->>U: Display Payment Instructions
+    S->>B: Get Bank Account Details
+    B->>S: Account Information
+    S->>U: Show Transfer Details
+
+    U->>B: Make Bank Transfer
+    B->>U: Transfer Confirmation
+    U->>S: Upload Payment Proof
+    S->>DB: Save Payment Proof
+    DB->>S: Proof Saved
+
+    S->>A: Notify Admin: Payment Received
+    A->>S: Access Payment Verification
+
+    A->>S: Review Payment Proof
+    S->>DB: Get Payment Data
+    DB->>S: Payment Information
+
+    A->>S: Verify Payment Details
+    S->>DB: Update Payment Status
+    DB->>S: Status Updated
+
+    alt Payment Verified
+        S->>DB: Process Booking/Purchase
+        DB->>S: Transaction Completed
+        S->>U: Send Confirmation
+    else Payment Rejected
+        S->>U: Send Rejection Notice
+        S->>DB: Mark for Correction
+        DB->>S: Correction Required
+    end
+```
+
+### 4.7 Sequence Diagram Dynamic Menu Management
 
 ```mermaid
 sequenceDiagram
     participant A as Admin
-    participant W as Web App
-    participant M as Menu Service
-    participant I as Inventory Service
-    participant B as Barcode Service
-    participant D as Database
-    participant N as Notification Service
+    participant S as System
+    participant M as Menu Manager
+    participant I as Inventory
+    participant DB as Database
 
-    Note over A: Admin manages menu
-    Note over W: React/Next.js Admin Interface
-    Note over M: Menu Management Service
-    Note over I: Inventory Management Service
-    Note over B: Barcode Generation Service
-    Note over D: MySQL Database
-    Note over N: FCM Push Service
+    A->>S: Access Menu Management
+    S->>M: Load Menu Interface
+    M->>DB: Get Existing Menus
+    DB->>M: Menu Data
+    M->>A: Display Menu List
 
-    A->>W: Access menu management
-    W->>M: Get menu list
-    M->>D: Fetch menu data
-    D-->>M: Menu information
-    M-->>W: Menu list
-    W-->>A: Display menu management
+    A->>M: Create New Menu Item
+    M->>A: Display Menu Form
 
-    A->>W: Create new menu
-    W->>M: Submit menu details
-    M->>D: Validate menu data
-    D-->>M: Validation result
-    M->>M: Calculate margin
-    M->>D: Store menu data
-    M->>I: Initialize inventory record
-    I->>D: Create inventory entry
-    M->>B: Generate barcode
-    B->>D: Store barcode data
-    M-->>W: Menu created successfully
-    W-->>A: Menu creation complete
+    A->>M: Fill Menu Details
+    M->>S: Validate Menu Data
+    S->>M: Validation Results
 
-    Note over A: Menu Update Process
-    A->>W: Edit existing menu
-    W->>M: Get menu details
-    M->>D: Fetch menu information
-    D-->>M: Menu details
-    M-->>W: Menu data for editing
-    W-->>A: Show edit form
+    A->>M: Set Pricing Information
+    M->>S: Calculate Margin
+    S->>M: Margin Calculations
 
-    A->>W: Update menu information
-    W->>M: Submit updated data
-    M->>D: Update menu record
-    M->>M: Recalculate margin
-    M->>I: Update inventory settings
-    I->>D: Update inventory data
-    M-->>W: Menu updated successfully
-    W-->>A: Menu update complete
+    A->>M: Upload Menu Image
+    M->>S: Process Image
+    S->>DB: Save Image
+    DB->>S: Image URL
 
-    Note over A: Stock Management
-    A->>W: Access stock management
-    W->>I: Get current stock levels
-    I->>D: Fetch inventory data
-    D-->>I: Stock information
-    I-->>W: Stock levels
-    W-->>A: Display stock management
+    A->>M: Save Menu Item
+    M->>DB: Create Menu Record
+    DB->>M: Menu Created
 
-    A->>W: Update stock levels
-    W->>I: Submit stock changes
-    I->>D: Update inventory records
-    I->>D: Log stock transaction
-    I->>M: Update menu availability
-    M->>D: Update menu status
-    I->>N: Send stock alerts
-    N-->>A: Stock update notification
-    I-->>W: Stock updated successfully
-    W-->>A: Stock management complete
+    M->>I: Update Inventory System
+    I->>DB: Create Inventory Record
+    DB->>I: Inventory Created
 
-    Note over A: Menu Analytics
-    A->>W: Access menu analytics
-    W->>M: Get menu performance data
-    M->>D: Fetch analytics data
-    D-->>M: Analytics information
-    M-->>W: Menu analytics
-    W-->>A: Display analytics dashboard
+    M->>S: Generate Menu Analytics
+    S->>DB: Update Analytics
+    DB->>S: Analytics Updated
+
+    M->>A: Confirm Menu Created
 ```
 
-### 2.12 Barcode Generation & Download Sequence Diagram
+### 4.8 Sequence Diagram Barcode Generation & Download
 
 ```mermaid
 sequenceDiagram
     participant A as Admin
-    participant W as Web App
-    participant M as Menu Service
-    participant B as Barcode Service
-    participant G as QR Code Service
-    participant F as File Service
-    participant D as Database
+    participant S as System
+    participant B as Barcode Generator
+    participant DB as Database
+    participant F as File System
 
-    Note over A: Admin manages barcodes
-    Note over W: React/Next.js Admin Interface
-    Note over M: Menu Management Service
-    Note over B: Barcode Generation Service
-    Note over G: QR Code Generation Service
-    Note over F: File Storage Service
-    Note over D: MySQL Database
+    A->>S: Access Barcode Management
+    S->>DB: Get Menu Items
+    DB->>S: Menu Data
+    S->>A: Display Menu List
 
-    Note over M,B: Auto-Generation Process
-    M->>D: Menu created/updated
-    D-->>M: Menu data
-    M->>B: Trigger barcode generation
-    B->>B: Generate unique barcode value
-    B->>G: Generate QR code
-    G-->>B: QR code data
-    B->>F: Store barcode image
-    F-->>B: Barcode image URL
-    B->>D: Store barcode information
-    B-->>M: Barcode generated successfully
+    A->>S: Select Menu for Barcode
+    S->>B: Generate Barcode Value
+    B->>S: Barcode Value
 
-    Note over A: Single Barcode Download
-    A->>W: Request barcode download
-    W->>M: Get menu barcode info
-    M->>D: Fetch barcode data
-    D-->>M: Barcode information
-    M-->>W: Barcode details
-    W-->>A: Display barcode preview
+    S->>B: Create QR Code
+    B->>S: QR Code Data
 
-    A->>W: Download barcode
-    W->>B: Generate download package
-    B->>F: Create barcode file
-    F-->>B: File created
-    B->>B: Package barcode data
-    B-->>W: Download link
-    W-->>A: Provide download
+    S->>B: Generate Barcode Image
+    B->>F: Save Barcode Image
+    F->>B: Image URL
 
-    Note over A: Bulk Barcode Export
-    A->>W: Request bulk export
-    W->>M: Get bulk barcode data
-    M->>D: Fetch all barcode data
-    D-->>M: All barcode information
-    M-->>W: Bulk barcode data
-    W-->>A: Bulk export options
+    S->>DB: Update Menu with Barcode
+    DB->>S: Menu Updated
 
-    A->>W: Select export format
-    W->>B: Generate bulk export
-    B->>F: Create bulk file
-    F-->>B: Bulk file created
-    B->>B: Package all barcodes
-    B-->>W: Bulk download link
-    W-->>A: Provide bulk download
+    S->>A: Display Barcode Preview
 
-    Note over A: Barcode Management
-    A->>W: Manage barcode status
-    W->>B: Update barcode status
-    B->>D: Update barcode record
-    B-->>W: Status updated
-    W-->>A: Barcode management complete
+    A->>S: Download Barcode
+    S->>F: Get Barcode Files
+    F->>S: File Data
+    S->>A: Provide Download Link
 
-    A->>W: Regenerate barcode
-    W->>B: Generate new barcode
-    B->>B: Create new barcode value
-    B->>G: Generate new QR code
-    G-->>B: New QR code
-    B->>F: Store new barcode image
-    F-->>B: New image URL
-    B->>D: Update barcode data
-    B-->>W: Barcode regenerated
-    W-->>A: New barcode ready
+    A->>S: Bulk Export Request
+    S->>DB: Get Multiple Menus
+    DB->>S: Menu List
+
+    S->>B: Generate Bulk Barcodes
+    B->>F: Create ZIP Package
+    F->>S: Package URL
+    S->>A: Provide Bulk Download
 ```
 
-### 2.13 Comprehensive Reporting System Sequence Diagram
+### 4.9 Sequence Diagram Comprehensive Reporting System
 
 ```mermaid
 sequenceDiagram
     participant A as Admin
-    participant W as Web App
-    participant R as Reporting Service
-    participant F as Financial Service
-    participant O as Operational Service
-    participant C as Customer Analytics Service
-    participant E as Export Service
-    participant D as Database
-    participant N as Notification Service
+    participant S as System
+    participant R as Report Generator
+    participant DB as Database
+    participant F as File Exporter
 
-    Note over A: Admin accesses reporting system
-    Note over W: React/Next.js Reporting Interface
-    Note over R: Reporting Service
-    Note over F: Financial Analytics Service
-    Note over O: Operational Analytics Service
-    Note over C: Customer Analytics Service
-    Note over E: Export Service
-    Note over D: MySQL Database
-    Note over N: Email/Notification Service
+    A->>S: Access Reporting System
+    S->>A: Display Report Categories
 
-    A->>W: Access reporting dashboard
-    W->>R: Get dashboard overview
-    R->>D: Fetch summary data
-    D-->>R: Summary information
-    R-->>W: Dashboard data
-    W-->>A: Display reporting dashboard
+    A->>S: Select Report Type
+    S->>R: Initialize Report Generation
+    R->>DB: Query Report Data
 
-    Note over A: Financial Reports
-    A->>W: Request financial report
-    W->>F: Get financial data
-    F->>D: Query financial records
-    D-->>F: Financial data
-    F->>F: Process financial analytics
-    F->>F: Calculate revenue metrics
-    F->>F: Generate expense analysis
-    F->>F: Create profit/loss statement
-    F-->>W: Financial report data
-    W-->>A: Display financial report
+    alt Financial Reports
+        R->>DB: Get Financial Data
+        DB->>R: Revenue, Expenses, Profit Data
+    else Operational Reports
+        R->>DB: Get Operational Data
+        DB->>R: Bookings, Sessions, Staff Data
+    else Customer Reports
+        R->>DB: Get Customer Data
+        DB->>R: Demographics, Behavior Data
+    end
 
-    A->>W: Export financial report
-    W->>E: Generate export file
-    E->>F: Get report data
-    F-->>E: Financial report data
-    E->>E: Format as PDF/Excel/CSV
-    E-->>W: Export file ready
-    W-->>A: Provide export download
+    R->>S: Process Report Data
+    S->>R: Format Report
 
-    Note over A: Operational Reports
-    A->>W: Request operational report
-    W->>O: Get operational data
-    O->>D: Query operational records
-    D-->>O: Operational data
-    O->>O: Process booking analytics
-    O->>O: Generate member reports
-    O->>O: Create session utilization
-    O->>O: Analyze staff performance
-    O-->>W: Operational report data
-    W-->>A: Display operational report
+    A->>S: Request Export
+    S->>F: Export Report
 
-    Note over A: Customer Analytics
-    A->>W: Request customer analytics
-    W->>C: Get customer data
-    C->>D: Query customer records
-    D-->>C: Customer data
-    C->>C: Analyze customer behavior
-    C->>C: Process retention metrics
-    C->>C: Generate satisfaction reports
-    C->>C: Create demographics analysis
-    C->>C: Analyze peak hours
-    C-->>W: Customer analytics data
-    W-->>A: Display customer analytics
+    F->>S: Generate Export File
+    S->>A: Provide Download Link
 
-    Note over A: Scheduled Reports
-    A->>W: Configure scheduled reports
-    W->>R: Set report schedule
-    R->>D: Store schedule configuration
-    R->>N: Set up automated delivery
-    N-->>A: Schedule confirmation
+    A->>S: Schedule Report
+    S->>DB: Save Schedule
+    DB->>S: Schedule Saved
 
-    Note over R: Automated Report Generation
-    Note over R: Daily/Weekly/Monthly reports
-    R->>F: Generate scheduled financial report
-    R->>O: Generate scheduled operational report
-    R->>C: Generate scheduled customer report
-    R->>E: Create scheduled export
-    R->>N: Send scheduled reports via email
-    N-->>A: Scheduled reports delivered
-
-    Note over A: Real-time Dashboards
-    A->>W: Access real-time dashboard
-    W->>R: Get live data
-    R->>D: Query real-time metrics
-    D-->>R: Live data
-    R->>R: Process real-time analytics
-    R-->>W: Real-time dashboard data
-    W-->>A: Display live dashboard
-
-    Note over A: Custom Reports
-    A->>W: Create custom report
-    W->>R: Configure custom parameters
-    R->>D: Query custom data
-    D-->>R: Custom data
-    R->>R: Process custom analytics
-    R->>E: Generate custom export
-    E-->>W: Custom report ready
-    W-->>A: Display custom report
+    S->>A: Confirm Report Actions
 ```
