@@ -700,11 +700,11 @@ classDiagram
         +generateReceipt()
     }
 
-    User ||--|| Member : has
-    Member ||--o{ Booking : makes
-    Package ||--o{ Member : subscribes
-    Booking ||--|| Payment : has
-    Booking ||--o{ Session : includes
+    User -- Member : has
+    Member o-- Booking : makes
+    Package o-- Member : subscribes
+    Booking -- Payment : has
+    Booking o-- Session : includes
 ```
 
 ### 2.2 Class Diagram Cafe System
@@ -793,11 +793,11 @@ classDiagram
         +sendNotification()
     }
 
-    CafeMenu ||--o{ CafeOrderItem : contains
-    CafeOrder ||--o{ CafeOrderItem : has
-    CafeMenu ||--|| CafeInventory : tracks
-    CafeInventory ||--o{ InventoryLog : logs
-    CafeInventory ||--o{ StockAlert : generates
+    CafeMenu o-- CafeOrderItem : contains
+    CafeOrder o-- CafeOrderItem : has
+    CafeMenu -- CafeInventory : tracks
+    CafeInventory o-- InventoryLog : logs
+    CafeInventory o-- StockAlert : generates
 ```
 
 ### 2.3 Class Diagram Rating & Review System
@@ -857,9 +857,9 @@ classDiagram
         +calculateGrowthRate()
     }
 
-    Rating ||--o{ RatingComponent : has
-    Rating ||--|| StaffRating : includes
-    Rating ||--|| RatingAnalytics : contributes_to
+    Rating o-- RatingComponent : has
+    Rating -- StaffRating : includes
+    Rating -- RatingAnalytics : contributes_to
 ```
 
 ### 2.4 Class Diagram Promotional System
@@ -920,9 +920,9 @@ classDiagram
         +getCampaignPerformance()
     }
 
-    PromotionalCampaign ||--o{ CampaignUsage : tracks
-    PromotionalCampaign ||--|| PromotionTemplate : based_on
-    PromotionalCampaign ||--|| CampaignAnalytics : generates
+    PromotionalCampaign o-- CampaignUsage : tracks
+    PromotionalCampaign -- PromotionTemplate : based_on
+    PromotionalCampaign -- CampaignAnalytics : generates
 ```
 
 ### 2.5 Class Diagram Manual Payment System
@@ -970,8 +970,8 @@ classDiagram
         +getVerificationHistory()
     }
 
-    ManualPayment ||--|| BankAccountConfig : uses
-    ManualPayment ||--o{ PaymentVerificationLog : has
+    ManualPayment -- BankAccountConfig : uses
+    ManualPayment o-- PaymentVerificationLog : has
 ```
 
 ### 2.6 Class Diagram Dynamic Member Quota Management
@@ -1026,9 +1026,9 @@ classDiagram
         +getQuotaTrends()
     }
 
-    MemberQuotaConfig ||--o{ MemberQueue : manages
-    MemberQuotaConfig ||--o{ MemberExpiryTracking : tracks
-    MemberQuotaConfig ||--o{ QuotaHistory : generates
+    MemberQuotaConfig o-- MemberQueue : manages
+    MemberQuotaConfig o-- MemberExpiryTracking : tracks
+    MemberQuotaConfig o-- QuotaHistory : generates
 ```
 
 ### 2.7 Class Diagram Member Daily Swimming Limit
@@ -1071,8 +1071,8 @@ classDiagram
         +getSessionHistory()
     }
 
-    MemberDailyUsage ||--o{ MemberLimitOverride : allows
-    MemberDailyUsage ||--o{ MemberSessionHistory : tracks
+    MemberDailyUsage o-- MemberLimitOverride : allows
+    MemberDailyUsage o-- MemberSessionHistory : tracks
 ```
 
 ### 2.8 Class Diagram Private Pool Rental System
@@ -1120,8 +1120,8 @@ classDiagram
         +calculateVisitMetrics()
     }
 
-    PrivatePoolBooking ||--|| PrivatePoolPricingConfig : uses
-    PrivatePoolBooking ||--|| CustomerVisitHistory : tracks
+    PrivatePoolBooking -- PrivatePoolPricingConfig : uses
+    PrivatePoolBooking -- CustomerVisitHistory : tracks
 ```
 
 ### 2.9 Class Diagram Barcode System
@@ -1166,8 +1166,8 @@ classDiagram
         +analyzeScanPatterns()
     }
 
-    MenuBarcode ||--|| BarcodeLocation : available_at
-    MenuBarcode ||--o{ BarcodeScan : generates
+    MenuBarcode -- BarcodeLocation : available_at
+    MenuBarcode o-- BarcodeScan : generates
 ```
 
 ### 2.10 Class Diagram Comprehensive Reporting System
@@ -1241,10 +1241,10 @@ classDiagram
         +executeScheduledReport()
     }
 
-    Report ||--|| FinancialReport : includes
-    Report ||--|| OperationalReport : includes
-    Report ||--|| CustomerAnalytics : includes
-    Report ||--o{ ReportSchedule : schedules
+    Report -- FinancialReport : includes
+    Report -- OperationalReport : includes
+    Report -- CustomerAnalytics : includes
+    Report o-- ReportSchedule : schedules
 ```
 
 ### 2.11 Class Diagram System Integration
@@ -1302,9 +1302,9 @@ classDiagram
         +validateSSO()
     }
 
-    Notification ||--|| UserSession : sends_to
-    UserSession ||--o{ SystemLog : generates
-    UserSession ||--|| SSOSession : authenticates_via
+    Notification -- UserSession : sends_to
+    UserSession o-- SystemLog : generates
+    UserSession -- SSOSession : authenticates_via
 ```
 
 ## 3. Activity Diagram
