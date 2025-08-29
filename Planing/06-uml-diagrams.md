@@ -2,575 +2,147 @@
 
 ## 1. Use Case Diagram
 
-### 1.1 Use Case Diagram Utama
+### 1.1 Use Case Diagram - Admin
 
 ```mermaid
 graph TB
-    subgraph "Sistem Kolam Renang Syariah"
-        subgraph "Actors"
-            A1[Admin]
-            A2[Staff Front Desk]
-            A3[Staff Cafe]
-            A4[Member]
-            A5[Non-Member]
-        end
+    subgraph "Admin Use Cases"
+        A1[Admin]
 
-        subgraph "Member Management"
+        subgraph "System Management"
             UC1[Register Member]
             UC2[Update Profile]
             UC3[Manage Packages]
             UC4[View History]
             UC5[Renew Membership]
-        end
-
-        subgraph "Booking System"
-            UC6[Access Calendar Interface]
-            UC7[Navigate Calendar Forward]
-            UC8[Select Available Date]
-            UC9[View Session Details]
-            UC10[Select Session]
-            UC11[Register as Guest/Member]
-            UC12[Complete Booking]
-            UC13[Receive Confirmation]
-            UC14[Cancel Booking]
-            UC15[Check-in/Check-out]
-            UC16[View Schedule]
-            UC17[Check Real-time Availability]
-            UC18[Book Regular Session]
-            UC19[Book Private Session]
-        end
-
-        subgraph "Payment System"
-            UC20[Pay Membership]
-            UC21[Pay Regular Session]
-            UC22[Pay Private Session]
-            UC23[Process Refund]
-        end
-
-        subgraph "Cafe Management"
-            UC24[Browse Menu]
-            UC25[Place Order]
-            UC26[Manage Inventory]
-            UC27[Update Stock]
-            UC28[Track Sales]
-        end
-
-        subgraph "Rating & Review System"
-            UC29[Rate Services]
-            UC30[Submit Reviews]
-            UC31[Manage Rating System]
-            UC32[View Rating Analytics]
-            UC33[Configure Rating Components]
-        end
-
-        subgraph "Promotional System"
-            UC34[Create Promotional Campaigns]
-            UC35[Manage Campaign Templates]
-            UC36[View Campaign Analytics]
-            UC37[Configure Dynamic Pricing]
-            UC38[Apply Promotional Pricing]
-        end
-
-        subgraph "Staff Management"
-            UC39[Process Check-in]
-            UC40[Manage Equipment]
-            UC41[Track Attendance]
-            UC42[Handle No-Shows]
-            UC43[Manage Staff]
-            UC44[Generate Reports]
+            UC6[Manage System Configuration]
+            UC7[Manage User Roles]
+            UC8[Manage Permissions]
+            UC9[System Backup]
+            UC10[System Restore]
+            UC11[View System Logs]
+            UC12[Manage API Keys]
+            UC13[Configure Integrations]
+            UC14[System Monitoring]
+            UC15[Performance Optimization]
         end
 
         subgraph "Dynamic Pricing System"
-            UC45[Configure Dynamic Pricing]
-            UC46[Update Pricing Configuration]
-            UC47[View Pricing History]
-            UC48[Manage Pricing Rules]
-            UC49[Set Seasonal Pricing]
-            UC50[Configure Member Discounts]
+            UC16[Configure Dynamic Pricing]
+            UC17[Update Pricing Configuration]
+            UC18[View Pricing History]
+            UC19[Manage Pricing Rules]
+            UC20[Set Seasonal Pricing]
+            UC21[Configure Member Discounts]
+        end
+
+        subgraph "Promotional System"
+            UC22[Create Promotional Campaigns]
+            UC23[Manage Campaign Templates]
+            UC24[View Campaign Analytics]
+            UC25[Configure Dynamic Pricing]
+            UC26[Apply Promotional Pricing]
         end
 
         subgraph "Guest User Management"
-            UC51[Register as Guest]
-            UC52[Convert Guest to Member]
-            UC53[Manage Guest Users]
-            UC54[Guest User Analytics]
-            UC55[Guest Conversion Tracking]
+            UC27[Register as Guest]
+            UC28[Convert Guest to Member]
+            UC29[Manage Guest Users]
+            UC30[Guest User Analytics]
+            UC31[Guest Conversion Tracking]
         end
 
         subgraph "Google SSO Integration"
-            UC56[Login via Google SSO]
-            UC57[Sign up via Google SSO]
-            UC58[Sync Google Profile]
-            UC59[Configure SSO Settings]
-            UC60[Manage SSO Sessions]
-        end
-
-        subgraph "Booking Proof System"
-            UC61[Generate QR Code]
-            UC62[Generate Booking Reference]
-            UC63[Send Email Confirmation]
-            UC64[Send SMS Confirmation]
-            UC65[Verify Booking Proof]
-            UC66[Generate Digital Receipt]
-            UC67[Manage Proof Templates]
+            UC32[Login via Google SSO]
+            UC33[Sign up via Google SSO]
+            UC34[Sync Google Profile]
+            UC35[Configure SSO Settings]
+            UC36[Manage SSO Sessions]
         end
 
         subgraph "Notification System"
-            UC68[Send Push Notifications]
-            UC69[Configure Notifications]
-            UC70[Manage Notification Templates]
-            UC71[Schedule Notifications]
-            UC72[Track Notification Delivery]
-        end
-
-        subgraph "Mobile Features"
-            UC73[PWA Installation]
-            UC74[Offline Support]
-            UC75[Mobile-Optimized Interface]
-            UC76[Touch Gestures]
-            UC77[Mobile Payment Integration]
-        end
-
-        subgraph "Advanced Calendar"
-            UC78[Forward-Only Navigation]
-            UC79[Real-time Availability Display]
-            UC80[Date Status Indicators]
-            UC81[Capacity Management]
-            UC82[Session Slot Management]
+            UC37[Send Push Notifications]
+            UC38[Configure Notifications]
+            UC39[Manage Notification Templates]
+            UC40[Schedule Notifications]
+            UC41[Track Notification Delivery]
         end
 
         subgraph "Manual Payment System"
-            UC83[Select Manual Payment]
-            UC84[Upload Transfer Proof]
-            UC85[Submit Payment Proof]
-            UC86[View Payment Status]
-            UC87[Verify Payment Proof]
-            UC88[Confirm Payment]
-            UC89[Reject Payment]
-            UC90[Request Payment Correction]
-            UC91[Generate Payment Instructions]
-            UC92[Track Payment History]
+            UC42[Verify Payment Proof]
+            UC43[Confirm Payment]
+            UC44[Reject Payment]
+            UC45[Request Payment Correction]
+            UC46[Generate Payment Instructions]
+            UC47[Track Payment History]
         end
 
-                        subgraph "Dynamic Member Quota Management"
-                    UC93[Configure Member Quota]
-                    UC94[Join Member Queue]
-                    UC95[Monitor Queue Position]
-                    UC96[Process Member Expiry]
-                    UC97[Send Expiry Warnings]
-                    UC98[Auto-Promote Queue]
-                    UC99[Confirm Promotion Offer]
-                    UC100[Update Quota Settings]
-                    UC101[Track Quota History]
-                    UC102[View Quota Dashboard]
-                end
+        subgraph "Dynamic Member Quota Management"
+            UC48[Configure Member Quota]
+            UC49[Monitor Queue Position]
+            UC50[Process Member Expiry]
+            UC51[Send Expiry Warnings]
+            UC52[Auto-Promote Queue]
+            UC53[Confirm Promotion Offer]
+            UC54[Update Quota Settings]
+            UC55[Track Quota History]
+            UC56[View Quota Dashboard]
+        end
 
-                subgraph "Member Daily Swimming Limit"
-                    UC103[Check Daily Limit]
-                    UC104[Book Free Session]
-                    UC105[Book Additional Paid Session]
-                    UC106[Apply Limit Override]
-                    UC107[Track Daily Usage]
-                    UC108[View Usage History]
-                    UC109[Generate Usage Reports]
-                    UC110[Monitor Limit Compliance]
-                end
+        subgraph "Cafe System Management"
+            UC57[Create Menu]
+            UC58[Update Menu]
+            UC59[Manage Stock]
+            UC60[View Menu Analytics]
+            UC61[Generate Menu Barcode]
+            UC62[Download Barcode]
+            UC63[Generate Financial Reports]
+            UC64[View Analytics Dashboard]
+        end
 
-                subgraph "Private Pool Rental System"
-                    UC111[Book Private Pool]
-                    UC112[Check New Customer Status]
-                    UC113[Apply Time Bonus]
-                    UC114[Calculate Dynamic Pricing]
-                    UC115[Manage Customer History]
-                    UC116[Configure Pricing Rules]
-                    UC117[Track Visit Counter]
-                    UC118[Generate Analytics]
-                    UC119[Process Payment]
-                    UC120[Send Notifications]
-                end
+        subgraph "Comprehensive Reporting System"
+            UC65[Generate Revenue Reports]
+            UC66[Generate Expense Reports]
+            UC67[Generate Profit & Loss Reports]
+            UC68[Generate Cash Flow Reports]
+            UC69[Generate Tax Reports]
+            UC70[Generate Budget Analysis]
+            UC71[Generate Booking Analytics]
+            UC72[Generate Member Reports]
+            UC73[Generate Session Reports]
+            UC74[Generate Staff Reports]
+            UC75[Generate Facility Reports]
+            UC76[Generate Customer Analytics]
+            UC77[Generate Inventory Reports]
+            UC78[Generate Promotional Reports]
+            UC79[Export Reports]
+            UC80[Schedule Reports]
+            UC81[Configure Report Templates]
+            UC82[View Real-time Dashboard]
+        end
 
-                subgraph "Cafe System with Barcode"
-                    UC121[Scan Barcode/QR Code]
-                    UC122[Browse Menu]
-                    UC123[Add Item to Cart]
-                    UC124[Add Special Notes]
-                    UC125[Manage Cart]
-                    UC126[Process Payment]
-                    UC127[Verify Payment]
-                    UC128[Prepare Food]
-                    UC129[Deliver Order]
-                    UC130[Confirm Reception]
-                    UC131[Create Menu]
-                    UC132[Update Menu]
-                    UC133[Manage Stock]
-                    UC134[View Menu Analytics]
-                    UC135[Generate Menu Barcode]
-                    UC136[Download Barcode]
-                    UC137[Generate Financial Reports]
-                    UC138[View Analytics Dashboard]
-                end
-
-                subgraph "Comprehensive Reporting System"
-                    UC139[Generate Revenue Reports]
-                    UC140[Generate Expense Reports]
-                    UC141[Generate Profit & Loss Reports]
-                    UC142[Generate Cash Flow Reports]
-                    UC143[Generate Tax Reports]
-                    UC144[Generate Budget Analysis]
-                    UC145[Generate Booking Analytics]
-                    UC146[Generate Member Reports]
-                    UC147[Generate Session Reports]
-                    UC148[Generate Staff Reports]
-                    UC149[Generate Facility Reports]
-                    UC150[Generate Customer Analytics]
-                    UC151[Generate Inventory Reports]
-                    UC152[Generate Promotional Reports]
-                    UC153[Export Reports]
-                    UC154[Schedule Reports]
-                    UC155[Configure Report Templates]
-                    UC156[View Real-time Dashboard]
-                end
-
-                subgraph "System Administration"
-                    UC157[Manage System Configuration]
-                    UC158[Manage User Roles]
-                    UC159[Manage Permissions]
-                    UC160[System Backup]
-                    UC161[System Restore]
-                    UC162[View System Logs]
-                    UC163[Manage API Keys]
-                    UC164[Configure Integrations]
-                    UC165[System Monitoring]
-                    UC166[Performance Optimization]
-                end
-
-                subgraph "Data Management"
-                    UC167[Data Import]
-                    UC168[Data Export]
-                    UC169[Data Validation]
-                    UC170[Data Cleanup]
-                    UC171[Data Migration]
-                    UC172[Data Archival]
-                    UC173[Data Recovery]
-                    UC174[Data Backup]
-                    UC175[Manage Data Retention]
-                    UC176[Data Compliance]
-                end
+        subgraph "Data Management"
+            UC83[Data Import]
+            UC84[Data Export]
+            UC85[Data Validation]
+            UC86[Data Cleanup]
+            UC87[Data Migration]
+            UC88[Data Archival]
+            UC89[Data Recovery]
+            UC90[Data Backup]
+            UC91[Manage Data Retention]
+            UC92[Data Compliance]
+        end
     end
 
+    linkStyle 0 stroke:#ff6b6b,stroke-width:2px
     A1 -.-> UC1
     A1 -.-> UC2
     A1 -.-> UC3
     A1 -.-> UC4
     A1 -.-> UC5
-    A1 -.-> UC21
-    A1 -.-> UC22
-    A1 -.-> UC23
-    A1 -.-> UC24
-    A1 -.-> UC25
-    A1 -.-> UC26
-    A1 -.-> UC27
-    A1 -.-> UC31
-    A1 -.-> UC32
-    A1 -.-> UC33
-    A1 -.-> UC34
-    A1 -.-> UC35
-    A1 -.-> UC36
-    A1 -.-> UC37
-    A1 -.-> UC38
-    A1 -.-> UC39
-    A1 -.-> UC40
-    A1 -.-> UC41
-    A1 -.-> UC42
-    A1 -.-> UC43
-    A1 -.-> UC44
-    A1 -.-> UC45
-    A1 -.-> UC46
-    A1 -.-> UC47
-    A1 -.-> UC48
-    A1 -.-> UC49
-    A1 -.-> UC50
-    A1 -.-> UC51
-    A1 -.-> UC52
-    A1 -.-> UC53
-    A1 -.-> UC54
-    A1 -.-> UC55
-    A1 -.-> UC56
-    A1 -.-> UC57
-    A1 -.-> UC58
-    A1 -.-> UC59
-    A1 -.-> UC60
-    A1 -.-> UC61
-    A1 -.-> UC62
-    A1 -.-> UC63
-    A1 -.-> UC64
-    A1 -.-> UC65
-    A1 -.-> UC66
-    A1 -.-> UC67
-    A1 -.-> UC68
-    A1 -.-> UC69
-    A1 -.-> UC70
-    A1 -.-> UC71
-    A1 -.-> UC72
-    A1 -.-> UC73
-    A1 -.-> UC74
-    A1 -.-> UC75
-    A1 -.-> UC76
-    A1 -.-> UC77
-    A1 -.-> UC78
-    A1 -.-> UC79
-    A1 -.-> UC80
-    A1 -.-> UC81
-    A1 -.-> UC82
-    A1 -.-> UC83
-    A1 -.-> UC84
-    A1 -.-> UC85
-    A1 -.-> UC86
-    A1 -.-> UC87
-    A1 -.-> UC88
-    A1 -.-> UC89
-    A1 -.-> UC90
-    A1 -.-> UC91
-    A1 -.-> UC92
-    A1 -.-> UC93
-    A1 -.-> UC96
-    A1 -.-> UC97
-    A1 -.-> UC98
-                A1 -.-> UC100
-            A1 -.> UC101
-            A1 -.-> UC102
-            A1 -.-> UC106
-            A1 -.-> UC107
-            A1 -.-> UC109
-            A1 -.-> UC110
-            A1 -.-> UC116
-            A1 -.-> UC118
-            A1 -.-> UC115
-
-            A2 -.-> UC1
-    A2 -.-> UC2
-    A2 -.-> UC9
-    A2 -.-> UC11
-    A2 -.-> UC12
-    A2 -.-> UC13
-    A2 -.-> UC14
-    A2 -.-> UC15
-    A2 -.-> UC39
-    A2 -.-> UC40
-    A2 -.-> UC41
-    A2 -.-> UC42
-    A2 -.-> UC87
-    A2 -.-> UC88
-    A2 -.-> UC89
-                A2 -.-> UC90
-            A2 -.-> UC93
-            A2 -.-> UC96
-            A2 -.-> UC97
-            A2 -.> UC98
-            A2 -.-> UC100
-            A2 -.-> UC101
-            A2 -.-> UC102
-            A2 -.-> UC106
-            A2 -.-> UC107
-            A2 -.-> UC110
-            A2 -.-> UC111
-            A2 -.-> UC112
-            A2 -.-> UC115
-            A2 -.-> UC119
-
-            A3 -.-> UC26
-    A3 -.-> UC27
-    A3 -.-> UC28
-    A3 -.-> UC40
-
-    A4 -.-> UC2
-    A4 -.-> UC4
-    A4 -.-> UC6
-    A4 -.-> UC7
-    A4 -.-> UC8
-    A4 -.-> UC10
-    A4 -.-> UC11
-    A4 -.-> UC12
-    A4 -.-> UC13
-    A4 -.-> UC14
-    A4 -.-> UC18
-    A4 -.-> UC19
-    A4 -.-> UC24
-    A4 -.-> UC25
-    A4 -.-> UC29
-    A4 -.-> UC30
-    A4 -.-> UC38
-    A4 -.-> UC5
-    A4 -.-> UC94
-    A4 -.-> UC95
-                A4 -.-> UC99
-            A4 -.-> UC103
-            A4 -.-> UC104
-            A4 -.-> UC105
-            A4 -.-> UC108
-            A4 -.> UC111
-            A4 -.-> UC112
-            A4 -.-> UC113
-            A4 -.-> UC114
-            A4 -.-> UC115
-            A4 -.-> UC117
-            A4 -.-> UC119
-
-            A5 -.-> UC6
-    A5 -.-> UC8
-    A5 -.-> UC10
-    A5 -.-> UC11
-    A5 -.-> UC13
-    A5 -.-> UC14
-    A5 -.-> UC18
-    A5 -.-> UC19
-    A5 -.-> UC24
-    A5 -.-> UC25
-    A5 -.-> UC29
-    A5 -.-> UC30
-    A5 -.-> UC38
-    A5 -.-> UC83
-    A5 -.-> UC84
-    A5 -.-> UC85
-    A5 -.-> UC86
-    A5 -.-> UC94
-                A5 -.-> UC95
-            A5 -.-> UC99
-            A5 -.-> UC111
-            A5 -.-> UC112
-            A5 -.-> UC113
-            A5 -.-> UC114
-            A5 -.-> UC119
-
-            A1 -.-> UC127
-            A1 -.-> UC128
-            A1 -.-> UC129
-            A1 -.-> UC130
-
-            A3 -.-> UC127
-            A3 -.-> UC128
-            A3 -.-> UC129
-            A3 -.-> UC130
-
-            A4 -.-> UC121
-            A4 -.-> UC122
-            A4 -.-> UC123
-            A4 -.-> UC124
-            A4 -.-> UC125
-            A4 -.-> UC126
-            A4 -.-> UC130
-
-            A5 -.-> UC121
-            A5 -.-> UC122
-            A5 -.-> UC123
-            A5 -.-> UC124
-            A5 -.-> UC125
-            A5 -.-> UC126
-            A5 -.-> UC130
-
-            A1 -.-> UC131
-            A1 -.-> UC132
-            A1 -.-> UC133
-            A1 -.-> UC134
-            A1 -.-> UC135
-            A1 -.-> UC136
-            A1 -.-> UC137
-            A1 -.-> UC138
-
-            A1 -.-> UC139
-            A1 -.-> UC140
-            A1 -.-> UC141
-            A1 -.-> UC142
-            A1 -.-> UC143
-            A1 -.-> UC144
-            A1 -.-> UC145
-            A1 -.-> UC146
-            A1 -.-> UC147
-            A1 -.-> UC148
-            A1 -.-> UC149
-            A1 -.-> UC150
-            A1 -.-> UC151
-            A1 -.-> UC152
-            A1 -.-> UC153
-            A1 -.-> UC154
-            A1 -.-> UC155
-            A1 -.-> UC156
-
-            A1 -.-> UC157
-            A1 -.-> UC158
-            A1 -.-> UC159
-            A1 -.-> UC160
-            A1 -.-> UC161
-            A1 -.-> UC162
-            A1 -.-> UC163
-            A1 -.-> UC164
-            A1 -.-> UC165
-            A1 -.-> UC166
-
-            A1 -.-> UC167
-            A1 -.-> UC168
-            A1 -.-> UC169
-            A1 -.-> UC170
-            A1 -.-> UC171
-            A1 -.-> UC172
-            A1 -.-> UC173
-            A1 -.-> UC174
-            A1 -.-> UC175
-            A1 -.-> UC176
-
-            A2 -.-> UC145
-            A2 -.-> UC146
-            A2 -.-> UC147
-            A2 -.-> UC148
-            A2 -.-> UC149
-
-            A3 -.-> UC145
-            A3 -.-> UC151
-            A3 -.-> UC153
-
-
-```
-
-### 1.2 Use Case Diagram Detail Member
-
-```mermaid
-graph TB
-    subgraph "Member Management System"
-        subgraph "Actors"
-            A1[Member]
-            A2[Admin]
-            A3[Staff]
-        end
-
-        subgraph "Registration Process"
-            UC1[Fill Registration Form]
-            UC2[Upload Documents]
-            UC3[Choose Package]
-            UC4[Make Payment]
-            UC5[Verify Documents]
-            UC6[Activate Account]
-            UC7[Generate Member Card]
-        end
-
-        subgraph "Profile Management"
-            UC8[Update Personal Info]
-            UC9[Change Password]
-            UC10[Upload Photo]
-            UC11[Update Emergency Contact]
-            UC12[View Booking History]
-            UC13[Check Membership Status]
-        end
-
-        subgraph "Membership Management"
-            UC14[Renew Membership]
-            UC15[Upgrade Package]
-            UC16[Cancel Membership]
-            UC17[Request Refund]
-            UC18[View Payment History]
-        end
-    end
-
-    A1 -.-> UC1
+    A1 -.-> UC6
+    A1 -.-> UC7
     A1 -.-> UC8
     A1 -.-> UC9
     A1 -.-> UC10
@@ -582,20 +154,482 @@ graph TB
     A1 -.-> UC16
     A1 -.-> UC17
     A1 -.-> UC18
+    A1 -.-> UC19
+    A1 -.-> UC20
+    A1 -.-> UC21
+    A1 -.-> UC22
+    A1 -.-> UC23
+    A1 -.-> UC24
+    A1 -.-> UC25
+    A1 -.> UC26
+    A1 -.> UC27
+    A1 -.> UC28
+    A1 -.> UC29
+    A1 -.> UC30
+    A1 -.> UC31
+    A1 -.> UC32
+    A1 -.> UC33
+    A1 -.> UC34
+    A1 -.> UC35
+    A1 -.> UC36
+    A1 -.> UC37
+    A1 -.> UC38
+    A1 -.> UC39
+    A1 -.> UC40
+    A1 -.> UC41
+    A1 -.> UC42
+    A1 -.> UC43
+    A1 -.> UC44
+    A1 -.> UC45
+    A1 -.> UC46
+    A1 -.> UC47
+    A1 -.> UC48
+    A1 -.> UC49
+    A1 -.> UC50
+    A1 -.> UC51
+    A1 -.> UC52
+    A1 -.> UC53
+    A1 -.> UC54
+    A1 -.> UC55
+    A1 -.> UC56
+    A1 -.> UC57
+    A1 -.> UC58
+    A1 -.> UC59
+    A1 -.> UC60
+    A1 -.> UC61
+    A1 -.> UC62
+    A1 -.> UC63
+    A1 -.> UC64
+    A1 -.> UC65
+    A1 -.> UC66
+    A1 -.> UC67
+    A1 -.> UC68
+    A1 -.> UC69
+    A1 -.> UC70
+    A1 -.> UC71
+    A1 -.> UC72
+    A1 -.> UC73
+    A1 -.> UC74
+    A1 -.> UC75
+    A1 -.> UC76
+    A1 -.> UC77
+    A1 -.> UC78
+    A1 -.> UC79
+    A1 -.> UC80
+    A1 -.> UC81
+    A1 -.> UC82
+    A1 -.> UC83
+    A1 -.> UC84
+    A1 -.> UC85
+    A1 -.> UC86
+    A1 -.> UC87
+    A1 -.> UC88
+    A1 -.> UC89
+    A1 -.> UC90
+    A1 -.> UC91
+    A1 -.> UC92
+```
 
+### 1.2 Use Case Diagram - Staff Front Desk
+
+```mermaid
+graph TB
+    subgraph "Staff Front Desk Use Cases"
+        A2[Staff Front Desk]
+
+        subgraph "Booking Management"
+            UC1[Process Check-in]
+            UC2[Process Check-out]
+            UC3[Handle No-Shows]
+            UC4[View Schedule]
+            UC5[Check Real-time Availability]
+            UC6[Generate Reports]
+        end
+
+        subgraph "Member Management"
+            UC7[Register Member]
+            UC8[Update Member Profile]
+            UC9[Manage Member Packages]
+            UC10[Process Membership Renewal]
+        end
+
+        subgraph "Payment Processing"
+            UC11[Process Regular Session Payment]
+            UC12[Process Private Session Payment]
+            UC13[Process Refund]
+            UC14[Verify Manual Payment]
+            UC15[Confirm Payment]
+            UC16[Reject Payment]
+            UC17[View Payment Status]
+        end
+
+        subgraph "Equipment Management"
+            UC18[Manage Equipment]
+            UC19[Track Attendance]
+            UC20[Issue Equipment]
+            UC21[Collect Equipment]
+            UC22[Equipment Maintenance Log]
+        end
+
+        subgraph "Guest Services"
+            UC23[Register Guest Users]
+            UC24[Convert Guest to Member]
+            UC25[Assist with Booking]
+            UC26[Provide Customer Support]
+        end
+
+        subgraph "Daily Operations"
+            UC27[Monitor Daily Capacity]
+            UC28[Manage Session Slots]
+            UC29[Handle Customer Complaints]
+            UC30[Process Cancellations]
+        end
+    end
+
+    linkStyle 0 stroke:#4ecdc4,stroke-width:2px
+    A2 -.-> UC1
     A2 -.-> UC2
     A2 -.-> UC3
+    A2 -.-> UC4
     A2 -.-> UC5
     A2 -.-> UC6
     A2 -.-> UC7
+    A2 -.-> UC8
+    A2 -.-> UC9
+    A2 -.-> UC10
+    A2 -.-> UC11
+    A2 -.-> UC12
+    A2 -.-> UC13
+    A2 -.-> UC14
+    A2 -.-> UC15
+    A2 -.-> UC16
+    A2 -.-> UC17
+    A2 -.> UC18
+    A2 -.> UC19
+    A2 -.> UC20
+    A2 -.> UC21
+    A2 -.> UC22
+    A2 -.> UC23
+    A2 -.> UC24
+    A2 -.> UC25
+    A2 -.> UC26
+    A2 -.> UC27
+    A2 -.> UC28
+    A2 -.> UC29
+    A2 -.> UC30
+```
 
+### 1.3 Use Case Diagram - Staff Cafe
+
+```mermaid
+graph TB
+    subgraph "Staff Cafe Use Cases"
+        A3[Staff Cafe]
+
+        subgraph "Menu Management"
+            UC1[Create Menu Items]
+            UC2[Update Menu Items]
+            UC3[Manage Stock]
+            UC4[Update Stock Levels]
+            UC5[Generate Menu Barcode]
+            UC6[Download Barcode]
+        end
+
+        subgraph "Order Processing"
+            UC7[Receive Orders]
+            UC8[Prepare Food]
+            UC9[Update Order Status]
+            UC10[Deliver Order]
+            UC11[Confirm Order Reception]
+            UC12[Handle Special Requests]
+        end
+
+        subgraph "Inventory Management"
+            UC13[Track Sales]
+            UC14[Manage Inventory]
+            UC15[Check Stock Levels]
+            UC16[Place Stock Orders]
+            UC17[Update Stock Records]
+        end
+
+        subgraph "Customer Service"
+            UC18[Assist with Menu Selection]
+            UC19[Process Payment]
+            UC20[Handle Customer Complaints]
+            UC21[Provide Menu Recommendations]
+        end
+
+        subgraph "Reporting"
+            UC22[Generate Sales Reports]
+            UC23[View Menu Analytics]
+            UC24[Track Customer Preferences]
+            UC25[Monitor Performance Metrics]
+        end
+    end
+
+    linkStyle 0 stroke:#45b7d1,stroke-width:2px
+    A3 -.-> UC1
+    A3 -.-> UC2
+    A3 -.-> UC3
     A3 -.-> UC4
     A3 -.-> UC5
     A3 -.-> UC6
+    A3 -.-> UC7
+    A3 -.-> UC8
+    A3 -.-> UC9
+    A3 -.-> UC10
+    A3 -.-> UC11
+    A3 -.> UC12
+    A3 -.> UC13
+    A3 -.> UC14
+    A3 -.> UC15
+    A3 -.> UC16
+    A3 -.> UC17
+    A3 -.> UC18
+    A3 -.> UC19
+    A3 -.> UC20
+    A3 -.> UC21
+    A3 -.> UC22
+    A3 -.> UC23
+    A3 -.> UC24
+    A3 -.> UC25
+```
 
-    %% Custom styling untuk lines dengan warna berbeda
+### 1.4 Use Case Diagram - Member
 
-    A3 --> UC7
+```mermaid
+graph TB
+    subgraph "Member Use Cases"
+        A4[Member]
+
+        subgraph "Profile Management"
+            UC1[Update Profile]
+            UC2[View Membership Details]
+            UC3[View Booking History]
+            UC4[Renew Membership]
+            UC5[Pay Membership Fee]
+        end
+
+        subgraph "Booking System"
+            UC6[Access Calendar Interface]
+            UC7[Navigate Calendar Forward]
+            UC8[Select Available Date]
+            UC9[View Session Details]
+            UC10[Select Session]
+            UC11[Complete Booking]
+            UC12[Receive Confirmation]
+            UC13[Cancel Booking]
+            UC14[Check-in/Check-out]
+            UC15[Book Regular Session]
+            UC16[Book Private Session]
+            UC17[Check Daily Limit]
+            UC18[Book Free Session]
+            UC19[Book Additional Paid Session]
+        end
+
+        subgraph "Payment System"
+            UC20[Pay Regular Session]
+            UC21[Pay Private Session]
+            UC22[Select Manual Payment]
+            UC23[Upload Transfer Proof]
+            UC24[Submit Payment Proof]
+            UC25[View Payment Status]
+            UC26[Generate Payment Instructions]
+        end
+
+        subgraph "Member Quota Management"
+            UC27[Join Member Queue]
+            UC28[Monitor Queue Position]
+            UC29[Confirm Promotion Offer]
+            UC30[View Quota Dashboard]
+        end
+
+        subgraph "Cafe System"
+            UC31[Scan Barcode/QR Code]
+            UC32[Browse Menu]
+            UC33[Add Item to Cart]
+            UC34[Add Special Notes]
+            UC35[Manage Cart]
+            UC36[Process Payment]
+            UC37[Confirm Reception]
+        end
+
+        subgraph "Rating & Review"
+            UC38[Rate Services]
+            UC39[Submit Reviews]
+            UC40[View Rating Analytics]
+        end
+
+        subgraph "Authentication"
+            UC41[Login via Google SSO]
+            UC42[Sync Google Profile]
+        end
+
+        subgraph "Notifications"
+            UC43[Receive Push Notifications]
+            UC44[Configure Notifications]
+            UC45[View Notification History]
+        end
+    end
+
+    linkStyle 0 stroke:#96ceb4,stroke-width:2px
+    A4 -.-> UC1
+    A4 -.-> UC2
+    A4 -.-> UC3
+    A4 -.-> UC4
+    A4 -.-> UC5
+    A4 -.-> UC6
+    A4 -.-> UC7
+    A4 -.-> UC8
+    A4 -.-> UC9
+    A4 -.-> UC10
+    A4 -.-> UC11
+    A4 -.-> UC12
+    A4 -.-> UC13
+    A4 -.-> UC14
+    A4 -.-> UC15
+    A4 -.-> UC16
+    A4 -.-> UC17
+    A4 -.-> UC18
+    A4 -.-> UC19
+    A4 -.> UC20
+    A4 -.> UC21
+    A4 -.> UC22
+    A4 -.> UC23
+    A4 -.> UC24
+    A4 -.> UC25
+    A4 -.> UC26
+    A4 -.> UC27
+    A4 -.> UC28
+    A4 -.> UC29
+    A4 -.> UC30
+    A4 -.> UC31
+    A4 -.> UC32
+    A4 -.> UC33
+    A4 -.> UC34
+    A4 -.> UC35
+    A4 -.> UC36
+    A4 -.> UC37
+    A4 -.> UC38
+    A4 -.> UC39
+    A4 -.> UC40
+    A4 -.> UC41
+    A4 -.> UC42
+    A4 -.> UC43
+    A4 -.> UC44
+    A4 -.> UC45
+```
+
+### 1.5 Use Case Diagram - Non-Member
+
+```mermaid
+graph TB
+    subgraph "Non-Member Use Cases"
+        A5[Non-Member]
+
+        subgraph "Registration & Authentication"
+            UC1[Register as Guest]
+            UC2[Login via Google SSO]
+            UC3[Sign up via Google SSO]
+            UC4[Sync Google Profile]
+        end
+
+        subgraph "Booking System"
+            UC5[Access Calendar Interface]
+            UC6[Navigate Calendar Forward]
+            UC7[Select Available Date]
+            UC8[View Session Details]
+            UC9[Select Session]
+            UC10[Complete Booking]
+            UC11[Receive Confirmation]
+            UC12[Cancel Booking]
+            UC13[Book Regular Session]
+            UC14[Book Private Session]
+            UC15[Check Real-time Availability]
+        end
+
+        subgraph "Payment System"
+            UC16[Pay Regular Session]
+            UC17[Pay Private Session]
+            UC18[Select Manual Payment]
+            UC19[Upload Transfer Proof]
+            UC20[Submit Payment Proof]
+            UC21[View Payment Status]
+            UC22[Generate Payment Instructions]
+        end
+
+        subgraph "Cafe System"
+            UC23[Scan Barcode/QR Code]
+            UC24[Browse Menu]
+            UC25[Add Item to Cart]
+            UC26[Add Special Notes]
+            UC27[Manage Cart]
+            UC28[Process Payment]
+            UC29[Confirm Reception]
+        end
+
+        subgraph "Member Conversion"
+            UC30[Convert to Member]
+            UC31[View Membership Benefits]
+            UC32[Compare Packages]
+        end
+
+        subgraph "Services"
+            UC33[Rate Services]
+            UC34[Submit Reviews]
+            UC35[Receive Push Notifications]
+            UC36[Configure Notifications]
+        end
+
+        subgraph "Private Pool Rental"
+            UC37[Book Private Pool]
+            UC38[Check New Customer Status]
+            UC39[Apply Time Bonus]
+            UC40[Process Payment]
+        end
+    end
+
+    linkStyle 0 stroke:#feca57,stroke-width:2px
+    A5 -.-> UC1
+    A5 -.-> UC2
+    A5 -.-> UC3
+    A5 -.-> UC4
+    A5 -.-> UC5
+    A5 -.-> UC6
+    A5 -.-> UC7
+    A5 -.-> UC8
+    A5 -.-> UC9
+    A5 -.-> UC10
+    A5 -.-> UC11
+    A5 -.-> UC12
+    A5 -.> UC13
+    A5 -.> UC14
+    A5 -.> UC15
+    A5 -.> UC16
+    A5 -.> UC17
+    A5 -.> UC18
+    A5 -.> UC19
+    A5 -.> UC20
+    A5 -.> UC21
+    A5 -.> UC22
+    A5 -.> UC23
+    A5 -.> UC24
+    A5 -.> UC25
+    A5 -.> UC26
+    A5 -.> UC27
+    A5 -.> UC28
+    A5 -.> UC29
+    A5 -.> UC30
+    A5 -.> UC31
+    A5 -.> UC32
+    A5 -.> UC33
+    A5 -.> UC34
+    A5 -.> UC35
+    A5 -.> UC36
+    A5 -.> UC37
+    A5 -.> UC38
+    A5 -.> UC39
+    A5 -.> UC40
 ```
 
 ## 2. Class Diagram
