@@ -72,10 +72,11 @@ gantt
   - Implement session_slots management
   - Setup capacity update triggers
 - Real-time: WebSocket integration for live updates
-  - Laravel WebSocket server setup
-  - Frontend WebSocket client integration
+  - Laravel Reverb WebSocket server setup
+  - React Use WebSocket client integration
   - Real-time availability updates
   - Concurrent booking prevention
+  - Heartbeat monitoring & auto-reconnection
 - Testing: Calendar navigation, availability checking
   - Unit tests untuk calendar API
   - Integration tests untuk availability logic

@@ -675,7 +675,7 @@ Untuk pertanyaan atau klarifikasi terkait dokumen analisa ini, khususnya tentang
 - **Mobile-First Design**: Touch-optimized dengan minimum 44px targets
 - **Forward-only Navigation**: Tidak bisa akses bulan yang sudah lewat
 - **Status Indicators**: Visual coding untuk availability (hijau/orange/merah/abu-abu)
-- **Real-time Updates**: WebSocket untuk live availability changes
+- **Real-time Updates**: WebSocket untuk live availability changes (Laravel Reverb + React Use WebSocket)
 - **Session Details**: Modal dengan capacity information dan booking counts
 - **Private Pool Availability**: Separate calendar untuk private pool rental
 - **Promotional Indicators**: Visual indicators untuk hari dengan promosi
