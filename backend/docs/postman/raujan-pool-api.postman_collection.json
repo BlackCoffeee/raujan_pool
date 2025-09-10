@@ -1,0 +1,790 @@
+{
+  "info": {
+    "name": "Raujan Pool Syariah API",
+    "description": "Complete API collection for Raujan Pool Syariah backend system",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data.token) {",
+                  "        pm.collectionVariables.set('auth_token', response.data.token);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\",\n  \"password_confirmation\": \"password123\",\n  \"phone\": \"081234567890\",\n  \"date_of_birth\": \"1990-01-01\",\n  \"gender\": \"male\",\n  \"address\": \"Jl. Example No. 123\",\n  \"emergency_contact_name\": \"Jane Doe\",\n  \"emergency_contact_phone\": \"081234567891\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/user",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "user"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/logout",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Booking System",
+      "item": [
+        {
+          "name": "Get Availability",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/calendar/availability?start_date=2024-01-15&end_date=2024-01-20",
+              "host": ["{{base_url}}"],
+              "path": ["calendar", "availability"],
+              "query": [
+                {
+                  "key": "start_date",
+                  "value": "2024-01-15"
+                },
+                {
+                  "key": "end_date",
+                  "value": "2024-01-20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Sessions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/calendar/sessions",
+              "host": ["{{base_url}}"],
+              "path": ["calendar", "sessions"]
+            }
+          }
+        },
+        {
+          "name": "Create Booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"session_id\": 1,\n  \"booking_date\": \"2024-01-15\",\n  \"booking_type\": \"regular\",\n  \"adult_count\": 2,\n  \"child_count\": 1,\n  \"notes\": \"Family booking\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/bookings",
+              "host": ["{{base_url}}"],
+              "path": ["bookings"]
+            }
+          }
+        },
+        {
+          "name": "Get My Bookings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/bookings/my",
+              "host": ["{{base_url}}"],
+              "path": ["bookings", "my"]
+            }
+          }
+        },
+        {
+          "name": "Cancel Booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Change of plans\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/bookings/1/cancel",
+              "host": ["{{base_url}}"],
+              "path": ["bookings", "1", "cancel"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payment System",
+      "item": [
+        {
+          "name": "Create Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"booking_id\": 1,\n  \"amount\": 75000,\n  \"payment_method\": \"bank_transfer\",\n  \"bank_name\": \"BCA\",\n  \"account_number\": \"1234567890\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/payments",
+              "host": ["{{base_url}}"],
+              "path": ["payments"]
+            }
+          }
+        },
+        {
+          "name": "Get Payment Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/payments/1/status",
+              "host": ["{{base_url}}"],
+              "path": ["payments", "1", "status"]
+            }
+          }
+        },
+        {
+          "name": "Upload Payment Proof",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "payment_proof",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/payments/1/upload-proof",
+              "host": ["{{base_url}}"],
+              "path": ["payments", "1", "upload-proof"]
+            }
+          }
+        },
+        {
+          "name": "Get Payment Tracking",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/payments/1/tracking/timeline",
+              "host": ["{{base_url}}"],
+              "path": ["payments", "1", "tracking", "timeline"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cafe System",
+      "item": [
+        {
+          "name": "Get Menu",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/members/menu",
+              "host": ["{{base_url}}"],
+              "path": ["members", "menu"]
+            }
+          }
+        },
+        {
+          "name": "Get Menu Categories",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/members/menu/categories",
+              "host": ["{{base_url}}"],
+              "path": ["members", "menu", "categories"]
+            }
+          }
+        },
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"menu_item_id\": 1,\n      \"quantity\": 2\n    },\n    {\n      \"menu_item_id\": 2,\n      \"quantity\": 1\n    }\n  ],\n  \"notes\": \"Extra spicy please\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/members/orders",
+              "host": ["{{base_url}}"],
+              "path": ["members", "orders"]
+            }
+          }
+        },
+        {
+          "name": "Get My Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/members/orders",
+              "host": ["{{base_url}}"],
+              "path": ["members", "orders"]
+            }
+          }
+        },
+        {
+          "name": "Scan Barcode",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"barcode_value\": \"QR000001\",\n  \"scan_type\": \"menu_access\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/members/barcode/scan",
+              "host": ["{{base_url}}"],
+              "path": ["members", "barcode", "scan"]
+            }
+          }
+        },
+        {
+          "name": "Track Order",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/members/orders/1/status",
+              "host": ["{{base_url}}"],
+              "path": ["members", "orders", "1", "status"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Member Management",
+      "item": [
+        {
+          "name": "Get Member Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/members/profile",
+              "host": ["{{base_url}}"],
+              "path": ["members", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Get Quota",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/members/quota",
+              "host": ["{{base_url}}"],
+              "path": ["members", "quota"]
+            }
+          }
+        },
+        {
+          "name": "Get Usage History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/members/usage/history",
+              "host": ["{{base_url}}"],
+              "path": ["members", "usage", "history"]
+            }
+          }
+        },
+        {
+          "name": "Register as Member",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"membership_type\": \"regular\",\n  \"membership_start\": \"2024-01-15\",\n  \"membership_end\": \"2025-01-15\",\n  \"notes\": \"New member registration\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/members/register",
+              "host": ["{{base_url}}"],
+              "path": ["members", "register"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Operations",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/users",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "users"]
+            }
+          }
+        },
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New User\",\n  \"email\": \"newuser@example.com\",\n  \"password\": \"password123\",\n  \"password_confirmation\": \"password123\",\n  \"phone\": \"081234567890\",\n  \"roles\": [\"member\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/users",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "users"]
+            }
+          }
+        },
+        {
+          "name": "Get All Members",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/members",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "members"]
+            }
+          }
+        },
+        {
+          "name": "Get System Analytics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/analytics/dashboard",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "analytics", "dashboard"]
+            }
+          }
+        },
+        {
+          "name": "Get Pending Payments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/payments?status=pending",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "payments"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "pending"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Verify Payment",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"verified\",\n  \"notes\": \"Payment verified successfully\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/payments/1/verify",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "payments", "1", "verify"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Staff Operations",
+      "item": [
+        {
+          "name": "Get Staff Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/staff/front-desk/dashboard",
+              "host": ["{{base_url}}"],
+              "path": ["staff", "front-desk", "dashboard"]
+            }
+          }
+        },
+        {
+          "name": "Check-in Booking",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notes\": \"Customer arrived on time\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/staff/front-desk/bookings/1/check-in",
+              "host": ["{{base_url}}"],
+              "path": ["staff", "front-desk", "bookings", "1", "check-in"]
+            }
+          }
+        },
+        {
+          "name": "Check-out Booking",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notes\": \"Customer left satisfied\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/staff/front-desk/bookings/1/check-out",
+              "host": ["{{base_url}}"],
+              "path": ["staff", "front-desk", "bookings", "1", "check-out"]
+            }
+          }
+        },
+        {
+          "name": "Get Pending Payments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/staff/payments/pending",
+              "host": ["{{base_url}}"],
+              "path": ["staff", "payments", "pending"]
+            }
+          }
+        },
+        {
+          "name": "Verify Payment",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"verified\",\n  \"notes\": \"Payment verified by staff\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/staff/payments/1/verify",
+              "host": ["{{base_url}}"],
+              "path": ["staff", "payments", "1", "verify"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
