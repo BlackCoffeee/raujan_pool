@@ -1,379 +1,182 @@
-# Phase 2: Authentication & User Interface
+# Phase 2: Authentication & User Management
 
 ## 📋 Overview
 
-Implementasi interface autentikasi dan manajemen user dengan Google SSO integration dan responsive design.
+Phase 2 fokus pada implementasi sistem authentication dan user management dengan berbagai role (admin, staff, member, guest) dan integrasi Google SSO.
 
 ## 🎯 Objectives
 
-- Login/signup interface implementation
-- Google SSO integration
+- Implementasi authentication UI components
+- Integrasi Google SSO
+- Role-based routing dan navigation
 - User profile management interface
-- Role-based navigation
-- Responsive design system
-- User state management
+- Guest user interface
+- Session management
 
-## 📁 Files Structure
+## 📁 Files
 
-```
-phase-2/
-├── 01-authentication-interface.md
-├── 02-google-sso-integration.md
-├── 03-user-profile-management.md
-├── 04-role-based-navigation.md
-└── 05-responsive-design-system.md
-```
+- [01-authentication-ui.md](01-authentication-ui.md) - Login/Register forms dan authentication flow
+- [02-google-sso-integration.md](02-google-sso-integration.md) - Google OAuth integration
+- [03-role-based-routing.md](03-role-based-routing.md) - Protected routes dan role guards
+- [04-user-profile-ui.md](04-user-profile-ui.md) - Profile management interface
+- [05-guest-user-ui.md](05-guest-user-ui.md) - Guest user interface
 
-## 🔧 Implementation Points
+## 🚀 Getting Started
 
-### Point 1: Authentication Interface
+1. **Setup Authentication Store**
 
-**Subpoints:**
+   ```bash
+   # Authentication store sudah dibuat di phase-1
+   # Pastikan authStore.ts sudah terkonfigurasi
+   ```
 
-- Login form component
-- Signup form component
-- Password reset interface
-- Form validation
-- Error handling
-- Loading states
+2. **Install Additional Dependencies**
 
-**Files:**
+   ```bash
+   npm install @google-cloud/oauth2
+   npm install react-google-login
+   npm install react-hook-form @hookform/resolvers zod
+   ```
 
-- `components/auth/LoginForm.tsx`
-- `components/auth/SignupForm.tsx`
-- `components/auth/PasswordReset.tsx`
-- `hooks/useAuth.ts`
-- `lib/validations/auth.ts`
+3. **Setup Environment Variables**
+   ```env
+   VITE_GOOGLE_CLIENT_ID=your-google-client-id
+   VITE_GOOGLE_CLIENT_SECRET=your-google-client-secret
+   ```
 
-### Point 2: Google SSO Integration
+## 📊 Progress Tracking
 
-**Subpoints:**
+- [ ] Authentication UI components
+- [ ] Google SSO integration
+- [ ] Role-based routing
+- [ ] User profile management
+- [ ] Guest user interface
+- [ ] Session management
+- [ ] Password reset functionality
+- [ ] Email verification
 
-- Google OAuth button component
-- SSO flow implementation
-- Google callback handling
-- Profile data synchronization
-- Error handling untuk SSO
-- SSO state management
+## 🔐 Authentication Flow
 
-**Files:**
+### Login Flow
 
-- `components/auth/GoogleSSOButton.tsx`
-- `components/auth/SSOCallback.tsx`
-- `lib/google-auth.ts`
-- `hooks/useGoogleAuth.ts`
+1. User memasukkan email dan password
+2. Validasi input dengan Zod schema
+3. API call ke `/auth/login`
+4. Store token dan user data
+5. Redirect ke dashboard berdasarkan role
 
-### Point 3: User Profile Management
+### Register Flow
 
-**Subpoints:**
+1. User mengisi form registrasi
+2. Validasi input dengan Zod schema
+3. API call ke `/auth/register`
+4. Store token dan user data
+5. Redirect ke dashboard berdasarkan role
 
-- Profile form component
-- Avatar upload interface
-- Profile editing functionality
-- Emergency contact management
-- Profile validation
-- Profile history display
+### Google SSO Flow
 
-**Files:**
+1. User klik "Login with Google"
+2. Redirect ke Google OAuth
+3. User authorize aplikasi
+4. Google redirect dengan code
+5. Exchange code untuk token
+6. Store token dan user data
 
-- `components/profile/ProfileForm.tsx`
-- `components/profile/AvatarUpload.tsx`
-- `components/profile/EmergencyContact.tsx`
-- `hooks/useProfile.ts`
+## 👥 User Roles
 
-### Point 4: Role-Based Navigation
+### Admin
 
-**Subpoints:**
+- Full access ke semua fitur
+- User management
+- System configuration
+- Analytics dan reporting
 
-- Navigation component
-- Role-based menu items
-- Protected route wrapper
-- Navigation state management
+### Staff
+
+- Access ke staff dashboard
+- Booking management
+- Payment verification
+- Customer service
+
+### Member
+
+- Access ke member dashboard
+- Booking management
+- Payment history
+- Profile management
+
+### Guest
+
+- Limited access
+- Basic booking
+- No profile management
+
+## 🎨 UI Components
+
+### Authentication Forms
+
+- Login form dengan validation
+- Register form dengan validation
+- Password reset form
+- Email verification form
+
+### User Profile
+
+- Profile information form
+- Password change form
+- Avatar upload
+- Emergency contact form
+
+### Navigation
+
+- Role-based navigation menu
+- User dropdown menu
+- Breadcrumb navigation
 - Mobile navigation
-- Breadcrumb component
-
-**Files:**
-
-- `components/navigation/Navbar.tsx`
-- `components/navigation/Sidebar.tsx`
-- `components/navigation/MobileNav.tsx`
-- `components/common/ProtectedRoute.tsx`
-- `lib/navigation.ts`
-
-### Point 5: Responsive Design System
-
-**Subpoints:**
-
-- Mobile-first design approach
-- Breakpoint system
-- Responsive components
-- Touch-friendly interface
-- Accessibility features
-- Performance optimization
-
-**Files:**
-
-- `components/layout/ResponsiveContainer.tsx`
-- `components/ui/ResponsiveButton.tsx`
-- `styles/responsive.css`
-- `lib/breakpoints.ts`
-
-## 📦 Dependencies
-
-### Authentication Dependencies
-
-```json
-{
-  "next-auth": "^4.24.0",
-  "react-hook-form": "^7.48.0",
-  "zod": "^3.22.0",
-  "@hookform/resolvers": "^3.3.0"
-}
-```
-
-### UI Dependencies
-
-```json
-{
-  "@headlessui/react": "^1.7.0",
-  "@heroicons/react": "^2.0.0",
-  "clsx": "^2.0.0",
-  "tailwind-merge": "^2.0.0"
-}
-```
-
-### State Management
-
-```json
-{
-  "zustand": "^4.4.0",
-  "react-query": "^3.39.0"
-}
-```
-
-## 🎨 Component Examples
-
-### Login Form Component
-
-```typescript
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { loginSchema } from "@/lib/validations/auth";
-
-export const LoginForm = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    resolver: zodResolver(loginSchema),
-  });
-
-  const onSubmit = async (data: LoginFormData) => {
-    setIsLoading(true);
-    try {
-      // Handle login logic
-      await loginUser(data);
-    } catch (error) {
-      // Handle error
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div>
-        <label htmlFor="email">Email</label>
-        <input
-          {...register("email")}
-          type="email"
-          className="w-full px-3 py-2 border rounded-md"
-        />
-        {errors.email && (
-          <span className="text-red-500 text-sm">{errors.email.message}</span>
-        )}
-      </div>
-
-      <div>
-        <label htmlFor="password">Password</label>
-        <input
-          {...register("password")}
-          type="password"
-          className="w-full px-3 py-2 border rounded-md"
-        />
-        {errors.password && (
-          <span className="text-red-500 text-sm">
-            {errors.password.message}
-          </span>
-        )}
-      </div>
-
-      <button
-        type="submit"
-        disabled={isLoading}
-        className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50"
-      >
-        {isLoading ? "Logging in..." : "Login"}
-      </button>
-    </form>
-  );
-};
-```
-
-### Google SSO Button Component
-
-```typescript
-import { signIn } from "next-auth/react";
-
-export const GoogleSSOButton = () => {
-  const handleGoogleSignIn = () => {
-    signIn("google", { callbackUrl: "/dashboard" });
-  };
-
-  return (
-    <button
-      onClick={handleGoogleSignIn}
-      className="flex items-center justify-center w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
-    >
-      <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
-        {/* Google icon */}
-      </svg>
-      Continue with Google
-    </button>
-  );
-};
-```
 
 ## 📱 Responsive Design
 
-### Breakpoint System
+### Mobile
 
-```typescript
-export const breakpoints = {
-  sm: "640px",
-  md: "768px",
-  lg: "1024px",
-  xl: "1280px",
-  "2xl": "1536px",
-};
-```
+- Touch-friendly forms
+- Responsive navigation
+- Mobile-optimized layouts
+- Swipe gestures
 
-### Mobile-First Components
+### Desktop
 
-```typescript
-export const ResponsiveContainer = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
-  return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      {children}
-    </div>
-  );
-};
-```
+- Keyboard navigation
+- Hover effects
+- Desktop-optimized layouts
+- Multi-column layouts
 
-## 🔐 Security Features
+## 🔧 Development Guidelines
 
-### Protected Routes
+### Form Validation
 
-```typescript
-export const ProtectedRoute = ({
-  children,
-  requiredRole,
-}: ProtectedRouteProps) => {
-  const { user, isLoading } = useAuth();
+- Use Zod schemas untuk validation
+- Real-time validation feedback
+- Error message display
+- Success feedback
 
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
+### State Management
 
-  if (!user) {
-    return <LoginRedirect />;
-  }
+- Use Zustand stores
+- Persistent authentication state
+- Real-time updates
+- Error handling
 
-  if (requiredRole && user.role !== requiredRole) {
-    return <AccessDenied />;
-  }
+### Security
 
-  return <>{children}</>;
-};
-```
+- Token management
+- Secure storage
+- CSRF protection
+- Rate limiting
 
-## 📚 API Integration
+## 📝 Notes
 
-### Authentication API
-
-```typescript
-export const authAPI = {
-  login: async (credentials: LoginCredentials) => {
-    const response = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(credentials),
-    });
-    return response.json();
-  },
-
-  logout: async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
-  },
-
-  getProfile: async () => {
-    const response = await fetch("/api/auth/profile");
-    return response.json();
-  },
-};
-```
-
-## 🧪 Testing
-
-### Component Testing
-
-```typescript
-import { render, screen, fireEvent } from "@testing-library/react";
-import { LoginForm } from "@/components/auth/LoginForm";
-
-describe("LoginForm", () => {
-  it("renders login form", () => {
-    render(<LoginForm />);
-    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /login/i })).toBeInTheDocument();
-  });
-
-  it("validates form inputs", () => {
-    render(<LoginForm />);
-    const submitButton = screen.getByRole("button", { name: /login/i });
-
-    fireEvent.click(submitButton);
-
-    expect(screen.getByText(/email is required/i)).toBeInTheDocument();
-    expect(screen.getByText(/password is required/i)).toBeInTheDocument();
-  });
-});
-```
-
-## ✅ Success Criteria
-
-- [ ] Login form berfungsi dengan baik
-- [ ] Google SSO integration berjalan
-- [ ] User profile management berfungsi
-- [ ] Role-based navigation terimplementasi
-- [ ] Responsive design pada semua device
-- [ ] Form validation berfungsi
-- [ ] Error handling terimplementasi
-- [ ] Security measures terpasang
-- [ ] Testing coverage > 80%
-
-## 📚 Documentation
-
-- Authentication Flow Documentation
-- Google SSO Integration Guide
-- Component Library Documentation
-- Responsive Design Guidelines
-- Security Best Practices
+- Pastikan semua API endpoints sesuai dengan backend documentation
+- Implementasi proper error handling
+- Use TypeScript untuk type safety
+- Test semua authentication flows
+- Implementasi proper loading states

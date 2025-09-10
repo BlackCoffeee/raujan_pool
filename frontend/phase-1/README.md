@@ -2,283 +2,170 @@
 
 ## 📋 Overview
 
-Setup awal project Next.js 14 dengan konfigurasi dasar dan infrastruktur core untuk Progressive Web App (PWA).
+Phase 1 fokus pada setup project infrastructure, template adaptation, dan core dependencies untuk Raujan Pool Syariah frontend application.
 
 ## 🎯 Objectives
 
-- Next.js 14 project setup
-- TypeScript configuration
-- Tailwind CSS setup
-- Component library foundation
-- PWA configuration
-- Development environment setup
+- Template adaptation dari ShadCN template
+- Project structure setup
+- Environment configuration
+- State management setup
+- Additional dependencies installation
+- Development tools configuration
 
-## 📁 Files Structure
+## 📁 Files
 
-```
-phase-1/
-├── 01-nextjs-setup.md
-├── 02-typescript-configuration.md
-├── 03-tailwind-css-setup.md
-├── 04-component-library.md
-├── 05-pwa-configuration.md
-└── 06-development-tools.md
-```
-
-## 🔧 Implementation Points
-
-### Point 1: Next.js 14 Setup
-
-**Subpoints:**
-
-- Install Next.js 14 dengan TypeScript
-- Konfigurasi App Router
-- Setup project structure
-- Konfigurasi environment variables
-- Setup development server
-- Konfigurasi build process
-
-**Files:**
-
-- `package.json` - Dependencies
-- `next.config.js` - Next.js configuration
-- `.env.example` - Environment template
-- `app/layout.tsx` - Root layout
-- `app/page.tsx` - Home page
-
-### Point 2: TypeScript Configuration
-
-**Subpoints:**
-
-- Setup TypeScript compiler options
-- Konfigurasi strict mode
-- Setup type definitions
-- Konfigurasi path mapping
-- Setup ESLint untuk TypeScript
-- Konfigurasi Prettier
-
-**Files:**
-
-- `tsconfig.json` - TypeScript configuration
-- `.eslintrc.json` - ESLint configuration
-- `.prettierrc` - Prettier configuration
-- `types/` - Custom type definitions
-
-### Point 3: Tailwind CSS Setup
-
-**Subpoints:**
-
-- Install dan konfigurasi Tailwind CSS
-- Setup custom color palette
-- Konfigurasi typography system
-- Setup component utilities
-- Konfigurasi responsive design
-- Setup dark mode support
-
-**Files:**
-
-- `tailwind.config.js` - Tailwind configuration
-- `app/globals.css` - Global styles
-- `styles/` - Custom styles
-- `components/ui/` - UI components
-
-### Point 4: Component Library Foundation
-
-**Subpoints:**
-
-- Setup component architecture
-- Implementasi base components
-- Setup component documentation
-- Konfigurasi Storybook (optional)
-- Setup component testing
-- Implementasi design system
-
-**Files:**
-
-- `components/base/` - Base components
-- `components/ui/` - UI components
-- `components/layout/` - Layout components
-- `lib/utils.ts` - Utility functions
-
-### Point 5: PWA Configuration
-
-**Subpoints:**
-
-- Install Next PWA
-- Setup service worker
-- Konfigurasi manifest.json
-- Setup offline functionality
-- Konfigurasi push notifications
-- Setup PWA testing
-
-**Files:**
-
-- `next.config.js` - PWA configuration
-- `public/manifest.json` - PWA manifest
-- `public/icons/` - PWA icons
-- `app/sw.js` - Service worker
-
-## 📦 Dependencies
-
-### Core Dependencies
-
-```json
-{
-  "next": "^14.0.0",
-  "react": "^18.0.0",
-  "react-dom": "^18.0.0",
-  "typescript": "^5.0.0"
-}
-```
-
-### UI Dependencies
-
-```json
-{
-  "tailwindcss": "^3.3.0",
-  "autoprefixer": "^10.4.0",
-  "postcss": "^8.4.0",
-  "@headlessui/react": "^1.7.0",
-  "@heroicons/react": "^2.0.0"
-}
-```
-
-### Development Dependencies
-
-```json
-{
-  "@types/node": "^20.0.0",
-  "@types/react": "^18.0.0",
-  "@types/react-dom": "^18.0.0",
-  "eslint": "^8.0.0",
-  "eslint-config-next": "^14.0.0",
-  "prettier": "^3.0.0",
-  "next-pwa": "^5.6.0"
-}
-```
-
-## 📁 Project Structure
-
-```
-frontend/
-├── app/
-│   ├── layout.tsx
-│   ├── page.tsx
-│   └── globals.css
-├── components/
-│   ├── base/
-│   ├── ui/
-│   └── layout/
-├── lib/
-│   ├── utils.ts
-│   └── constants.ts
-├── types/
-│   └── index.ts
-├── styles/
-│   └── components.css
-├── public/
-│   ├── manifest.json
-│   └── icons/
-├── package.json
-├── tsconfig.json
-├── tailwind.config.js
-└── next.config.js
-```
-
-## 🎨 Design System Foundation
-
-### Color Palette
-
-```css
-:root {
-  --primary: #3b82f6;
-  --primary-dark: #2563eb;
-  --secondary: #10b981;
-  --accent: #f59e0b;
-  --error: #ef4444;
-  --success: #10b981;
-  --warning: #f59e0b;
-  --gray-50: #f9fafb;
-  --gray-100: #f3f4f6;
-  --gray-900: #111827;
-}
-```
-
-### Typography
-
-```css
-.font-inter {
-  font-family: "Inter", sans-serif;
-}
-
-.text-heading-1 {
-  font-size: 2.25rem;
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-.text-body {
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.5;
-}
-```
-
-### Spacing System
-
-```css
-.space-xs {
-  gap: 0.25rem;
-}
-.space-sm {
-  gap: 0.5rem;
-}
-.space-md {
-  gap: 1rem;
-}
-.space-lg {
-  gap: 1.5rem;
-}
-.space-xl {
-  gap: 2rem;
-}
-```
+- [01-template-adaptation.md](01-template-adaptation.md) - Template adaptation process
+- [02-project-structure.md](02-project-structure.md) - Project structure documentation
+- [03-environment-configuration.md](03-environment-configuration.md) - Environment setup
+- [04-state-management.md](04-state-management.md) - State management setup
+- [05-additional-dependencies.md](05-additional-dependencies.md) - Additional dependencies
 
 ## 🚀 Getting Started
 
-1. Clone repository
-2. Run `npm install`
-3. Copy `.env.example` to `.env.local`
-4. Configure environment variables
-5. Run `npm run dev`
-6. Open http://localhost:3000
+1. **Template Setup**
 
-## 📚 Development Commands
+   ```bash
+   # Template sudah tersedia di @template-shadcn
+   # Tidak perlu setup dari scratch
+   ```
 
-```bash
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run start        # Start production server
-npm run lint         # Run ESLint
-npm run type-check   # Run TypeScript check
-npm run test         # Run tests
-```
+2. **Install Dependencies**
 
-## ✅ Success Criteria
+   ```bash
+   # Run dependency installation script
+   chmod +x install-dependencies.sh
+   ./install-dependencies.sh
+   ```
 
-- [ ] Next.js 14 berhasil terinstall dan berjalan
-- [ ] TypeScript dapat digunakan tanpa error
-- [ ] Tailwind CSS berfungsi dengan baik
-- [ ] Component library dapat digunakan
-- [ ] PWA dapat diinstall
-- [ ] Development environment terkonfigurasi
-- [ ] Build process berjalan lancar
-- [ ] Performance metrics memenuhi standar
+3. **Environment Setup**
+   ```env
+   VITE_API_URL=http://localhost:8000/api
+   VITE_SOCKET_URL=http://localhost:8000
+   VITE_GOOGLE_CLIENT_ID=your_google_client_id
+   ```
 
-## 📚 Documentation
+## 📊 Progress Tracking
 
-- Next.js 14 Documentation
-- TypeScript Configuration Guide
-- Tailwind CSS Documentation
-- PWA Implementation Guide
-- Component Architecture Guide
+- [ ] Template adaptation completed
+- [ ] Project structure documented
+- [ ] Environment configuration setup
+- [ ] State management configured
+- [ ] Additional dependencies installed
+- [ ] Development tools configured
+
+## 🛠️ Core Infrastructure
+
+### Template Adaptation
+
+- ShadCN UI template integration
+- Custom theme configuration
+- Component library setup
+- TypeScript configuration
+
+### Project Structure
+
+- Feature-based organization
+- Component architecture
+- Asset management
+- Configuration files
+
+### State Management
+
+- Zustand store setup
+- Global state structure
+- Persistence configuration
+- DevTools integration
+
+### Development Tools
+
+- ESLint configuration
+- Prettier setup
+- Vitest testing framework
+- Husky git hooks
+
+## 👥 Development Workflow
+
+### Code Quality
+
+- ESLint rules enforcement
+- Prettier formatting
+- TypeScript strict mode
+- Conventional commits
+
+### Testing
+
+- Unit testing dengan Vitest
+- Component testing
+- Mock service worker
+- Coverage reporting
+
+### Git Workflow
+
+- Husky pre-commit hooks
+- Commitlint validation
+- Branch protection
+- Automated testing
+
+## 🎨 UI Foundation
+
+### Design System
+
+- ShadCN UI components
+- Custom theme variables
+- Responsive breakpoints
+- Dark/light mode
+
+### Component Library
+
+- Reusable components
+- Storybook documentation
+- Accessibility features
+- Performance optimization
+
+## 📱 Responsive Design
+
+### Mobile First
+
+- Mobile-optimized layouts
+- Touch-friendly interactions
+- Performance optimization
+- Progressive enhancement
+
+### Desktop
+
+- Full feature access
+- Keyboard navigation
+- Multi-window support
+- Advanced interactions
+
+## 🔧 Development Guidelines
+
+### Code Standards
+
+- TypeScript strict mode
+- ESLint configuration
+- Prettier formatting
+- Conventional commits
+
+### Performance
+
+- Bundle optimization
+- Lazy loading
+- Code splitting
+- Asset optimization
+
+### Security
+
+- Environment variables
+- API security
+- XSS protection
+- CSRF protection
+
+## 📝 Notes
+
+- Template sudah tersedia, tidak perlu setup dari scratch
+- Pastikan semua dependencies terinstall dengan benar
+- Environment variables harus dikonfigurasi sesuai backend
+- State management structure harus konsisten
+- Development tools harus berfungsi dengan baik
