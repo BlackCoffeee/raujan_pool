@@ -6,12 +6,12 @@ Setup Laravel Sanctum untuk API authentication dengan login/logout endpoints dan
 
 ## 🎯 Objectives
 
-- Install dan konfigurasi Laravel Sanctum
-- Setup API token authentication
-- Implementasi login/logout endpoints
-- Token refresh mechanism
-- Token revocation
-- Security middleware
+-   Install dan konfigurasi Laravel Sanctum
+-   Setup API token authentication
+-   Implementasi login/logout endpoints
+-   Token refresh mechanism
+-   Token revocation
+-   Security middleware
 
 ## 📁 Files Structure
 
@@ -609,25 +609,25 @@ POST /api/v1/auth/login
 
 ```json
 {
-  "success": true,
-  "message": "Login successful",
-  "data": {
-    "user": {
-      "id": 1,
-      "name": "John Doe",
-      "email": "user@example.com",
-      "roles": [
-        {
-          "id": 1,
-          "name": "member",
-          "display_name": "Member"
-        }
-      ]
-    },
-    "token": "1|abcdef123456...",
-    "token_type": "Bearer",
-    "expires_in": null
-  }
+    "success": true,
+    "message": "Login successful",
+    "data": {
+        "user": {
+            "id": 1,
+            "name": "John Doe",
+            "email": "user@example.com",
+            "roles": [
+                {
+                    "id": 1,
+                    "name": "member",
+                    "display_name": "Member"
+                }
+            ]
+        },
+        "token": "1|abcdef123456...",
+        "token_type": "Bearer",
+        "expires_in": null
+    }
 }
 ```
 
@@ -738,21 +738,9 @@ describe('Authentication', function () {
 });
 ```
 
-## ✅ Success Criteria
-
-- [ ] Laravel Sanctum terinstall dan terkonfigurasi
-- [ ] API token authentication berfungsi
-- [ ] Login/logout endpoints berjalan
-- [ ] Token refresh mechanism berfungsi
-- [ ] Session management terimplementasi
-- [ ] Security middleware berfungsi
-- [ ] Role-based access control berjalan
-- [ ] Rate limiting terpasang
-- [ ] Testing coverage > 90%
-
 ## 📚 Documentation
 
-- [Laravel Sanctum Documentation](https://laravel.com/docs/11.x/sanctum)
-- [API Authentication Guide](https://laravel.com/docs/11.x/sanctum#api-token-authentication)
-- [Token Abilities Documentation](https://laravel.com/docs/11.x/sanctum#token-abilities)
-- [SPA Authentication Guide](https://laravel.com/docs/11.x/sanctum#spa-authentication)
+-   [Laravel Sanctum Documentation](https://laravel.com/docs/11.x/sanctum)
+-   [API Authentication Guide](https://laravel.com/docs/11.x/sanctum#api-token-authentication)
+-   [Token Abilities Documentation](https://laravel.com/docs/11.x/sanctum#token-abilities)
+-   [SPA Authentication Guide](https://laravel.com/docs/11.x/sanctum#spa-authentication)

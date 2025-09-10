@@ -6,12 +6,12 @@ Implementasi sistem tracking pembayaran dengan payment status tracking, payment 
 
 ## 🎯 Objectives
 
-- Payment status tracking
-- Payment timeline
-- Payment reminders
-- Payment expiry handling
-- Payment reconciliation
-- Payment reporting
+-   Payment status tracking
+-   Payment timeline
+-   Payment reminders
+-   Payment expiry handling
+-   Payment reconciliation
+-   Payment reporting
 
 ## 📁 Files Structure
 
@@ -823,16 +823,16 @@ describe('Payment Tracking', function () {
 
 ## ✅ Success Criteria
 
-- [ ] Payment status tracking berfungsi
-- [ ] Payment timeline berjalan
-- [ ] Payment reminders berfungsi
-- [ ] Payment expiry handling berjalan
-- [ ] Payment reconciliation berfungsi
-- [ ] Payment reporting berjalan
-- [ ] Testing coverage > 90%
+-   [x] Payment status tracking berfungsi
+-   [x] Payment timeline berjalan
+-   [x] Payment reminders berfungsi
+-   [x] Payment expiry handling berjalan
+-   [x] Payment reconciliation berfungsi
+-   [x] Payment reporting berjalan
+-   [x] Testing coverage > 90%
 
 ## 📚 Documentation
 
-- [Laravel Jobs](https://laravel.com/docs/11.x/queues)
-- [Laravel Database Transactions](https://laravel.com/docs/11.x/database#database-transactions)
-- [Laravel Events](https://laravel.com/docs/11.x/events)
+-   [Laravel Jobs](https://laravel.com/docs/11.x/queues)
+-   [Laravel Database Transactions](https://laravel.com/docs/11.x/database#database-transactions)
+-   [Laravel Events](https://laravel.com/docs/11.x/events)

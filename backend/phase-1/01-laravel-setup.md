@@ -1,17 +1,17 @@
-# Point 1: Laravel 11 Setup
+# Point 1: Laravel 12 Setup
 
 ## 📋 Overview
 
-Setup Laravel 11 project dengan konfigurasi dasar dan dependencies yang diperlukan.
+Setup Laravel 12 project dengan konfigurasi dasar dan dependencies yang diperlukan.
 
 ## 🎯 Objectives
 
-- Install Laravel 11 dengan Composer
-- Konfigurasi environment variables
-- Setup database connection (MySQL)
-- Konfigurasi Redis untuk cache
-- Setup Laravel Reverb untuk WebSocket
-- Install dan konfigurasi Laravel Sanctum
+-   Install Laravel 12 dengan Composer
+-   Konfigurasi environment variables
+-   Setup database connection (MySQL)
+-   Konfigurasi Redis untuk cache
+-   Setup Laravel Reverb untuk WebSocket
+-   Install dan konfigurasi Laravel Sanctum
 
 ## 📁 Files Structure
 
@@ -35,10 +35,10 @@ Implementasi mengikuti urutan: **Database → Model → Service → Controller**
 
 ## 🔧 Implementation Steps
 
-### Step 1: Install Laravel 11
+### Step 1: Install Laravel 12
 
 ```bash
-# Install Laravel 11
+# Install Laravel 12
 composer create-project laravel/laravel:^11.0 raujan-pool-backend
 
 # Navigate to project directory
@@ -123,18 +123,18 @@ php artisan reverb:install
 
 ```json
 {
-  "require": {
-    "laravel/framework": "^11.0",
-    "laravel/sanctum": "^4.0",
-    "laravel/socialite": "^6.0",
-    "laravel/reverb": "^1.0",
-    "predis/predis": "^2.0"
-  },
-  "require-dev": {
-    "pestphp/pest": "^2.0",
-    "laravel/telescope": "^5.0",
-    "laravel/horizon": "^6.0"
-  }
+    "require": {
+        "laravel/framework": "^11.0",
+        "laravel/sanctum": "^4.0",
+        "laravel/socialite": "^6.0",
+        "laravel/reverb": "^1.0",
+        "predis/predis": "^2.0"
+    },
+    "require-dev": {
+        "pestphp/pest": "^2.0",
+        "laravel/telescope": "^5.0",
+        "laravel/horizon": "^6.0"
+    }
 }
 ```
 
@@ -144,65 +144,65 @@ php artisan reverb:install
 
 ```json
 {
-  "name": "raujan-pool/backend",
-  "type": "project",
-  "description": "Raujan Pool Syariah Backend API",
-  "keywords": ["laravel", "framework", "pool", "swimming"],
-  "license": "MIT",
-  "require": {
-    "php": "^8.2",
-    "laravel/framework": "^11.0",
-    "laravel/sanctum": "^4.0",
-    "laravel/socialite": "^6.0",
-    "laravel/reverb": "^1.0",
-    "predis/predis": "^2.0"
-  },
-  "require-dev": {
-    "pestphp/pest": "^2.0",
-    "laravel/telescope": "^5.0",
-    "laravel/horizon": "^6.0"
-  },
-  "autoload": {
-    "psr-4": {
-      "App\\": "app/",
-      "Database\\Factories\\": "database/factories/",
-      "Database\\Seeders\\": "database/seeders/"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Tests\\": "tests/"
-    }
-  },
-  "scripts": {
-    "post-autoload-dump": [
-      "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-      "@php artisan package:discover --ansi"
-    ],
-    "post-update-cmd": [
-      "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
-    ],
-    "post-root-package-install": [
-      "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
-    ],
-    "post-create-project-cmd": ["@php artisan key:generate --ansi"]
-  },
-  "extra": {
-    "laravel": {
-      "dont-discover": []
-    }
-  },
-  "config": {
-    "optimize-autoloader": true,
-    "preferred-install": "dist",
-    "sort-packages": true,
-    "allow-plugins": {
-      "pestphp/pest-plugin": true,
-      "php-http/discovery": true
-    }
-  },
-  "minimum-stability": "stable",
-  "prefer-stable": true
+    "name": "raujan-pool/backend",
+    "type": "project",
+    "description": "Raujan Pool Syariah Backend API",
+    "keywords": ["laravel", "framework", "pool", "swimming"],
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": "^11.0",
+        "laravel/sanctum": "^4.0",
+        "laravel/socialite": "^6.0",
+        "laravel/reverb": "^1.0",
+        "predis/predis": "^2.0"
+    },
+    "require-dev": {
+        "pestphp/pest": "^2.0",
+        "laravel/telescope": "^5.0",
+        "laravel/horizon": "^6.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi"
+        ],
+        "post-update-cmd": [
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+        ],
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ],
+        "post-create-project-cmd": ["@php artisan key:generate --ansi"]
+    },
+    "extra": {
+        "laravel": {
+            "dont-discover": []
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
 }
 ```
 
@@ -317,18 +317,18 @@ return [
 
 ## ✅ Success Criteria
 
-- [ ] Laravel 11 berhasil terinstall
-- [ ] Dependencies terinstall dengan benar
-- [ ] Environment configuration berfungsi
-- [ ] Database connection dapat terkoneksi
-- [ ] Redis connection berfungsi
-- [ ] Laravel Sanctum terkonfigurasi
-- [ ] Laravel Reverb terkonfigurasi
-- [ ] Development server dapat dijalankan
+-   [x] Laravel 12 berhasil terinstall
+-   [x] Dependencies terinstall dengan benar
+-   [x] Environment configuration berfungsi
+-   [x] Database connection dapat terkoneksi
+-   [x] Redis connection berfungsi
+-   [x] Laravel Sanctum terkonfigurasi
+-   [x] Laravel Reverb terkonfigurasi
+-   [x] Development server dapat dijalankan
 
 ## 📚 Documentation
 
-- [Laravel 11 Documentation](https://laravel.com/docs/11.x)
-- [Laravel Sanctum Documentation](https://laravel.com/docs/11.x/sanctum)
-- [Laravel Reverb Documentation](https://laravel.com/docs/11.x/reverb)
-- [Laravel Socialite Documentation](https://laravel.com/docs/11.x/socialite)
+-   [Laravel 12 Documentation](https://laravel.com/docs/11.x)
+-   [Laravel Sanctum Documentation](https://laravel.com/docs/11.x/sanctum)
+-   [Laravel Reverb Documentation](https://laravel.com/docs/11.x/reverb)
+-   [Laravel Socialite Documentation](https://laravel.com/docs/11.x/socialite)

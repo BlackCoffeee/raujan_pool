@@ -6,12 +6,12 @@ Implementasi sistem manajemen expiry membership dengan expiry date tracking, exp
 
 ## 🎯 Objectives
 
-- Expiry date tracking
-- Expiry notifications
-- Expiry processing
-- Membership renewal
-- Expiry analytics
-- Expiry automation
+-   Expiry date tracking
+-   Expiry notifications
+-   Expiry processing
+-   Membership renewal
+-   Expiry analytics
+-   Expiry automation
 
 ## 📁 Files Structure
 
@@ -976,16 +976,16 @@ describe('Membership Expiry Management', function () {
 
 ## ✅ Success Criteria
 
-- [ ] Expiry date tracking berfungsi
-- [ ] Expiry notifications berjalan
-- [ ] Expiry processing berfungsi
-- [ ] Membership renewal berjalan
-- [ ] Expiry analytics berfungsi
-- [ ] Expiry automation berjalan
-- [ ] Testing coverage > 90%
+-   [x] Expiry date tracking berfungsi
+-   [x] Expiry notifications berjalan
+-   [x] Expiry processing berfungsi
+-   [x] Membership renewal berjalan
+-   [x] Expiry analytics berfungsi
+-   [x] Expiry automation berjalan
+-   [x] Testing coverage > 90%
 
 ## 📚 Documentation
 
-- [Laravel Jobs](https://laravel.com/docs/11.x/queues)
-- [Laravel Database Transactions](https://laravel.com/docs/11.x/database#database-transactions)
-- [Laravel Events](https://laravel.com/docs/11.x/events)
+-   [Laravel Jobs](https://laravel.com/docs/11.x/queues)
+-   [Laravel Database Transactions](https://laravel.com/docs/11.x/database#database-transactions)
+-   [Laravel Events](https://laravel.com/docs/11.x/events)

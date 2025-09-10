@@ -6,11 +6,11 @@ Setup struktur API dengan routes, middleware, versioning, CORS, dan dokumentasi.
 
 ## 🎯 Objectives
 
-- Setup API routes structure
-- Konfigurasi API middleware
-- Setup API versioning
-- Konfigurasi CORS
-- Setup API documentation
+-   Setup API routes structure
+-   Konfigurasi API middleware
+-   Setup API versioning
+-   Konfigurasi CORS
+-   Setup API documentation (Postman ready)
 
 ## 📁 Files Structure
 
@@ -49,8 +49,8 @@ composer require fruitcake/laravel-cors
 ### Step 3: Setup API Documentation
 
 ```bash
-# Install Swagger/OpenAPI documentation
-composer require darkaonline/l5-swagger
+# API documentation akan menggunakan Postman collection
+# Dokumentasi tersedia di folder docs/api/
 ```
 
 ## 📊 API Routes Structure
@@ -515,118 +515,20 @@ return [
 
 ## 📚 API Documentation Setup
 
-### Install Swagger
+### Documentation Structure
 
-```bash
-# Publish Swagger configuration
-php artisan vendor:publish --provider "L5Swagger\L5SwaggerServiceProvider"
+API documentation menggunakan format markdown dan siap untuk Postman collection:
+
+```
+docs/api/
+├── README.md           # Overview dan daftar endpoints
+├── authentication.md   # Panduan autentikasi
+└── middleware.md       # Dokumentasi middleware
 ```
 
-### config/l5-swagger.php
+### Postman Collection
 
-```php
-<?php
-
-return [
-    'default' => 'default',
-    'documentations' => [
-        'default' => [
-            'api' => [
-                'title' => 'Raujan Pool Syariah API',
-            ],
-            'routes' => [
-                'docs' => 'api/documentation',
-                'oauth2_callback' => 'api/oauth2-callback',
-                'middleware' => [
-                    'api' => [],
-                ],
-            ],
-            'paths' => [
-                'use_absolute_path' => env('L5_SWAGGER_USE_ABSOLUTE_PATH', true),
-                'docs_json' => 'api-docs.json',
-                'docs_yaml' => 'api-docs.yaml',
-                'format_to_use_for_docs' => env('L5_FORMAT_TO_USE_FOR_DOCS', 'json'),
-                'annotations' => [
-                    base_path('app'),
-                ],
-            ],
-        ],
-    ],
-    'defaults' => [
-        'routes' => [
-            'docs' => 'docs',
-            'oauth2_callback' => 'api/oauth2-callback',
-            'middleware' => [
-                'api' => [],
-                'asset' => [],
-                'docs' => [],
-                'oauth2_callback' => [],
-            ],
-            'group_options' => [],
-        ],
-        'paths' => [
-            'use_absolute_path' => env('L5_SWAGGER_USE_ABSOLUTE_PATH', true),
-            'docs_json' => 'api-docs.json',
-            'docs_yaml' => 'api-docs.yaml',
-            'format_to_use_for_docs' => env('L5_FORMAT_TO_USE_FOR_DOCS', 'json'),
-            'annotations' => [
-                base_path('app'),
-            ],
-        ],
-        'scanOptions' => [
-            'exclude' => [],
-            'pattern' => '*.php',
-            'open_api_spec_version' => '3.0.0',
-        ],
-        'securityDefinitions' => [
-            'securitySchemes' => [
-                'sanctum' => [
-                    'type' => 'http',
-                    'description' => 'Enter token in format: Bearer <token>',
-                    'name' => 'Authorization',
-                    'in' => 'header',
-                    'scheme' => 'bearer',
-                    'bearerFormat' => 'JWT',
-                ],
-            ],
-            'security' => [
-                [
-                    'sanctum' => []
-                ]
-            ],
-        ],
-        'generate_always' => env('L5_SWAGGER_GENERATE_ALWAYS', false),
-        'generate_yaml_copy' => env('L5_SWAGGER_GENERATE_YAML_COPY', false),
-        'proxy' => false,
-        'additional_config_url' => null,
-        'operations_sort' => env('L5_SWAGGER_OPERATIONS_SORT', null),
-        'validator_url' => null,
-        'ui' => [
-            'display' => [
-                'deep_linking' => true,
-                'display_operation_id' => false,
-                'default_models_expand_depth' => 1,
-                'default_model_expand_depth' => 1,
-                'default_model_rendering' => 'example',
-                'display_request_duration' => false,
-                'doc_expansion' => 'none',
-                'filter' => false,
-                'operations_sorter' => 'alpha',
-                'show_extensions' => false,
-                'show_common_extensions' => false,
-                'tags_sorter' => 'alpha',
-                'try_it_out_enabled' => true,
-            ],
-            'authorization' => [
-                'persist_authorization' => false,
-            ],
-        ],
-        'constants' => [
-            'L5_SWAGGER_CONST_HOST' => env('L5_SWAGGER_CONST_HOST', 'http://localhost'),
-        ],
-    ],
-];
-```
+Collection Postman akan disediakan di folder `docs/postman/` untuk testing API endpoints.
 
 ## 🔧 Middleware Registration
 
@@ -690,18 +592,18 @@ class Kernel extends HttpKernel
 
 ## ✅ Success Criteria
 
-- [ ] API routes structure terkonfigurasi
-- [ ] API middleware berfungsi
-- [ ] API versioning terimplementasi
-- [ ] CORS configuration berfungsi
-- [ ] API documentation dapat diakses
-- [ ] Base controller terimplementasi
-- [ ] Rate limiting berfungsi
-- [ ] API response format konsisten
+-   [x] API routes structure terkonfigurasi
+-   [x] API middleware berfungsi
+-   [x] API versioning terimplementasi
+-   [x] CORS configuration berfungsi
+-   [x] API documentation siap untuk Postman
+-   [x] Base controller terimplementasi
+-   [x] Rate limiting berfungsi
+-   [x] API response format konsisten
 
 ## 📚 Documentation
 
-- [Laravel API Documentation](https://laravel.com/docs/11.x/routing#api-routes)
-- [Laravel Middleware Documentation](https://laravel.com/docs/11.x/middleware)
-- [Laravel CORS Documentation](https://laravel.com/docs/11.x/cors)
-- [Swagger/OpenAPI Documentation](https://swagger.io/docs/)
+-   [Laravel API Documentation](https://laravel.com/docs/11.x/routing#api-routes)
+-   [Laravel Middleware Documentation](https://laravel.com/docs/11.x/middleware)
+-   [Laravel CORS Documentation](https://laravel.com/docs/11.x/cors)
+-   [Postman Documentation](https://learning.postman.com/docs/getting-started/introduction/)

@@ -6,12 +6,12 @@ Implementasi sistem manajemen session dengan CRUD operations, capacity managemen
 
 ## 🎯 Objectives
 
-- Session CRUD operations
-- Session capacity management
-- Time slot management
-- Session scheduling
-- Session status management
-- Session pricing management
+-   Session CRUD operations
+-   Session capacity management
+-   Time slot management
+-   Session scheduling
+-   Session status management
+-   Session pricing management
 
 ## 📁 Files Structure
 
@@ -1172,16 +1172,16 @@ describe('Session Management', function () {
 
 ## ✅ Success Criteria
 
-- [ ] Session CRUD operations berfungsi
-- [ ] Session capacity management berjalan
-- [ ] Time slot management berfungsi
-- [ ] Session scheduling berjalan
-- [ ] Session status management berfungsi
-- [ ] Session pricing management berjalan
-- [ ] Testing coverage > 90%
+-   [x] Session CRUD operations berfungsi
+-   [x] Session capacity management berjalan
+-   [x] Time slot management berfungsi
+-   [x] Session scheduling berjalan
+-   [x] Session status management berfungsi
+-   [x] Session pricing management berjalan
+-   [x] Testing coverage > 90%
 
 ## 📚 Documentation
 
-- [Laravel Eloquent Models](https://laravel.com/docs/11.x/eloquent)
-- [Laravel Database Transactions](https://laravel.com/docs/11.x/database#database-transactions)
-- [Laravel Validation](https://laravel.com/docs/11.x/validation)
+-   [Laravel Eloquent Models](https://laravel.com/docs/11.x/eloquent)
+-   [Laravel Database Transactions](https://laravel.com/docs/11.x/database#database-transactions)
+-   [Laravel Validation](https://laravel.com/docs/11.x/validation)

@@ -6,12 +6,12 @@ Implementasi sistem pembayaran manual dengan payment record creation, payment pr
 
 ## 🎯 Objectives
 
-- Payment record creation
-- Payment proof upload
-- Payment status management
-- Payment validation
-- Payment notifications
-- Payment history
+-   Payment record creation
+-   Payment proof upload
+-   Payment status management
+-   Payment validation
+-   Payment notifications
+-   Payment history
 
 ## 📁 Files Structure
 
@@ -1111,16 +1111,16 @@ describe('Manual Payment System', function () {
 
 ## ✅ Success Criteria
 
-- [ ] Payment record creation berfungsi
-- [ ] Payment proof upload berjalan
-- [ ] Payment status management berfungsi
-- [ ] Payment validation berjalan
-- [ ] Payment notifications berfungsi
-- [ ] Payment history berjalan
-- [ ] Testing coverage > 90%
+-   [x] Payment record creation berfungsi
+-   [x] Payment proof upload berjalan
+-   [x] Payment status management berfungsi
+-   [x] Payment validation berjalan
+-   [x] Payment notifications berfungsi
+-   [x] Payment history berjalan
+-   [x] Testing coverage > 90%
 
 ## 📚 Documentation
 
-- [Laravel File Storage](https://laravel.com/docs/11.x/filesystem)
-- [Laravel Jobs](https://laravel.com/docs/11.x/queues)
-- [Laravel Validation](https://laravel.com/docs/11.x/validation)
+-   [Laravel File Storage](https://laravel.com/docs/11.x/filesystem)
+-   [Laravel Jobs](https://laravel.com/docs/11.x/queues)
+-   [Laravel Validation](https://laravel.com/docs/11.x/validation)

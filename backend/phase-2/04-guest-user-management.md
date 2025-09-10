@@ -6,12 +6,12 @@ Implementasi sistem manajemen guest user dengan temporary accounts, conversion k
 
 ## 🎯 Objectives
 
-- Guest user registration system
-- Temporary user accounts
-- Guest to member conversion
-- Guest session management
-- Guest data cleanup
-- Guest analytics tracking
+-   Guest user registration system
+-   Temporary user accounts
+-   Guest to member conversion
+-   Guest session management
+-   Guest data cleanup
+-   Guest analytics tracking
 
 ## 📁 Files Structure
 
@@ -759,17 +759,17 @@ describe('Guest User Management', function () {
 
 ## ✅ Success Criteria
 
-- [ ] Guest user registration berfungsi
-- [ ] Temporary user accounts terkelola
-- [ ] Guest to member conversion berjalan
-- [ ] Guest session management berfungsi
-- [ ] Guest data cleanup otomatis
-- [ ] Guest analytics tracking berjalan
-- [ ] Database schema optimal
-- [ ] Testing coverage > 90%
+-   [x] Guest user registration berfungsi
+-   [x] Temporary user accounts terkelola
+-   [x] Guest to member conversion berjalan
+-   [x] Guest session management berfungsi
+-   [x] Guest data cleanup otomatis
+-   [x] Guest analytics tracking berjalan
+-   [x] Database schema optimal
+-   [x] Testing coverage > 90%
 
 ## 📚 Documentation
 
-- [Laravel Jobs Documentation](https://laravel.com/docs/11.x/queues)
-- [Laravel Task Scheduling](https://laravel.com/docs/11.x/scheduling)
-- [Guest User Management Best Practices](https://docs.example.com/guest-management)
+-   [Laravel Jobs Documentation](https://laravel.com/docs/11.x/queues)
+-   [Laravel Task Scheduling](https://laravel.com/docs/11.x/scheduling)
+-   [Guest User Management Best Practices](https://docs.example.com/guest-management)
