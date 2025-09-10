@@ -656,23 +656,38 @@ classDiagram
     class Member {
         -int id
         -int user_id
+        -int user_profile_id
         -string member_code
-        -string full_name
-        -string phone
-        -string address
-        -date birth_date
-        -string gender
-        -string photo_url
-        -string emergency_contact
+        -enum status
         -boolean is_active
         -date membership_start
         -date membership_end
-        -string membership_type
-        +register()
-        +updateProfile()
+        -enum membership_type
+        -enum registration_method
+        -int pricing_package_id
+        -decimal registration_fee_paid
+        -decimal monthly_fee_paid
+        -decimal total_paid
+        -timestamp status_changed_at
+        -int status_changed_by
+        -text status_change_reason
+        -date grace_period_start
+        -date grace_period_end
+        -int grace_period_days
+        -int reactivation_count
+        -timestamp last_reactivation_date
+        -decimal last_reactivation_fee
+        -timestamp created_at
+        -timestamp updated_at
+        +generateMemberCode()
+        +changeStatus()
+        +startGracePeriod()
+        +reactivate()
         +renewMembership()
-        +checkMembershipStatus()
-        +makeBooking()
+        +getTotalRegistrationAmount()
+        +getTotalReactivationAmount()
+        +getRegistrationBreakdown()
+        +getReactivationBreakdown()
     }
 
     class Package {
@@ -741,7 +756,111 @@ classDiagram
     Booking o-- Session : includes
 ```
 
-### 2.2 Class Diagram Cafe System
+### 2.2 Class Diagram Member Schema Revision v2
+
+```mermaid
+classDiagram
+    class SystemConfiguration {
+        -int id
+        -string config_key
+        -text config_value
+        -enum config_type
+        -text description
+        -boolean is_active
+        -int created_by
+        -timestamp created_at
+        -timestamp updated_at
+        +get(key, default)
+        +set(key, value, type, description, createdBy)
+        +getMemberConfig()
+        +updateMemberConfig(configs, updatedBy)
+    }
+
+    class PricingConfig {
+        -int id
+        -string name
+        -enum membership_type
+        -decimal registration_fee
+        -decimal monthly_fee
+        -decimal quarterly_fee
+        -decimal quarterly_discount_percentage
+        -decimal reactivation_fee
+        -boolean is_active
+        -text description
+        -int created_by
+        -timestamp created_at
+        -timestamp updated_at
+        +calculateTotalPrice(membershipType, includeRegistration)
+        +calculateReactivationPrice(membershipType)
+        +getPriceBreakdown(membershipType, includeRegistration)
+        +getReactivationBreakdown(membershipType)
+        +getActiveConfig(membershipType)
+        +createDefaultConfigs(createdBy)
+    }
+
+    class MemberStatusHistory {
+        -int id
+        -int member_id
+        -enum previous_status
+        -enum new_status
+        -text change_reason
+        -enum change_type
+        -int changed_by
+        -timestamp changed_at
+        -date membership_end_date
+        -date grace_period_end_date
+        -decimal payment_amount
+        -string payment_reference
+        +recordStatusChange(memberId, newStatus, previousStatus, changeType, reason, changedBy, paymentAmount, paymentReference)
+        +getMemberHistory(memberId, limit)
+        +getStatusChangeStats(startDate, endDate)
+    }
+
+    class MemberPayment {
+        -int id
+        -int member_id
+        -enum payment_type
+        -decimal amount
+        -enum payment_method
+        -string payment_reference
+        -timestamp payment_date
+        -enum payment_status
+        -text description
+        -text notes
+        -int processed_by
+        -timestamp created_at
+        -timestamp updated_at
+        +markAsPaid(processedBy)
+        +markAsFailed(reason)
+        +markAsRefunded(reason, processedBy)
+        +createPayment(memberId, paymentType, amount, paymentMethod, description, notes, processedBy)
+        +getMemberPayments(memberId, limit)
+        +getPaymentStats(startDate, endDate)
+        +getTotalRevenue(startDate, endDate)
+    }
+
+    class UserProfile {
+        -int id
+        -int user_id
+        -string phone
+        -date date_of_birth
+        -string gender
+        -text address
+        -string emergency_contact
+        -string photo_url
+        -timestamp created_at
+        -timestamp updated_at
+    }
+
+    SystemConfiguration ||--o{ Member : configures
+    PricingConfig ||--o{ Member : defines_pricing
+    Member ||--o{ MemberStatusHistory : has_history
+    Member ||--o{ MemberPayment : makes_payments
+    Member }o--|| UserProfile : has_profile
+    User ||--|| UserProfile : has
+```
+
+### 2.3 Class Diagram Cafe System
 
 ```mermaid
 classDiagram
@@ -834,7 +953,7 @@ classDiagram
     CafeInventory o-- StockAlert : generates
 ```
 
-### 2.3 Class Diagram Rating & Review System
+### 2.4 Class Diagram Rating & Review System
 
 ```mermaid
 classDiagram
@@ -896,7 +1015,7 @@ classDiagram
     Rating -- RatingAnalytics : contributes_to
 ```
 
-### 2.4 Class Diagram Promotional System
+### 2.5 Class Diagram Promotional System
 
 ```mermaid
 classDiagram
@@ -959,7 +1078,7 @@ classDiagram
     PromotionalCampaign -- CampaignAnalytics : generates
 ```
 
-### 2.5 Class Diagram Manual Payment System
+### 2.6 Class Diagram Manual Payment System
 
 ```mermaid
 classDiagram
@@ -1008,7 +1127,7 @@ classDiagram
     ManualPayment o-- PaymentVerificationLog : has
 ```
 
-### 2.6 Class Diagram Dynamic Member Quota Management
+### 2.7 Class Diagram Dynamic Member Quota Management
 
 ```mermaid
 classDiagram
@@ -1065,7 +1184,7 @@ classDiagram
     MemberQuotaConfig o-- QuotaHistory : generates
 ```
 
-### 2.7 Class Diagram Member Daily Swimming Limit
+### 2.8 Class Diagram Member Daily Swimming Limit
 
 ```mermaid
 classDiagram
@@ -1109,7 +1228,7 @@ classDiagram
     MemberDailyUsage o-- MemberSessionHistory : tracks
 ```
 
-### 2.8 Class Diagram Private Pool Rental System
+### 2.9 Class Diagram Private Pool Rental System
 
 ```mermaid
 classDiagram
@@ -1158,7 +1277,7 @@ classDiagram
     PrivatePoolBooking -- CustomerVisitHistory : tracks
 ```
 
-### 2.9 Class Diagram Barcode System
+### 2.10 Class Diagram Barcode System
 
 ```mermaid
 classDiagram
@@ -1204,7 +1323,7 @@ classDiagram
     MenuBarcode o-- BarcodeScan : generates
 ```
 
-### 2.10 Class Diagram Comprehensive Reporting System
+### 2.11 Class Diagram Comprehensive Reporting System
 
 ```mermaid
 classDiagram
@@ -1281,7 +1400,7 @@ classDiagram
     Report o-- ReportSchedule : schedules
 ```
 
-### 2.11 Class Diagram System Integration
+### 2.12 Class Diagram System Integration
 
 ```mermaid
 classDiagram
@@ -1343,31 +1462,34 @@ classDiagram
 
 ## 3. Activity Diagram
 
-### 3.1 Activity Diagram Member Registration
+### 3.1 Activity Diagram Member Registration (Schema Revision v2)
 
 ```mermaid
 flowchart TD
     A[Start] --> B[User Access Registration Page]
     B --> C[Fill Registration Form]
     C --> D[Upload Required Documents]
-    D --> E[Choose Package]
-    E --> F[Calculate Total Cost]
-    F --> G[Proceed to Payment]
-    G --> H[Make Payment]
-    H --> I{Payment Successful?}
-    I -->|Yes| J[Generate Temporary Account]
-    I -->|No| K[Show Payment Error]
-    K --> L[Retry Payment]
-    L --> I
-    J --> M[Admin Review Documents]
-    M --> N{Documents Valid?}
-    N -->|Yes| O[Activate Member Account]
-    N -->|No| P[Request Document Correction]
-    P --> Q[User Upload Corrected Documents]
+    D --> E[Choose Membership Type]
+    E --> F{Membership Type?}
+    F -->|Monthly| G[Calculate Monthly Cost]
+    F -->|Quarterly| H[Calculate Quarterly Cost with Discount]
+    G --> I[Registration Fee + Monthly Fee]
+    H --> J[Registration Fee + Quarterly Fee - Discount]
+    I --> K[Display Cost Breakdown]
+    J --> K
+    K --> L[Proceed to Payment]
+    L --> M[Make Payment]
+    M --> N{Payment Successful?}
+    N -->|Yes| O[Create Member Record]
+    N -->|No| P[Show Payment Error]
+    P --> Q[Retry Payment]
     Q --> M
-    O --> R[Generate Member Card]
-    R --> S[Send Welcome Email/SMS]
-    S --> T[End]
+    O --> R[Set Status: Active]
+    R --> S[Record Payment History]
+    S --> T[Record Status History]
+    T --> U[Generate Member Code]
+    U --> V[Send Welcome Email/SMS]
+    V --> W[End]
 ```
 
 ### 3.2 Activity Diagram Booking Process
@@ -1830,7 +1952,95 @@ flowchart TD
     AA --> X
 ```
 
-### 3.14 Activity Diagram Comprehensive Reporting
+### 3.14 Activity Diagram Member Status Lifecycle (Schema Revision v2)
+
+```mermaid
+flowchart TD
+    A[Start] --> B[Member Registration Complete]
+    B --> C[Status: Active]
+    C --> D[Monitor Membership End Date]
+    D --> E{Membership Expired?}
+    E -->|No| D
+    E -->|Yes| F[Change Status to Inactive]
+    F --> G[Start Grace Period]
+    G --> H[Send Grace Period Notification]
+    H --> I[Monitor Grace Period]
+    I --> J{Grace Period Expired?}
+    J -->|No| K{Member Renewed?}
+    K -->|Yes| L[Process Renewal Payment]
+    L --> M[Change Status to Active]
+    M --> N[Update Membership End Date]
+    N --> D
+    K -->|No| I
+    J -->|Yes| O[Change Status to Non-Member]
+    O --> P[Record Status History]
+    P --> Q[Send Non-Member Notification]
+    Q --> R[End]
+```
+
+### 3.15 Activity Diagram Member Reactivation (Schema Revision v2)
+
+```mermaid
+flowchart TD
+    A[Start] --> B[Non-Member Request Reactivation]
+    B --> C[Admin Access Reactivation System]
+    C --> D[Select Member to Reactivate]
+    D --> E[Choose Membership Type]
+    E --> F{Membership Type?}
+    F -->|Monthly| G[Calculate Monthly Reactivation Cost]
+    F -->|Quarterly| H[Calculate Quarterly Reactivation Cost with Discount]
+    G --> I[Reactivation Fee + Monthly Fee]
+    H --> J[Reactivation Fee + Quarterly Fee - Discount]
+    I --> K[Display Cost Breakdown]
+    J --> K
+    K --> L[Process Payment]
+    L --> M{Payment Successful?}
+    M -->|Yes| N[Update Member Status to Active]
+    M -->|No| O[Show Payment Error]
+    O --> P[Retry Payment]
+    P --> L
+    N --> Q[Update Reactivation Count]
+    Q --> R[Record Payment History]
+    R --> S[Record Status History]
+    S --> T[Update Membership End Date]
+    T --> U[Send Reactivation Confirmation]
+    U --> V[End]
+```
+
+### 3.16 Activity Diagram System Configuration Management (Schema Revision v2)
+
+```mermaid
+flowchart TD
+    A[Start] --> B[Admin Access Configuration Panel]
+    B --> C[Select Configuration Type]
+    C --> D{Configuration Type?}
+    D -->|Member Fees| E[Configure Member Fees]
+    D -->|Grace Period| F[Configure Grace Period]
+    D -->|Discount Settings| G[Configure Discount Settings]
+    E --> H[Set Registration Fee]
+    H --> I[Set Monthly Fee]
+    I --> J[Set Quarterly Fee]
+    J --> K[Set Reactivation Fee]
+    K --> L[Save Configuration]
+    F --> M[Set Grace Period Days]
+    M --> N[Set Notification Periods]
+    N --> L
+    G --> O[Set Quarterly Discount Percentage]
+    O --> P[Configure Other Discounts]
+    P --> L
+    L --> Q[Validate Configuration]
+    Q --> R{Configuration Valid?}
+    R -->|Yes| S[Update System Configuration]
+    R -->|No| T[Show Validation Error]
+    T --> U[Correct Configuration]
+    U --> L
+    S --> V[Clear Configuration Cache]
+    V --> W[Notify System of Changes]
+    W --> X[Log Configuration Change]
+    X --> Y[End]
+```
+
+### 3.17 Activity Diagram Comprehensive Reporting
 
 ```mermaid
 flowchart TD
@@ -1895,13 +2105,14 @@ flowchart TD
 
 ## 4. Sequence Diagram
 
-### 4.1 Sequence Diagram Member Registration
+### 4.1 Sequence Diagram Member Registration (Schema Revision v2)
 
 ```mermaid
 sequenceDiagram
     participant U as User
     participant S as System
-    participant A as Admin
+    participant SC as SystemConfiguration
+    participant PC as PricingConfig
     participant DB as Database
     participant E as Email/SMS
 
@@ -1912,37 +2123,36 @@ sequenceDiagram
     S->>DB: Validate User Data
     DB->>S: Validation Results
 
-    U->>S: Upload Documents
-    S->>DB: Save Documents
-    DB->>S: Document URLs
-
-    U->>S: Choose Package
-    S->>DB: Get Package Details
-    DB->>S: Package Information
-
-    U->>S: Submit Registration
-    S->>DB: Create Temporary Account
-    DB->>S: Account Created
-
-    S->>A: Notify Admin: New Registration
-    A->>S: Access Admin Panel
-
-    A->>S: Review Documents
-    S->>DB: Get User Documents
-    DB->>S: Document Data
-
-    A->>S: Approve/Reject Registration
-    alt Registration Approved
-        S->>DB: Activate User Account
-        DB->>S: Account Activated
-        S->>DB: Generate Member Card
-        DB->>S: Member Card Data
-        S->>E: Send Welcome Email/SMS
-        E->>U: Welcome Message
-    else Registration Rejected
-        S->>E: Send Rejection Notice
-        E->>U: Rejection Details
+    U->>S: Choose Membership Type
+    S->>SC: Get Registration Fee
+    SC->>S: Registration Fee (50,000)
+    
+    alt Monthly Membership
+        S->>PC: Get Monthly Fee
+        PC->>S: Monthly Fee (200,000)
+        S->>S: Calculate Total (250,000)
+    else Quarterly Membership
+        S->>PC: Get Quarterly Fee
+        PC->>S: Quarterly Fee (500,000)
+        S->>SC: Get Quarterly Discount
+        SC->>S: Discount (10%)
+        S->>S: Calculate Total with Discount (495,000)
     end
+
+    S->>U: Display Cost Breakdown
+    U->>S: Confirm Registration
+    S->>DB: Create Member Record
+    DB->>S: Member Created
+
+    S->>DB: Record Payment History
+    DB->>S: Payment Recorded
+    S->>DB: Record Status History
+    DB->>S: Status History Recorded
+
+    S->>DB: Generate Member Code
+    DB->>S: Member Code Generated
+    S->>E: Send Welcome Email/SMS
+    E->>U: Welcome Message with Member Code
 ```
 
 ### 4.2 Sequence Diagram Booking Process
@@ -2294,7 +2504,109 @@ sequenceDiagram
     S->>A: Provide Bulk Download
 ```
 
-### 4.9 Sequence Diagram Comprehensive Reporting System
+### 4.9 Sequence Diagram Member Reactivation (Schema Revision v2)
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant A as Admin
+    participant S as System
+    participant SC as SystemConfiguration
+    participant PC as PricingConfig
+    participant DB as Database
+    participant E as Email/SMS
+
+    U->>A: Request Member Reactivation
+    A->>S: Access Reactivation System
+    S->>DB: Get Member Details
+    DB->>S: Member Data (Status: Non-Member)
+
+    A->>S: Select Membership Type
+    S->>SC: Get Reactivation Fee
+    SC->>S: Reactivation Fee (50,000)
+    
+    alt Monthly Reactivation
+        S->>PC: Get Monthly Fee
+        PC->>S: Monthly Fee (200,000)
+        S->>S: Calculate Total (250,000)
+    else Quarterly Reactivation
+        S->>PC: Get Quarterly Fee
+        PC->>S: Quarterly Fee (500,000)
+        S->>SC: Get Quarterly Discount
+        SC->>S: Discount (10%)
+        S->>S: Calculate Total with Discount (495,000)
+    end
+
+    S->>A: Display Cost Breakdown
+    A->>S: Process Payment
+    S->>DB: Update Member Status to Active
+    DB->>S: Status Updated
+
+    S->>DB: Update Reactivation Count
+    DB->>S: Count Updated
+    S->>DB: Record Payment History
+    DB->>S: Payment Recorded
+    S->>DB: Record Status History
+    DB->>S: Status History Recorded
+
+    S->>DB: Update Membership End Date
+    DB->>S: End Date Updated
+    S->>E: Send Reactivation Confirmation
+    E->>U: Reactivation Confirmation
+```
+
+### 4.10 Sequence Diagram System Configuration Management (Schema Revision v2)
+
+```mermaid
+sequenceDiagram
+    participant A as Admin
+    participant S as System
+    participant SC as SystemConfiguration
+    participant PC as PricingConfig
+    participant DB as Database
+    participant C as Cache
+
+    A->>S: Access Configuration Panel
+    S->>SC: Get Current Configuration
+    SC->>DB: Query Configuration Data
+    DB->>SC: Configuration Values
+    SC->>S: Current Settings
+    S->>A: Display Configuration Form
+
+    A->>S: Update Configuration
+    S->>S: Validate Configuration Data
+    
+    alt Member Fee Configuration
+        S->>SC: Update Registration Fee
+        SC->>DB: Save Registration Fee
+        S->>SC: Update Monthly Fee
+        SC->>DB: Save Monthly Fee
+        S->>SC: Update Quarterly Fee
+        SC->>DB: Save Quarterly Fee
+        S->>SC: Update Reactivation Fee
+        SC->>DB: Save Reactivation Fee
+    else Grace Period Configuration
+        S->>SC: Update Grace Period Days
+        SC->>DB: Save Grace Period
+        S->>SC: Update Notification Periods
+        SC->>DB: Save Notification Settings
+    else Discount Configuration
+        S->>SC: Update Quarterly Discount
+        SC->>DB: Save Discount Percentage
+        S->>PC: Update Pricing Config
+        PC->>DB: Save Pricing Changes
+    end
+
+    DB->>SC: Configuration Saved
+    SC->>S: Update Confirmed
+    S->>C: Clear Configuration Cache
+    C->>S: Cache Cleared
+    S->>DB: Log Configuration Change
+    DB->>S: Change Logged
+    S->>A: Configuration Updated Successfully
+```
+
+### 4.11 Sequence Diagram Comprehensive Reporting System
 
 ```mermaid
 sequenceDiagram
@@ -2337,3 +2649,326 @@ sequenceDiagram
 
     S->>A: Confirm Report Actions
 ```
+
+## 5. Member Schema Revision v2 - Additional Diagrams
+
+### 5.1 Member Status Lifecycle State Diagram
+
+```mermaid
+stateDiagram-v2
+    [*] --> Active : Member Registration
+    Active --> Inactive : Membership Expired
+    Inactive --> Active : Payment Renewal
+    Inactive --> NonMember : Grace Period Expired
+    NonMember --> Active : Reactivation Payment
+    Active --> [*] : Member Cancellation
+    Inactive --> [*] : Member Cancellation
+    NonMember --> [*] : Member Cancellation
+
+    state Active {
+        [*] --> Monitoring
+        Monitoring --> Monitoring : Check Membership End Date
+        Monitoring --> Expired : Membership End Date Reached
+    }
+
+    state Inactive {
+        [*] --> GracePeriod
+        GracePeriod --> GracePeriod : Monitor Grace Period
+        GracePeriod --> Renewal : Member Pays Renewal
+        GracePeriod --> Expired : Grace Period Expired
+    }
+
+    state NonMember {
+        [*] --> Waiting
+        Waiting --> Reactivation : Admin Processes Reactivation
+    }
+```
+
+### 5.2 Payment Flow Diagram (Schema Revision v2)
+
+```mermaid
+flowchart TD
+    A[Payment Request] --> B{Payment Type?}
+    B -->|Registration| C[Calculate Registration Fee]
+    B -->|Renewal| D[Calculate Renewal Fee]
+    B -->|Reactivation| E[Calculate Reactivation Fee]
+    
+    C --> F{Membership Type?}
+    F -->|Monthly| G[Registration Fee + Monthly Fee]
+    F -->|Quarterly| H[Registration Fee + Quarterly Fee]
+    
+    D --> I{Membership Type?}
+    I -->|Monthly| J[Monthly Fee Only]
+    I -->|Quarterly| K[Quarterly Fee Only]
+    
+    E --> L{Membership Type?}
+    L -->|Monthly| M[Reactivation Fee + Monthly Fee]
+    L -->|Quarterly| N[Reactivation Fee + Quarterly Fee]
+    
+    H --> O[Apply Quarterly Discount]
+    K --> O
+    N --> O
+    
+    G --> P[Final Amount]
+    J --> P
+    M --> P
+    O --> P
+    
+    P --> Q[Process Payment]
+    Q --> R{Payment Success?}
+    R -->|Yes| S[Update Member Status]
+    R -->|No| T[Payment Failed]
+    
+    S --> U[Record Payment History]
+    U --> V[Record Status History]
+    V --> W[Send Confirmation]
+    
+    style O fill:#fff3e0
+    style P fill:#e8f5e8
+    style S fill:#c8e6c9
+    style T fill:#ffcdd2
+```
+
+### 5.3 System Configuration Architecture Diagram
+
+```mermaid
+graph TB
+    subgraph "Configuration Layer"
+        A[SystemConfiguration Model]
+        B[PricingConfig Model]
+        C[Configuration Cache]
+    end
+    
+    subgraph "Business Logic Layer"
+        D[MemberService]
+        E[PaymentService]
+        F[StatusService]
+    end
+    
+    subgraph "Data Layer"
+        G[system_configurations Table]
+        H[pricing_config Table]
+        I[members Table]
+        J[member_payments Table]
+        K[member_status_history Table]
+    end
+    
+    subgraph "API Layer"
+        L[MemberController]
+        M[SystemConfigurationController]
+        N[PaymentController]
+    end
+    
+    A --> G
+    B --> H
+    C --> A
+    C --> B
+    
+    D --> A
+    D --> B
+    E --> A
+    E --> B
+    F --> A
+    
+    D --> I
+    E --> J
+    F --> K
+    
+    L --> D
+    M --> A
+    N --> E
+    
+    style A fill:#e1f5fe
+    style B fill:#e1f5fe
+    style C fill:#fff3e0
+    style D fill:#f3e5f5
+    style E fill:#f3e5f5
+    style F fill:#f3e5f5
+```
+
+### 5.4 Member Schema Revision v2 - Database Relationship Diagram
+
+```mermaid
+erDiagram
+    users ||--o{ members : has
+    users ||--|| user_profiles : has
+    members ||--o{ member_payments : makes
+    members ||--o{ member_status_history : has_history
+    members }o--|| pricing_config : uses_pricing
+    system_configurations ||--o{ members : configures
+    
+    users {
+        int id PK
+        string username
+        string email
+        string password_hash
+        string role
+        boolean is_active
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    user_profiles {
+        int id PK
+        int user_id FK
+        string phone
+        date date_of_birth
+        string gender
+        text address
+        string emergency_contact
+        string photo_url
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    members {
+        int id PK
+        int user_id FK
+        int user_profile_id FK
+        string member_code
+        enum status
+        boolean is_active
+        date membership_start
+        date membership_end
+        enum membership_type
+        enum registration_method
+        int pricing_package_id FK
+        decimal registration_fee_paid
+        decimal monthly_fee_paid
+        decimal total_paid
+        timestamp status_changed_at
+        int status_changed_by
+        text status_change_reason
+        date grace_period_start
+        date grace_period_end
+        int grace_period_days
+        int reactivation_count
+        timestamp last_reactivation_date
+        decimal last_reactivation_fee
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    system_configurations {
+        int id PK
+        string config_key
+        text config_value
+        enum config_type
+        text description
+        boolean is_active
+        int created_by
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    pricing_config {
+        int id PK
+        string name
+        enum membership_type
+        decimal registration_fee
+        decimal monthly_fee
+        decimal quarterly_fee
+        decimal quarterly_discount_percentage
+        decimal reactivation_fee
+        boolean is_active
+        text description
+        int created_by
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    member_payments {
+        int id PK
+        int member_id FK
+        enum payment_type
+        decimal amount
+        enum payment_method
+        string payment_reference
+        timestamp payment_date
+        enum payment_status
+        text description
+        text notes
+        int processed_by
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    member_status_history {
+        int id PK
+        int member_id FK
+        enum previous_status
+        enum new_status
+        text change_reason
+        enum change_type
+        int changed_by
+        timestamp changed_at
+        date membership_end_date
+        date grace_period_end_date
+        decimal payment_amount
+        string payment_reference
+    }
+```
+
+### 5.5 Member Schema Revision v2 - API Endpoint Flow
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B{Endpoint Type?}
+    
+    B -->|Member Registration| C[POST /api/v1/members/register]
+    B -->|Member Reactivation| D[POST /api/v1/members/{id}/reactivate]
+    B -->|Status Management| E[PUT /api/v1/admin/members/{id}/status]
+    B -->|Configuration| F[GET/PUT /api/v1/admin/config/member]
+    B -->|Payment History| G[GET /api/v1/members/{id}/payments]
+    B -->|Status History| H[GET /api/v1/members/{id}/status-history]
+    
+    C --> I[Validate Request]
+    D --> I
+    E --> I
+    F --> I
+    G --> I
+    H --> I
+    
+    I --> J{Validation Pass?}
+    J -->|No| K[Return Validation Error]
+    J -->|Yes| L[Process Request]
+    
+    L --> M{Request Type?}
+    M -->|Registration| N[Calculate Fees with Discount]
+    M -->|Reactivation| O[Calculate Reactivation Fees]
+    M -->|Status Change| P[Update Member Status]
+    M -->|Configuration| Q[Update System Config]
+    M -->|History| R[Retrieve History Data]
+    
+    N --> S[Create Member Record]
+    O --> T[Update Member Status]
+    P --> U[Record Status History]
+    Q --> V[Update Configuration]
+    R --> W[Return History Data]
+    
+    S --> X[Record Payment History]
+    T --> X
+    U --> Y[Return Success Response]
+    V --> Y
+    W --> Y
+    X --> Y
+    
+    Y --> Z[Send Response to Client]
+    K --> Z
+    
+    style N fill:#fff3e0
+    style O fill:#fff3e0
+    style S fill:#c8e6c9
+    style T fill:#c8e6c9
+    style U fill:#c8e6c9
+    style V fill:#c8e6c9
+    style Y fill:#e8f5e8
+    style K fill:#ffcdd2
+```
+
+---
+
+**Version**: 2.0  
+**Date**: September 10, 2025  
+**Status**: Updated with Member Schema Revision v2  
+**Author**: Development Team
