@@ -1,23 +1,32 @@
-# Member Management API
+# Member Management API (Legacy)
+
+## ⚠️ Notice
+
+**Dokumentasi ini adalah versi legacy. Untuk Member Schema Revision v2, silakan lihat [Member Schema Revision API](member-schema-revision-api.md)**
 
 ## Overview
-API untuk mengelola member registration, profile management, dan member analytics dalam sistem kolam renang.
+
+API untuk mengelola member registration, profile management, dan member analytics dalam sistem kolam renang (versi legacy).
 
 ## Authentication
+
 Semua endpoint memerlukan authentication menggunakan Bearer token, kecuali yang disebutkan sebaliknya.
 
 ## Admin vs Member Access
-- **Admin routes**: `/api/v1/admin/members/*` - Hanya admin yang bisa akses
-- **Member routes**: `/api/v1/members/*` - Member bisa akses untuk profile sendiri
+
+-   **Admin routes**: `/api/v1/admin/members/*` - Hanya admin yang bisa akses
+-   **Member routes**: `/api/v1/members/*` - Member bisa akses untuk profile sendiri
 
 ## Endpoints
 
 ### 1. Member Registration
 
 #### POST `/api/v1/members/register`
+
 Mendaftarkan user sebagai member baru.
 
 **Request:**
+
 ```json
 {
     "user_id": 1,
@@ -29,6 +38,7 @@ Mendaftarkan user sebagai member baru.
 ```
 
 **Response (201):**
+
 ```json
 {
     "success": true,
@@ -63,17 +73,20 @@ Mendaftarkan user sebagai member baru.
 ### 2. Admin Member Management
 
 #### GET `/api/v1/admin/members`
+
 Mendapatkan daftar semua member (Admin only).
 
 **Query Parameters:**
-- `status` - Filter by status (active, inactive, suspended, expired)
-- `membership_type` - Filter by membership type (regular, premium, vip)
-- `start_date` - Filter by joined date range
-- `end_date` - Filter by joined date range
-- `expiring_soon` - Filter members expiring soon (number of days)
-- `per_page` - Number of items per page (default: 15)
+
+-   `status` - Filter by status (active, inactive, suspended, expired)
+-   `membership_type` - Filter by membership type (regular, premium, vip)
+-   `start_date` - Filter by joined date range
+-   `end_date` - Filter by joined date range
+-   `expiring_soon` - Filter members expiring soon (number of days)
+-   `per_page` - Number of items per page (default: 15)
 
 **Response (200):**
+
 ```json
 {
     "success": true,
@@ -103,9 +116,11 @@ Mendapatkan daftar semua member (Admin only).
 ```
 
 #### GET `/api/v1/admin/members/{id}`
+
 Mendapatkan detail member (Admin only).
 
 **Response (200):**
+
 ```json
 {
     "success": true,
@@ -137,9 +152,11 @@ Mendapatkan detail member (Admin only).
 ```
 
 #### PUT `/api/v1/admin/members/{id}`
+
 Update data member (Admin only).
 
 **Request:**
+
 ```json
 {
     "user_id": 1,
@@ -150,6 +167,7 @@ Update data member (Admin only).
 ```
 
 **Response (200):**
+
 ```json
 {
     "success": true,
@@ -165,9 +183,11 @@ Update data member (Admin only).
 ```
 
 #### DELETE `/api/v1/admin/members/{id}`
+
 Hapus member (Admin only).
 
 **Response (200):**
+
 ```json
 {
     "success": true,
@@ -179,9 +199,11 @@ Hapus member (Admin only).
 ### 3. Member Status Management
 
 #### POST `/api/v1/admin/members/{id}/suspend`
+
 Suspend member (Admin only).
 
 **Request:**
+
 ```json
 {
     "reason": "Policy violation"
@@ -189,6 +211,7 @@ Suspend member (Admin only).
 ```
 
 **Response (200):**
+
 ```json
 {
     "success": true,
@@ -202,9 +225,11 @@ Suspend member (Admin only).
 ```
 
 #### POST `/api/v1/admin/members/{id}/activate`
+
 Activate member (Admin only).
 
 **Response (200):**
+
 ```json
 {
     "success": true,
@@ -217,9 +242,11 @@ Activate member (Admin only).
 ```
 
 #### POST `/api/v1/admin/members/{id}/expire`
+
 Expire member (Admin only).
 
 **Response (200):**
+
 ```json
 {
     "success": true,
@@ -232,9 +259,11 @@ Expire member (Admin only).
 ```
 
 #### POST `/api/v1/admin/members/{id}/renew`
+
 Renew membership (Admin only).
 
 **Request:**
+
 ```json
 {
     "new_end_date": "2027-09-03"
@@ -242,6 +271,7 @@ Renew membership (Admin only).
 ```
 
 **Response (200):**
+
 ```json
 {
     "success": true,
@@ -257,9 +287,11 @@ Renew membership (Admin only).
 ### 4. Member Profile Management
 
 #### GET `/api/v1/members/profile`
+
 Mendapatkan profile member yang sedang login.
 
 **Response (200):**
+
 ```json
 {
     "success": true,
@@ -299,9 +331,11 @@ Mendapatkan profile member yang sedang login.
 ```
 
 #### PUT `/api/v1/members/profile`
+
 Update profile member yang sedang login.
 
 **Request:**
+
 ```json
 {
     "notes": "Updated notes"
@@ -309,6 +343,7 @@ Update profile member yang sedang login.
 ```
 
 **Response (200):**
+
 ```json
 {
     "success": true,
@@ -324,15 +359,18 @@ Update profile member yang sedang login.
 ### 5. Member Analytics (Admin only)
 
 #### GET `/api/v1/admin/members/stats`
+
 Mendapatkan statistik member.
 
 **Query Parameters:**
-- `start_date` - Filter by date range
-- `end_date` - Filter by date range
-- `membership_type` - Filter by membership type
-- `status` - Filter by status
+
+-   `start_date` - Filter by date range
+-   `end_date` - Filter by date range
+-   `membership_type` - Filter by membership type
+-   `status` - Filter by status
 
 **Response (200):**
+
 ```json
 {
     "success": true,
@@ -365,9 +403,11 @@ Mendapatkan statistik member.
 ```
 
 #### GET `/api/v1/admin/members/analytics`
+
 Mendapatkan analytics member yang lebih detail.
 
 **Response (200):**
+
 ```json
 {
     "success": true,
@@ -422,9 +462,11 @@ Mendapatkan analytics member yang lebih detail.
 ### 6. Bulk Operations
 
 #### POST `/api/v1/admin/members/process-expired`
+
 Proses member yang sudah expired (Admin only).
 
 **Response (200):**
+
 ```json
 {
     "success": true,
@@ -436,9 +478,11 @@ Proses member yang sudah expired (Admin only).
 ```
 
 #### POST `/api/v1/admin/members/convert-guest/{userId}`
+
 Convert guest user menjadi member (Admin only).
 
 **Request:**
+
 ```json
 {
     "membership_type": "regular",
@@ -449,6 +493,7 @@ Convert guest user menjadi member (Admin only).
 ```
 
 **Response (201):**
+
 ```json
 {
     "success": true,
@@ -466,6 +511,7 @@ Convert guest user menjadi member (Admin only).
 ## Error Responses
 
 ### 400 Bad Request
+
 ```json
 {
     "success": false,
@@ -476,26 +522,22 @@ Convert guest user menjadi member (Admin only).
 ```
 
 ### 422 Validation Error
+
 ```json
 {
     "success": false,
     "message": "User is required (and 2 more errors)",
     "data": null,
     "errors": {
-        "user_id": [
-            "User is required"
-        ],
-        "membership_type": [
-            "Membership type is required"
-        ],
-        "membership_end": [
-            "Membership end date is required"
-        ]
+        "user_id": ["User is required"],
+        "membership_type": ["Membership type is required"],
+        "membership_end": ["Membership end date is required"]
     }
 }
 ```
 
 ### 403 Forbidden
+
 ```json
 {
     "success": false,
@@ -506,6 +548,7 @@ Convert guest user menjadi member (Admin only).
 ```
 
 ### 404 Not Found
+
 ```json
 {
     "success": false,
@@ -517,16 +560,16 @@ Convert guest user menjadi member (Admin only).
 
 ## Membership Types
 
-- **regular**: Member reguler dengan quota 50 sesi
-- **premium**: Member premium dengan quota 100 sesi
-- **vip**: Member VIP dengan quota unlimited
+-   **regular**: Member reguler dengan quota 50 sesi
+-   **premium**: Member premium dengan quota 100 sesi
+-   **vip**: Member VIP dengan quota unlimited
 
 ## Member Status
 
-- **active**: Member aktif dan bisa booking
-- **inactive**: Member tidak aktif
-- **suspended**: Member di-suspend karena pelanggaran
-- **expired**: Membership sudah expired
+-   **active**: Member aktif dan bisa booking
+-   **inactive**: Member tidak aktif
+-   **suspended**: Member di-suspend karena pelanggaran
+-   **expired**: Membership sudah expired
 
 ## Business Rules
 
@@ -540,6 +583,7 @@ Convert guest user menjadi member (Admin only).
 ## Testing
 
 Untuk testing API, gunakan command:
+
 ```bash
 php artisan test tests/Feature/MemberTest.php
 ```

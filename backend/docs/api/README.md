@@ -17,6 +17,7 @@ Dokumentasi lengkap untuk Raujan Pool Backend API - Sistem manajemen kolam renan
 -   [Booking System](booking-system.md) - Session booking dan management
 -   [Payment System](payment-system.md) - Payment processing dan verification
 -   [Member Management](member-management.md) - Membership dan quota management
+-   [Member Schema Revision v2](member-schema-revision-api.md) - Member schema revision dengan dynamic pricing
 -   [Calendar & Sessions](calendar-sessions.md) - Session scheduling dan availability
 -   [Menu Management](menu-management.md) - Cafe menu dan item management
 -   [Order Processing](order-processing.md) - Order tracking dan processing
@@ -138,6 +139,17 @@ Authorization: Bearer {your_token}
 -   `GET /members/quota` - Get quota information
 -   `GET /members/usage` - Get usage history
 -   `GET /members/expiry` - Get expiry information
+
+### Member Schema Revision v2
+
+-   `POST /members/register` - Register new member with dynamic pricing
+-   `PUT /admin/members/{id}/status` - Update member status (admin)
+-   `POST /members/{id}/reactivate` - Reactivate non-member
+-   `GET /admin/config/member` - Get member configuration (admin)
+-   `PUT /admin/config/member` - Update member configuration (admin)
+-   `GET /members/{id}/payments` - Get member payment history
+-   `POST /members/{id}/payments` - Create member payment
+-   `GET /members/{id}/status-history` - Get member status history
 
 ### Calendar & Sessions
 
@@ -476,13 +488,14 @@ api.interceptors.request.use((config) => {
 
 ## 📋 Changelog
 
-### Version 1.0.0 (Current)
+### Version 2.0.0 (Current)
 
 -   ✅ Initial API release
 -   ✅ Authentication system
 -   ✅ Booking management
 -   ✅ Payment processing
 -   ✅ Member management
+-   ✅ Member Schema Revision v2 dengan dynamic pricing
 -   ✅ Real-time updates
 -   ✅ Admin dashboard
 -   ✅ Staff operations

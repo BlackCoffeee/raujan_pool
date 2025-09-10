@@ -2,6 +2,10 @@
 
 Riwayat perubahan dan update API Raujan Pool Backend.
 
+## 📋 Related Changelogs
+
+-   [Member Schema Revision v2 Changelog](../changelog-member-schema-revision-v2.md) - Detailed changelog untuk Member Schema Revision v2
+
 ## Version 1.0.0 (2024-01-15)
 
 ### 🎉 Initial Release

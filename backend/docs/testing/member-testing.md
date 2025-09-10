@@ -1,8 +1,12 @@
-# Member Management Testing Guide
+# Member Management Testing Guide (Legacy)
+
+## ⚠️ Notice
+
+**Dokumentasi ini adalah versi legacy. Untuk Member Schema Revision v2, silakan lihat [Member Schema Revision Testing](member-schema-revision-testing.md)**
 
 ## Overview
 
-Dokumentasi ini menjelaskan cara melakukan testing untuk Member Management API menggunakan Laravel Pest dan script testing manual.
+Dokumentasi ini menjelaskan cara melakukan testing untuk Member Management API menggunakan Laravel Pest dan script testing manual (versi legacy).
 
 ## Automated Testing dengan Pest
 

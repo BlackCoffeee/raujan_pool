@@ -23,6 +23,7 @@ Dokumentasi lengkap untuk semua API endpoints:
 -   **[Booking Management](api/booking-management.md)** - Sistem booking dan calendar
 -   **[Payment System](api/payment-system.md)** - Payment processing dan verification
 -   **[Member Management](api/member-management.md)** - Member registration dan quota
+-   **[Member Schema Revision v2](api/member-schema-revision-api.md)** - Member schema revision dengan dynamic pricing
 -   **[Menu Management](api/menu-management-api.md)** - Cafe menu dan pricing
 -   **[Barcode System](api/barcode-system.md)** - Barcode generation dan scanning
 -   **[Order Processing](api/order-processing-api.md)** - Order workflow
@@ -42,6 +43,7 @@ Panduan pengembangan dan best practices:
 -   **[Real-time Availability Setup](development/real-time-availability-setup.md)** - WebSocket setup
 -   **[Refund System Development](development/refund-system-development.md)** - Refund implementation
 -   **[Session Management Implementation](development/session-management-implementation.md)** - Session handling
+-   **[Member Schema Revision v2](development/member-schema-revision-v2.md)** - Member schema revision implementation
 
 ### 🧪 Testing Documentation (`/testing`)
 
@@ -53,6 +55,7 @@ Panduan testing dan quality assurance:
 -   **[Booking Testing](testing/booking-testing.md)** - Booking system testing
 -   **[Payment Testing](testing/payment-tracking-testing.md)** - Payment system testing
 -   **[Member Testing](testing/member-testing.md)** - Member management testing
+-   **[Member Schema Revision Testing](testing/member-schema-revision-testing.md)** - Member schema revision testing
 -   **[Menu Management Testing](testing/menu-management-testing.md)** - Menu system testing
 -   **[Order Processing Testing](testing/order-processing-testing.md)** - Order workflow testing
 
@@ -142,6 +145,7 @@ composer run test:unit
 -   [x] Booking & Calendar System
 -   [x] Payment System dengan manual verification
 -   [x] Member Management dengan quota system
+-   [x] Member Schema Revision v2 dengan dynamic pricing
 -   [x] Cafe System dengan barcode integration
 -   [x] Real-time notifications
 -   [x] Analytics & Reporting
@@ -176,6 +180,6 @@ Untuk pertanyaan atau dukungan teknis:
 
 ---
 
-**Last updated**: December 2024  
-**Version**: 1.0.0  
+**Last updated**: September 2025  
+**Version**: 2.0.0  
 **Status**: Production Ready ✅
