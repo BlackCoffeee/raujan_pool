@@ -30,8 +30,11 @@ npm install qrcode react-qr-scanner react-barcode
 echo "📦 Installing Data & State dependencies..."
 npm install @tanstack/react-query lodash uuid
 
+echo "📦 Installing Multicabang dependencies..."
+npm install @googlemaps/js-api-loader react-leaflet leaflet
+
 echo "📦 Installing development dependencies..."
-npm install --save-dev @types/axios @types/react-hook-form @types/react-dropzone @types/react-big-calendar @types/react-datepicker @types/qrcode @types/react-barcode @types/lodash @types/uuid @tanstack/react-query-devtools
+npm install --save-dev @types/axios @types/react-hook-form @types/react-dropzone @types/react-big-calendar @types/react-datepicker @types/qrcode @types/react-barcode @types/lodash @types/uuid @types/leaflet @tanstack/react-query-devtools
 
 echo "📦 Installing testing dependencies..."
 npm install --save-dev vitest @testing-library/react @testing-library/jest-dom msw @testing-library/user-event
@@ -47,6 +50,7 @@ echo "   • Core: axios, react-hook-form, zod, dayjs, socket.io-client"
 echo "   • UI: react-dropzone, react-image-crop, react-big-calendar, react-datepicker"
 echo "   • QR/Barcode: qrcode, react-qr-scanner, react-barcode"
 echo "   • Data: @tanstack/react-query, lodash, uuid"
+echo "   • Multicabang: @googlemaps/js-api-loader, react-leaflet, leaflet"
 echo "   • Testing: vitest, @testing-library/*, msw"
 echo "   • Dev Tools: vite-bundle-analyzer, dotenv, @tanstack/react-query-devtools"
 echo ""

@@ -13,6 +13,9 @@ Phase 3 fokus pada implementasi sistem booking pool dengan calendar interface, t
 - Booking history dan management
 - Pool capacity management
 - Booking confirmation system
+- Cross-branch booking system
+- Branch-specific availability
+- Location-based booking
 
 ## 📁 Files
 

@@ -10,6 +10,9 @@ Implementasi sistem reporting yang komprehensif untuk memberikan insights bisnis
 - [ ] Buat operational reports
 - [ ] Implementasi custom report builder
 - [ ] Setup automated report scheduling
+- [ ] Branch-specific reporting
+- [ ] Cross-branch comparison reports
+- [ ] Location-based analytics
 
 ## Implementation Steps
 

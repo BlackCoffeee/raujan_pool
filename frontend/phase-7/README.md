@@ -12,6 +12,9 @@ Phase 7 fokus pada implementasi dynamic pricing system dan promotional campaign 
 - Seasonal pricing management
 - Member discount configuration
 - Promotional pricing application
+- Branch-specific pricing
+- Cross-branch pricing comparison
+- Location-based pricing
 
 ## 📁 Files
 

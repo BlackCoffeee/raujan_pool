@@ -12,6 +12,9 @@ Implementasi sistem notifikasi dan komunikasi yang komprehensif untuk meningkatk
 - [ ] Manajemen preferensi pengguna
 - [ ] Komunikasi admin ke pengguna
 - [ ] History dan analytics notifikasi
+- [ ] Branch-specific notifications
+- [ ] Cross-branch notification management
+- [ ] Location-based notifications
 
 ## Implementation Steps
 

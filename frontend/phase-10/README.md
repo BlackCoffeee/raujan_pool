@@ -12,6 +12,9 @@ Implementasi sistem rating dan review untuk memungkinkan pengguna memberikan fee
 - [ ] Buat review analytics dan insights
 - [ ] Implementasi review response system
 - [ ] Setup review display dan filtering
+- [ ] Branch-specific reviews
+- [ ] Cross-branch review management
+- [ ] Location-based review system
 
 ## Implementation Steps
 

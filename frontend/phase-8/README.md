@@ -12,6 +12,9 @@ Phase 8 fokus pada implementasi member quota management dan queue management sys
 - Auto-promotion system
 - Quota dashboard dan analytics
 - Queue management interface
+- Branch-specific quota management
+- Cross-branch queue management
+- Location-based quota tracking
 
 ## 📁 Files
 

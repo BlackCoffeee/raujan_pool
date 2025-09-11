@@ -16,6 +16,8 @@ Phase 4 fokus pada implementasi sistem payment dengan multiple payment methods, 
 - Dynamic pricing integration
 - Pricing calculation system
 - Member discount application
+- Branch-specific payment processing
+- Cross-branch payment tracking
 
 ## 📁 Files
 

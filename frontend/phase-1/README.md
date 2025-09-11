@@ -12,6 +12,9 @@ Phase 1 fokus pada setup project infrastructure, template adaptation, dan core d
 - State management setup
 - Additional dependencies installation
 - Development tools configuration
+- Multicabang system foundation
+- Branch management infrastructure
+- Cross-branch booking foundation
 
 ## 📁 Files
 
@@ -20,6 +23,7 @@ Phase 1 fokus pada setup project infrastructure, template adaptation, dan core d
 - [03-environment-configuration.md](03-environment-configuration.md) - Environment setup
 - [04-state-management.md](04-state-management.md) - State management setup
 - [05-additional-dependencies.md](05-additional-dependencies.md) - Additional dependencies
+- [06-multicabang-foundation.md](06-multicabang-foundation.md) - Multicabang system foundation
 
 ## 🚀 Getting Started
 
@@ -43,6 +47,9 @@ Phase 1 fokus pada setup project infrastructure, template adaptation, dan core d
    VITE_API_URL=http://localhost:8000/api
    VITE_SOCKET_URL=http://localhost:8000
    VITE_GOOGLE_CLIENT_ID=your_google_client_id
+   VITE_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+   VITE_DEFAULT_BRANCH_ID=1
+   VITE_MAX_BRANCHES=10
    ```
 
 ## 📊 Progress Tracking
@@ -53,6 +60,9 @@ Phase 1 fokus pada setup project infrastructure, template adaptation, dan core d
 - [ ] State management configured
 - [ ] Additional dependencies installed
 - [ ] Development tools configured
+- [ ] Multicabang system foundation
+- [ ] Branch management infrastructure
+- [ ] Cross-branch booking foundation
 
 ## 🛠️ Core Infrastructure
 
@@ -83,6 +93,29 @@ Phase 1 fokus pada setup project infrastructure, template adaptation, dan core d
 - Prettier setup
 - Vitest testing framework
 - Husky git hooks
+
+## 🏢 Multicabang System Foundation
+
+### Branch Management Infrastructure
+
+- Branch creation and management
+- Branch-specific configuration
+- Staff assignment per branch
+- Branch analytics foundation
+
+### Cross-Branch Features
+
+- Location-based branch selection
+- Cross-branch booking infrastructure
+- Branch-specific pricing
+- Cross-branch data synchronization
+
+### Branch State Management
+
+- Branch selection state
+- Branch-specific data isolation
+- Cross-branch data aggregation
+- Real-time branch updates
 
 ## 👥 Development Workflow
 

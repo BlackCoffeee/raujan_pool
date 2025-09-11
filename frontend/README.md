@@ -2,7 +2,7 @@
 
 ## 📋 Overview
 
-Frontend development menggunakan Vite + React + ShadCN UI dengan struktur modular dan scalable untuk sistem manajemen kolam renang syariah.
+Frontend development menggunakan Vite + React + ShadCN UI dengan struktur modular dan scalable untuk sistem manajemen kolam renang syariah dengan dukungan multicabang system.
 
 ## 🏗️ Technology Stack
 
@@ -16,6 +16,7 @@ Frontend development menggunakan Vite + React + ShadCN UI dengan struktur modula
 - **Date/Time**: Day.js
 - **Charts**: Recharts
 - **Real-time**: Socket.io-client
+- **Maps**: Google Maps API + Leaflet
 - **Testing**: Vitest + React Testing Library
 
 ## 📁 File Hierarchy Rules
@@ -86,7 +87,8 @@ frontend/
 │   ├── 02-project-structure.md
 │   ├── 03-environment-configuration.md
 │   ├── 04-state-management.md
-│   └── 05-additional-dependencies.md
+│   ├── 05-additional-dependencies.md
+│   └── 06-multicabang-foundation.md
 ├── phase-2/          # Authentication & User Management
 │   ├── 01-authentication-ui.md
 │   ├── 02-google-sso-integration.md
@@ -163,6 +165,7 @@ frontend/
 - Environment configuration
 - State management setup
 - Additional dependencies
+- Multicabang system foundation
 
 ### Phase 2: Authentication & User Management (Week 3-4)
 
@@ -263,6 +266,7 @@ Each phase contains detailed documentation split into individual files for bette
 - [Environment Configuration](phase-1/03-environment-configuration.md) - Konfigurasi environment variables
 - [State Management](phase-1/04-state-management.md) - Setup Zustand state management
 - [Additional Dependencies](phase-1/05-additional-dependencies.md) - Dependencies tambahan yang diperlukan
+- [Multicabang Foundation](phase-1/06-multicabang-foundation.md) - Multicabang system foundation
 
 ### Phase 2: Authentication & User Management
 
@@ -394,6 +398,29 @@ Each documentation file includes:
 - **Mobile**: 320px - 768px
 - **Tablet**: 768px - 1024px
 - **Desktop**: 1024px+
+
+## 🏢 Multicabang System Architecture
+
+### Branch Management
+
+- **Branch Selection**: Location-based branch selection
+- **Cross-Branch Booking**: Book across multiple branches
+- **Branch-Specific Configuration**: Each branch has unique settings
+- **Centralized Control**: Admin can manage all branches
+
+### Cross-Branch Features
+
+- **Location Services**: Google Maps integration
+- **Branch Analytics**: Per-branch performance tracking
+- **Cross-Branch Reports**: Comparative analytics
+- **Branch Isolation**: Data separation with integration
+
+### Branch State Management
+
+- **Branch Context**: Current branch selection
+- **Branch-Specific Data**: Isolated data per branch
+- **Cross-Branch Sync**: Data synchronization
+- **Branch Switching**: Seamless branch transitions
 
 ## 🔧 Development Guidelines
 

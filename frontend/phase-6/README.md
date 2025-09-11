@@ -13,6 +13,9 @@ Phase 6 fokus pada implementasi cafe system dengan menu management, order proces
 - Cafe analytics dan reporting
 - Staff cafe management
 - Customer cafe experience
+- Branch-specific cafe management
+- Cross-branch inventory tracking
+- Location-based cafe services
 
 ## 📁 Files
 

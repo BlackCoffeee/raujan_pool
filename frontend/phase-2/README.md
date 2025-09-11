@@ -15,6 +15,8 @@ Phase 2 fokus pada implementasi sistem authentication dan user management dengan
 - Basic notification system
 - User notification preferences
 - Authentication notifications
+- Branch selection integration
+- Cross-branch user management
 
 ## 📁 Files
 

@@ -71,11 +71,24 @@ npm install @tanstack/react-query lodash uuid
 - `lodash` - Utility functions
 - `uuid` - Unique identifier generation
 
+### Step 4.5: Install Multicabang Dependencies
+
+```bash
+# Install Multicabang dependencies
+npm install @googlemaps/js-api-loader react-leaflet leaflet
+```
+
+**Multicabang Dependencies:**
+
+- `@googlemaps/js-api-loader` - Google Maps integration
+- `react-leaflet` - React wrapper untuk Leaflet maps
+- `leaflet` - Interactive maps library
+
 ### Step 5: Install Development Dependencies
 
 ```bash
 # Install development dependencies
-npm install --save-dev @types/axios @types/react-hook-form @types/react-dropzone @types/react-big-calendar @types/react-datepicker @types/qrcode @types/react-barcode @types/lodash @types/uuid
+npm install --save-dev @types/axios @types/react-hook-form @types/react-dropzone @types/react-big-calendar @types/react-datepicker @types/qrcode @types/react-barcode @types/lodash @types/uuid @types/leaflet
 ```
 
 **Development Dependencies:**
@@ -140,7 +153,10 @@ npm install --save-dev vitest @testing-library/react @testing-library/jest-dom m
     "react-barcode": "^1.4.0",
     "@tanstack/react-query": "^5.8.4",
     "lodash": "^4.17.21",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "@googlemaps/js-api-loader": "^1.16.2",
+    "react-leaflet": "^4.2.1",
+    "leaflet": "^1.9.4"
   },
   "devDependencies": {
     "@types/axios": "^1.1.0",
@@ -152,6 +168,7 @@ npm install --save-dev vitest @testing-library/react @testing-library/jest-dom m
     "@types/react-barcode": "^1.4.0",
     "@types/lodash": "^4.14.202",
     "@types/uuid": "^9.0.7",
+    "@types/leaflet": "^1.9.8",
     "vitest": "^1.0.0",
     "@testing-library/react": "^14.1.2",
     "@testing-library/jest-dom": "^6.1.5",
