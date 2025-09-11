@@ -82,11 +82,11 @@ src/
 ```
 frontend/
 ├── phase-1/          # Project Setup & Core Infrastructure
-│   ├── 01-vite-react-setup.md
-│   ├── 02-shadcn-ui-setup.md
-│   ├── 03-routing-setup.md
+│   ├── 01-template-adaptation.md
+│   ├── 02-project-structure.md
+│   ├── 03-environment-configuration.md
 │   ├── 04-state-management.md
-│   └── 05-development-tools.md
+│   └── 05-additional-dependencies.md
 ├── phase-2/          # Authentication & User Management
 │   ├── 01-authentication-ui.md
 │   ├── 02-google-sso-integration.md
@@ -94,40 +94,75 @@ frontend/
 │   ├── 04-user-profile-ui.md
 │   └── 05-guest-user-ui.md
 ├── phase-3/          # Booking System & Calendar
-│   ├── 01-calendar-ui.md
-│   ├── 02-booking-forms.md
-│   ├── 03-real-time-availability.md
-│   ├── 04-session-management-ui.md
-│   └── 05-capacity-display.md
+│   ├── 01-calendar-interface.md
+│   ├── 02-booking-form.md
+│   ├── 03-availability-system.md
+│   ├── 04-booking-management.md
+│   └── 05-booking-confirmation.md
 ├── phase-4/          # Payment System & Manual Payment
-│   ├── 01-payment-forms.md
-│   ├── 02-payment-verification-ui.md
-│   ├── 03-payment-tracking.md
-│   ├── 04-refund-management-ui.md
-│   └── 05-payment-analytics-ui.md
-├── phase-5/          # Member Management & Quota System
-│   ├── 01-member-registration-ui.md
-│   ├── 02-quota-management-ui.md
-│   ├── 03-queue-system-ui.md
-│   ├── 04-membership-expiry-ui.md
-│   └── 05-member-notifications-ui.md
-└── phase-6/          # Cafe System & Barcode Integration
-    ├── 01-menu-management-ui.md
-    ├── 02-barcode-scanner-ui.md
-    ├── 03-order-processing-ui.md
-    ├── 04-inventory-management-ui.md
-    └── 05-order-tracking-ui.md
+│   ├── 01-payment-methods.md
+│   ├── 02-manual-payment.md
+│   ├── 03-payment-verification.md
+│   ├── 04-payment-history.md
+│   └── 05-refund-system.md
+├── phase-5/          # Data Master & Admin Dashboard
+│   ├── 01-data-master.md
+│   ├── 02-admin-dashboard.md
+│   ├── 03-member-management.md
+│   ├── 04-quota-system.md
+│   └── 05-system-configuration.md
+├── phase-6/          # Cafe System & Barcode Integration
+│   ├── 01-cafe-menu.md
+│   ├── 02-order-processing.md
+│   ├── 03-barcode-integration.md
+│   ├── 04-inventory-management.md
+│   └── 05-cafe-analytics.md
+├── phase-7/          # Dynamic Pricing & Promotional System
+│   ├── 01-dynamic-pricing-config.md
+│   ├── 02-promotional-campaigns.md
+│   ├── 03-pricing-history.md
+│   ├── 04-seasonal-pricing.md
+│   ├── 05-member-discounts.md
+│   └── 06-promotional-pricing.md
+├── phase-8/          # Member Quota & Queue Management
+│   ├── 01-member-quota-config.md
+│   ├── 02-queue-management.md
+│   ├── 03-member-expiry-tracking.md
+│   ├── 04-auto-promotion-system.md
+│   ├── 05-quota-dashboard.md
+│   └── 06-queue-analytics.md
+├── phase-9/          # Notification & Communication System
+│   ├── 01-push-notifications.md
+│   ├── 02-notification-templates.md
+│   ├── 03-notification-scheduling.md
+│   ├── 04-user-preferences.md
+│   ├── 05-admin-communication.md
+│   └── 06-notification-history.md
+├── phase-10/         # Rating & Review System
+│   ├── 01-rating-system.md
+│   ├── 02-review-submission.md
+│   ├── 03-review-management.md
+│   ├── 04-review-moderation.md
+│   ├── 05-review-analytics.md
+│   └── 06-review-display.md
+└── phase-11/         # Comprehensive Reporting System
+    ├── 01-analytics-dashboard.md
+    ├── 02-financial-reports.md
+    ├── 03-operational-reports.md
+    ├── 04-custom-report-builder.md
+    ├── 05-automated-reporting.md
+    └── 06-data-export.md
 ```
 
 ## 🎯 Development Phases
 
 ### Phase 1: Project Setup & Core Infrastructure (Week 1-2)
 
-- Vite + React + TypeScript setup
-- ShadCN UI integration
-- Routing configuration
+- Template adaptation
+- Project structure setup
+- Environment configuration
 - State management setup
-- Development tools configuration
+- Additional dependencies
 
 ### Phase 2: Authentication & User Management (Week 3-4)
 
@@ -142,32 +177,72 @@ frontend/
 - Calendar interface
 - Booking forms
 - Real-time availability
-- Session management UI
-- Capacity display
+- Booking management
+- Booking confirmation
 
 ### Phase 4: Payment System & Manual Payment (Week 7-8)
 
-- Payment forms
-- Payment verification UI
-- Payment tracking
-- Refund management
-- Payment analytics
+- Payment methods
+- Manual payment
+- Payment verification
+- Payment history
+- Refund system
 
-### Phase 5: Member Management & Quota System (Week 9-10)
+### Phase 5: Data Master & Admin Dashboard (Week 9-10)
 
-- Member registration UI
-- Quota management interface
-- Queue system UI
-- Membership expiry handling
-- Member notifications
+- Data master management
+- Admin dashboard
+- Member management
+- Quota system
+- System configuration
 
 ### Phase 6: Cafe System & Barcode Integration (Week 11-12)
 
-- Menu management interface
-- Barcode scanner integration
-- Order processing UI
+- Cafe menu management
+- Order processing
+- Barcode integration
 - Inventory management
-- Order tracking
+- Cafe analytics
+
+### Phase 7: Dynamic Pricing & Promotional System (Week 13-14)
+
+- Dynamic pricing configuration
+- Promotional campaigns
+- Pricing history
+- Seasonal pricing
+- Member discounts
+
+### Phase 8: Member Quota & Queue Management (Week 15-16)
+
+- Member quota configuration
+- Queue management
+- Member expiry tracking
+- Auto-promotion system
+- Quota dashboard
+
+### Phase 9: Notification & Communication System (Week 17-18)
+
+- Push notifications
+- Notification templates
+- Notification scheduling
+- User preferences
+- Admin communication
+
+### Phase 10: Rating & Review System (Week 19-20)
+
+- Rating system
+- Review submission
+- Review management
+- Review moderation
+- Review analytics
+
+### Phase 11: Comprehensive Reporting System (Week 21-22)
+
+- Analytics dashboard
+- Financial reports
+- Operational reports
+- Custom report builder
+- Automated reporting
 
 ## 🚀 Getting Started
 
@@ -183,11 +258,11 @@ Each phase contains detailed documentation split into individual files for bette
 
 ### Phase 1: Project Setup & Core Infrastructure
 
-- [Vite React Setup](phase-1/01-vite-react-setup.md) - Vite + React + TypeScript configuration
-- [ShadCN UI Setup](phase-1/02-shadcn-ui-setup.md) - ShadCN UI components integration
-- [Routing Setup](phase-1/03-routing-setup.md) - React Router configuration
-- [State Management](phase-1/04-state-management.md) - Zustand/Redux setup
-- [Development Tools](phase-1/05-development-tools.md) - ESLint, Prettier, and testing tools
+- [Template Adaptation](phase-1/01-template-adaptation.md) - Adaptasi template ShadCN yang sudah ada
+- [Project Structure](phase-1/02-project-structure.md) - Struktur project yang direkomendasikan
+- [Environment Configuration](phase-1/03-environment-configuration.md) - Konfigurasi environment variables
+- [State Management](phase-1/04-state-management.md) - Setup Zustand state management
+- [Additional Dependencies](phase-1/05-additional-dependencies.md) - Dependencies tambahan yang diperlukan
 
 ### Phase 2: Authentication & User Management
 
@@ -199,35 +274,80 @@ Each phase contains detailed documentation split into individual files for bette
 
 ### Phase 3: Booking System & Calendar
 
-- [Calendar UI](phase-3/01-calendar-ui.md) - Calendar interface components
-- [Booking Forms](phase-3/02-booking-forms.md) - Booking form components
-- [Real-time Availability](phase-3/03-real-time-availability.md) - WebSocket integration
-- [Session Management UI](phase-3/04-session-management-ui.md) - Session handling interface
-- [Capacity Display](phase-3/05-capacity-display.md) - Capacity visualization
+- [Calendar Interface](phase-3/01-calendar-interface.md) - Calendar interface components
+- [Booking Form](phase-3/02-booking-form.md) - Booking form components
+- [Availability System](phase-3/03-availability-system.md) - Real-time availability system
+- [Booking Management](phase-3/04-booking-management.md) - Booking management interface
+- [Booking Confirmation](phase-3/05-booking-confirmation.md) - Booking confirmation system
 
 ### Phase 4: Payment System & Manual Payment
 
-- [Payment Forms](phase-4/01-payment-forms.md) - Payment form components
-- [Payment Verification UI](phase-4/02-payment-verification-ui.md) - Admin verification interface
-- [Payment Tracking](phase-4/03-payment-tracking.md) - Payment status tracking
-- [Refund Management UI](phase-4/04-refund-management-ui.md) - Refund processing interface
-- [Payment Analytics UI](phase-4/05-payment-analytics-ui.md) - Payment reports interface
+- [Payment Methods](phase-4/01-payment-methods.md) - Payment method components
+- [Manual Payment](phase-4/02-manual-payment.md) - Manual payment processing
+- [Payment Verification](phase-4/03-payment-verification.md) - Payment verification system
+- [Payment History](phase-4/04-payment-history.md) - Payment history tracking
+- [Refund System](phase-4/05-refund-system.md) - Refund processing system
 
-### Phase 5: Member Management & Quota System
+### Phase 5: Data Master & Admin Dashboard
 
-- [Member Registration UI](phase-5/01-member-registration-ui.md) - Member registration forms
-- [Quota Management UI](phase-5/02-quota-management-ui.md) - Quota management interface
-- [Queue System UI](phase-5/03-queue-system-ui.md) - Queue management interface
-- [Membership Expiry UI](phase-5/04-membership-expiry-ui.md) - Expiry tracking interface
-- [Member Notifications UI](phase-5/05-member-notifications-ui.md) - Notification interface
+- [Data Master](phase-5/01-data-master.md) - Data master management interface
+- [Admin Dashboard](phase-5/02-admin-dashboard.md) - Admin dashboard components
+- [Member Management](phase-5/03-member-management.md) - Member management interface
+- [Quota System](phase-5/04-quota-system.md) - Quota management system
+- [System Configuration](phase-5/05-system-configuration.md) - System configuration interface
 
 ### Phase 6: Cafe System & Barcode Integration
 
-- [Menu Management UI](phase-6/01-menu-management-ui.md) - Menu management interface
-- [Barcode Scanner UI](phase-6/02-barcode-scanner-ui.md) - Barcode scanning interface
-- [Order Processing UI](phase-6/03-order-processing-ui.md) - Order workflow interface
-- [Inventory Management UI](phase-6/04-inventory-management-ui.md) - Stock management interface
-- [Order Tracking UI](phase-6/05-order-tracking-ui.md) - Order status tracking
+- [Cafe Menu](phase-6/01-cafe-menu.md) - Cafe menu management interface
+- [Order Processing](phase-6/02-order-processing.md) - Order processing system
+- [Barcode Integration](phase-6/03-barcode-integration.md) - Barcode scanning integration
+- [Inventory Management](phase-6/04-inventory-management.md) - Inventory management system
+- [Cafe Analytics](phase-6/05-cafe-analytics.md) - Cafe analytics dashboard
+
+### Phase 7: Dynamic Pricing & Promotional System
+
+- [Dynamic Pricing Config](phase-7/01-dynamic-pricing-config.md) - Dynamic pricing configuration
+- [Promotional Campaigns](phase-7/02-promotional-campaigns.md) - Promotional campaign management
+- [Pricing History](phase-7/03-pricing-history.md) - Pricing history tracking
+- [Seasonal Pricing](phase-7/04-seasonal-pricing.md) - Seasonal pricing management
+- [Member Discounts](phase-7/05-member-discounts.md) - Member discount system
+- [Promotional Pricing](phase-7/06-promotional-pricing.md) - Promotional pricing system
+
+### Phase 8: Member Quota & Queue Management
+
+- [Member Quota Config](phase-8/01-member-quota-config.md) - Member quota configuration
+- [Queue Management](phase-8/02-queue-management.md) - Queue management system
+- [Member Expiry Tracking](phase-8/03-member-expiry-tracking.md) - Member expiry tracking
+- [Auto-promotion System](phase-8/04-auto-promotion-system.md) - Auto-promotion system
+- [Quota Dashboard](phase-8/05-quota-dashboard.md) - Quota dashboard interface
+- [Queue Analytics](phase-8/06-queue-analytics.md) - Queue analytics system
+
+### Phase 9: Notification & Communication System
+
+- [Push Notifications](phase-9/01-push-notifications.md) - Push notification system
+- [Notification Templates](phase-9/02-notification-templates.md) - Notification template system
+- [Notification Scheduling](phase-9/03-notification-scheduling.md) - Notification scheduling system
+- [User Preferences](phase-9/04-user-preferences.md) - User notification preferences
+- [Admin Communication](phase-9/05-admin-communication.md) - Admin communication system
+- [Notification History](phase-9/06-notification-history.md) - Notification history tracking
+
+### Phase 10: Rating & Review System
+
+- [Rating System](phase-10/01-rating-system.md) - Rating system components
+- [Review Submission](phase-10/02-review-submission.md) - Review submission system
+- [Review Management](phase-10/03-review-management.md) - Review management interface
+- [Review Moderation](phase-10/04-review-moderation.md) - Review moderation system
+- [Review Analytics](phase-10/05-review-analytics.md) - Review analytics dashboard
+- [Review Display](phase-10/06-review-display.md) - Review display system
+
+### Phase 11: Comprehensive Reporting System
+
+- [Analytics Dashboard](phase-11/01-analytics-dashboard.md) - Analytics dashboard interface
+- [Financial Reports](phase-11/02-financial-reports.md) - Financial reporting system
+- [Operational Reports](phase-11/03-operational-reports.md) - Operational reporting system
+- [Custom Report Builder](phase-11/04-custom-report-builder.md) - Custom report builder
+- [Automated Reporting](phase-11/05-automated-reporting.md) - Automated reporting system
+- [Data Export](phase-11/06-data-export.md) - Data export system
 
 Each documentation file includes:
 
