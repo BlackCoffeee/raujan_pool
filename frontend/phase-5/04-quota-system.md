@@ -13,6 +13,9 @@ Implementasi quota system untuk member management dengan quota tracking, quota m
 - Quota notification system
 - Quota reset dan renewal
 - Quota overage handling
+- Member expiry tracking
+- Auto-promotion system
+- Queue management integration
 
 ## 🔧 Implementation Steps
 
@@ -98,6 +101,38 @@ touch src/components/admin/quota/analytics/QuotaReports.tsx
 - `QuotaTrends` - Quota trend analysis
 - `QuotaReports` - Quota reporting
 
+### Step 6: Implement Member Expiry Tracking
+
+```bash
+# Create member expiry tracking components
+mkdir -p src/components/admin/quota/expiry
+touch src/components/admin/quota/expiry/MemberExpiryTracking.tsx
+touch src/components/admin/quota/expiry/ExpiryNotifications.tsx
+touch src/components/admin/quota/expiry/ExpiryRenewal.tsx
+```
+
+**Expiry Components:**
+
+- `MemberExpiryTracking` - Member expiry tracking interface
+- `ExpiryNotifications` - Expiry notification system
+- `ExpiryRenewal` - Expiry renewal management
+
+### Step 7: Setup Auto-promotion System
+
+```bash
+# Create auto-promotion components
+mkdir -p src/components/admin/quota/auto-promotion
+touch src/components/admin/quota/auto-promotion/AutoPromotionConfig.tsx
+touch src/components/admin/quota/auto-promotion/PromotionRules.tsx
+touch src/components/admin/quota/auto-promotion/PromotionHistory.tsx
+```
+
+**Auto-promotion Components:**
+
+- `AutoPromotionConfig` - Auto-promotion configuration
+- `PromotionRules` - Promotion rules management
+- `PromotionHistory` - Promotion history tracking
+
 ## 📊 Configuration Files
 
 ### src/types/quotaSystem.ts
@@ -169,6 +204,51 @@ export interface QuotaAnalytics {
     };
   };
 }
+
+export interface MemberExpiry {
+  id: string;
+  memberId: string;
+  membershipType: string;
+  expiryDate: string;
+  daysUntilExpiry: number;
+  status: "active" | "expiring_soon" | "expired" | "renewed";
+  renewalReminders: number;
+  lastReminderSent: string;
+  autoRenewal: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AutoPromotionRule {
+  id: string;
+  name: string;
+  condition: {
+    type: "quota_usage" | "membership_duration" | "payment_history" | "attendance";
+    threshold: number;
+    period: "days" | "weeks" | "months";
+  };
+  promotion: {
+    fromMembershipType: string;
+    toMembershipType: string;
+    quotaIncrease: number;
+    benefits: string[];
+  };
+  isActive: boolean;
+  priority: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PromotionHistory {
+  id: string;
+  memberId: string;
+  ruleId: string;
+  fromMembershipType: string;
+  toMembershipType: string;
+  promotedAt: string;
+  reason: string;
+  metadata: any;
+}
 ```
 
 ### src/config/quotaSystem.ts
@@ -210,6 +290,20 @@ export const QUOTA_SYSTEM_CONFIG = {
     reportFrequency: "monthly",
     exportFormats: ["csv", "excel", "pdf"],
   },
+  expiry: {
+    warningDays: 30, // days before expiry
+    criticalDays: 7, // days before expiry
+    autoRenewal: true,
+    gracePeriod: 7, // days after expiry
+    reminderFrequency: "daily",
+  },
+  autoPromotion: {
+    enabled: true,
+    checkFrequency: "daily",
+    maxPromotionsPerMember: 3,
+    cooldownPeriod: 30, // days
+    notificationChannels: ["email", "push", "sms"],
+  },
 };
 ```
 
@@ -231,6 +325,26 @@ export const calculateOverageFee = (quota: Quota, overageAmount: number) => {
 
 export const resetQuota = (quota: Quota) => {
   // Reset quota for new period
+};
+
+export const checkMemberExpiry = (member: MemberExpiry) => {
+  // Check member expiry status
+};
+
+export const calculateDaysUntilExpiry = (expiryDate: string) => {
+  // Calculate days until expiry
+};
+
+export const shouldSendExpiryReminder = (member: MemberExpiry) => {
+  // Check if expiry reminder should be sent
+};
+
+export const evaluateAutoPromotion = (memberId: string, rules: AutoPromotionRule[]) => {
+  // Evaluate if member qualifies for auto-promotion
+};
+
+export const executeAutoPromotion = (memberId: string, rule: AutoPromotionRule) => {
+  // Execute auto-promotion for member
 };
 ```
 
@@ -319,6 +433,14 @@ touch src/services/quotaSystemApi.ts
 - `POST /api/admin/quota-configurations` - Create quota configuration
 - `PUT /api/admin/quota-configurations/:id` - Update quota configuration
 - `DELETE /api/admin/quota-configurations/:id` - Delete quota configuration
+- `GET /api/admin/member-expiry` - Get member expiry tracking
+- `POST /api/admin/member-expiry/:id/renew` - Renew member membership
+- `GET /api/admin/auto-promotion-rules` - Get auto-promotion rules
+- `POST /api/admin/auto-promotion-rules` - Create auto-promotion rule
+- `PUT /api/admin/auto-promotion-rules/:id` - Update auto-promotion rule
+- `DELETE /api/admin/auto-promotion-rules/:id` - Delete auto-promotion rule
+- `GET /api/admin/promotion-history` - Get promotion history
+- `POST /api/admin/auto-promotion/execute` - Execute auto-promotion
 
 ### Quota Enforcement Integration
 
@@ -481,6 +603,11 @@ touch src/utils/quotaSystemMonitoring.ts
 - [ ] Performance optimization untuk quota processing
 - [ ] Quota system health monitoring
 - [ ] Quota system documentation dan user guides
+- [ ] Member expiry tracking system
+- [ ] Auto-promotion system
+- [ ] Expiry notification system
+- [ ] Promotion history tracking
+- [ ] Queue management integration
 
 ## 📝 Notes
 

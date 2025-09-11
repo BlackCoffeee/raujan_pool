@@ -13,6 +13,9 @@ Phase 4 fokus pada implementasi sistem payment dengan multiple payment methods, 
 - Refund processing system
 - Payment analytics dan reporting
 - Payment security dan compliance
+- Dynamic pricing integration
+- Pricing calculation system
+- Member discount application
 
 ## 📁 Files
 
@@ -21,6 +24,7 @@ Phase 4 fokus pada implementasi sistem payment dengan multiple payment methods, 
 - [03-payment-verification.md](03-payment-verification.md) - Payment verification dan confirmation
 - [04-payment-history.md](04-payment-history.md) - Payment history dan tracking
 - [05-refund-system.md](05-refund-system.md) - Refund processing system
+- [06-dynamic-pricing.md](06-dynamic-pricing.md) - Dynamic pricing integration
 
 ## 🚀 Getting Started
 
@@ -56,6 +60,9 @@ Phase 4 fokus pada implementasi sistem payment dengan multiple payment methods, 
 - [ ] Payment analytics dan reporting
 - [ ] Payment security measures
 - [ ] Payment compliance implementation
+- [ ] Dynamic pricing integration
+- [ ] Pricing calculation system
+- [ ] Member discount application
 
 ## 💳 Payment Methods
 
@@ -86,6 +93,36 @@ Phase 4 fokus pada implementasi sistem payment dengan multiple payment methods, 
 - QR code scanning
 - Payment processing
 - Status tracking
+
+## 💰 Dynamic Pricing
+
+### Pricing Calculation
+
+- Base pricing system
+- Member discount calculation
+- Time-based pricing
+- Promotional pricing
+
+### Member Discounts
+
+- Membership type discounts
+- Loyalty program discounts
+- Special member pricing
+- Bulk booking discounts
+
+### Time-based Pricing
+
+- Peak hours pricing
+- Off-peak pricing
+- Weekend pricing
+- Holiday pricing
+
+### Promotional Pricing
+
+- Campaign-based pricing
+- Limited time offers
+- Seasonal pricing
+- Special event pricing
 
 ## 👥 User Roles Integration
 

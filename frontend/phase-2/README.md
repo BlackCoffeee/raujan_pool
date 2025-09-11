@@ -12,6 +12,9 @@ Phase 2 fokus pada implementasi sistem authentication dan user management dengan
 - User profile management interface
 - Guest user interface
 - Session management
+- Basic notification system
+- User notification preferences
+- Authentication notifications
 
 ## 📁 Files
 
@@ -20,6 +23,7 @@ Phase 2 fokus pada implementasi sistem authentication dan user management dengan
 - [03-role-based-routing.md](03-role-based-routing.md) - Protected routes dan role guards
 - [04-user-profile-ui.md](04-user-profile-ui.md) - Profile management interface
 - [05-guest-user-ui.md](05-guest-user-ui.md) - Guest user interface
+- [06-basic-notifications.md](06-basic-notifications.md) - Basic notification system
 
 ## 🚀 Getting Started
 
@@ -54,6 +58,9 @@ Phase 2 fokus pada implementasi sistem authentication dan user management dengan
 - [ ] Session management
 - [ ] Password reset functionality
 - [ ] Email verification
+- [ ] Basic notification system
+- [ ] User notification preferences
+- [ ] Authentication notifications
 
 ## 🔐 Authentication Flow
 
@@ -110,6 +117,30 @@ Phase 2 fokus pada implementasi sistem authentication dan user management dengan
 - Limited access
 - Basic booking
 - No profile management
+
+## 🔔 Basic Notification System
+
+### Authentication Notifications
+
+- Login success notifications
+- Logout confirmations
+- Registration success
+- Password reset notifications
+- Email verification notifications
+
+### User Notification Preferences
+
+- Basic notification settings
+- Notification channel preferences
+- Notification frequency settings
+- Do not disturb mode
+
+### Notification Types
+
+- Success notifications
+- Error notifications
+- Warning notifications
+- Info notifications
 
 ## 🎨 UI Components
 
