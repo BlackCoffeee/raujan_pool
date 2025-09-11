@@ -35,10 +35,10 @@ CREATE TABLE menu_branch_configs (
     min_stock_level INT DEFAULT NULL,
     created_at TIMESTAMP NULL DEFAULT NULL,
     updated_at TIMESTAMP NULL DEFAULT NULL,
-    
+
     FOREIGN KEY (menu_item_id) REFERENCES menu_items(id) ON DELETE CASCADE,
     FOREIGN KEY (branch_id) REFERENCES branches(id) ON DELETE CASCADE,
-    
+
     UNIQUE KEY unique_menu_branch (menu_item_id, branch_id),
     INDEX idx_menu_branch_config_menu (menu_item_id),
     INDEX idx_menu_branch_config_branch (branch_id)
@@ -96,15 +96,15 @@ class BranchMenuService
     public function getBranchMenu(Branch $branch, array $filters = []): Collection
     {
         $query = $branch->menuItems();
-        
+
         if (isset($filters['category'])) {
             $query->where('category', $filters['category']);
         }
-        
+
         if (isset($filters['is_available'])) {
             $query->where('is_available', $filters['is_available']);
         }
-        
+
         return $query->with(['branchConfigs' => function ($q) use ($branch) {
             $q->where('branch_id', $branch->id);
         }])->get();
@@ -132,7 +132,7 @@ class BranchMenuService
         $config = $menuItem->branchConfigs()
             ->where('branch_id', $branch->id)
             ->first();
-        
+
         if (!$config) {
             $config = $this->configureMenuItemForBranch($menuItem, $branch, [
                 'price' => $menuItem->price,
@@ -141,7 +141,7 @@ class BranchMenuService
         } else {
             $config->update(['stock_quantity' => $quantity]);
         }
-        
+
         return $config;
     }
 
@@ -150,20 +150,20 @@ class BranchMenuService
         $config = $menuItem->branchConfigs()
             ->where('branch_id', $branch->id)
             ->first();
-        
+
         $isAvailable = $menuItem->is_available;
         $stockQuantity = null;
         $isLowStock = false;
-        
+
         if ($config) {
             $isAvailable = $isAvailable && $config->is_available;
             $stockQuantity = $config->stock_quantity;
-            
+
             if ($stockQuantity !== null && $config->min_stock_level !== null) {
                 $isLowStock = $stockQuantity <= $config->min_stock_level;
             }
         }
-        
+
         return [
             'menu_item_id' => $menuItem->id,
             'branch_id' => $branch->id,
@@ -177,7 +177,7 @@ class BranchMenuService
     public function getBranchMenuAvailability(Branch $branch): Collection
     {
         $menuItems = $this->getBranchMenu($branch, ['is_available' => true]);
-        
+
         return $menuItems->map(function ($menuItem) use ($branch) {
             return [
                 'menu_item' => $menuItem,
@@ -229,7 +229,7 @@ class BranchMenuController extends Controller
     {
         $filters = $request->only(['category', 'is_available']);
         $menuItems = $this->branchMenuService->getBranchMenu($branch, $filters);
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Branch menu retrieved successfully',
@@ -246,9 +246,9 @@ class BranchMenuController extends Controller
             'price' => 'required|numeric|min:0',
             'is_available' => 'boolean'
         ]);
-        
+
         $menuItem = $this->branchMenuService->createBranchMenuItem($branch, $request->validated());
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Menu item created successfully',
@@ -259,7 +259,7 @@ class BranchMenuController extends Controller
     public function getAvailability(Branch $branch, Request $request): JsonResponse
     {
         $availability = $this->branchMenuService->getBranchMenuAvailability($branch);
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Branch menu availability retrieved successfully',
@@ -272,13 +272,13 @@ class BranchMenuController extends Controller
         $request->validate([
             'quantity' => 'required|integer|min:0'
         ]);
-        
+
         $config = $this->branchMenuService->updateMenuItemStock(
             $menuItem,
             $branch,
             $request->quantity
         );
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Menu item stock updated successfully',
@@ -289,7 +289,7 @@ class BranchMenuController extends Controller
     public function getLowStock(Branch $branch): JsonResponse
     {
         $lowStockItems = $this->branchMenuService->getLowStockItems($branch);
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Low stock items retrieved successfully',
@@ -331,9 +331,9 @@ class BranchMenuServiceTest extends TestCase
     {
         $branch = Branch::factory()->create();
         MenuItem::factory()->count(3)->create(['branch_id' => $branch->id]);
-        
+
         $menuItems = $this->branchMenuService->getBranchMenu($branch);
-        
+
         $this->assertCount(3, $menuItems);
         $this->assertTrue($menuItems->every(fn($item) => $item->branch_id === $branch->id));
     }
@@ -348,9 +348,9 @@ class BranchMenuServiceTest extends TestCase
             'price' => 25.00,
             'is_available' => true
         ];
-        
+
         $menuItem = $this->branchMenuService->createBranchMenuItem($branch, $menuData);
-        
+
         $this->assertInstanceOf(MenuItem::class, $menuItem);
         $this->assertEquals($branch->id, $menuItem->branch_id);
         $this->assertEquals('Test Menu', $menuItem->name);
@@ -360,9 +360,9 @@ class BranchMenuServiceTest extends TestCase
     {
         $branch = Branch::factory()->create();
         $menuItem = MenuItem::factory()->create(['branch_id' => $branch->id]);
-        
+
         $availability = $this->branchMenuService->getMenuItemAvailability($menuItem, $branch);
-        
+
         $this->assertArrayHasKey('menu_item_id', $availability);
         $this->assertArrayHasKey('branch_id', $availability);
         $this->assertArrayHasKey('is_available', $availability);

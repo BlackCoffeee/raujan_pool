@@ -21,7 +21,7 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
-    
+
     branch_staff {
         int id PK
         int branch_id FK
@@ -34,7 +34,7 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
-    
+
     staff_schedules {
         int id PK
         int branch_staff_id FK
@@ -45,7 +45,7 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
-    
+
     pools {
         int id PK
         int branch_id FK
@@ -57,7 +57,7 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
-    
+
     menu_items {
         int id PK
         int branch_id FK
@@ -69,7 +69,7 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
-    
+
     bookings {
         int id PK
         int branch_id FK
@@ -83,7 +83,7 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
-    
+
     orders {
         int id PK
         int branch_id FK
@@ -93,7 +93,7 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
-    
+
     branch_analytics {
         int id PK
         int branch_id FK
@@ -108,20 +108,20 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
-    
+
     branches ||--o{ branch_staff : "has"
     branches ||--o{ pools : "contains"
     branches ||--o{ menu_items : "serves"
     branches ||--o{ bookings : "receives"
     branches ||--o{ orders : "processes"
     branches ||--o{ branch_analytics : "tracks"
-    
+
     branch_staff ||--o{ staff_schedules : "has"
     branch_staff }o--|| users : "assigned to"
-    
+
     pools ||--o{ bookings : "booked for"
     menu_items ||--o{ order_items : "ordered as"
-    
+
     users ||--o{ bookings : "makes"
     users ||--o{ orders : "places"
 ```
@@ -136,14 +136,14 @@ graph TB
         C[Staff Dashboard]
         D[Customer App]
     end
-    
+
     subgraph "API Gateway"
         E[Authentication Middleware]
         F[Authorization Middleware]
         G[Rate Limiting]
         H[Request Validation]
     end
-    
+
     subgraph "Business Logic Layer"
         I[Branch Management Service]
         J[Staff Management Service]
@@ -152,7 +152,7 @@ graph TB
         M[Booking Management Service]
         N[Analytics Service]
     end
-    
+
     subgraph "Data Access Layer"
         O[Branch Repository]
         P[Staff Repository]
@@ -161,56 +161,56 @@ graph TB
         S[Booking Repository]
         T[Analytics Repository]
     end
-    
+
     subgraph "Database Layer"
         U[(MySQL Database)]
         V[Redis Cache]
         W[File Storage]
     end
-    
+
     subgraph "External Services"
         X[Payment Gateway]
         Y[Notification Service]
         Z[Geolocation Service]
     end
-    
+
     A --> E
     B --> E
     C --> E
     D --> E
-    
+
     E --> F
     F --> G
     G --> H
-    
+
     H --> I
     H --> J
     H --> K
     H --> L
     H --> M
     H --> N
-    
+
     I --> O
     J --> P
     K --> Q
     L --> R
     M --> S
     N --> T
-    
+
     O --> U
     P --> U
     Q --> U
     R --> U
     S --> U
     T --> U
-    
+
     I --> V
     J --> V
     K --> V
     L --> V
     M --> V
     N --> V
-    
+
     M --> X
     M --> Y
     I --> Z
@@ -225,7 +225,7 @@ sequenceDiagram
     participant BranchService
     participant Database
     participant Cache
-    
+
     Admin->>API: Create Branch
     API->>BranchService: validateBranchData()
     BranchService->>Database: createBranch()
@@ -233,7 +233,7 @@ sequenceDiagram
     BranchService->>Cache: updateBranchCache()
     BranchService-->>API: Branch Response
     API-->>Admin: Success Response
-    
+
     Admin->>API: Assign Staff to Branch
     API->>BranchService: assignStaffToBranch()
     BranchService->>Database: createBranchStaff()
@@ -253,14 +253,14 @@ sequenceDiagram
     participant BranchService
     participant Database
     participant NotificationService
-    
+
     Customer->>API: Request Cross-Branch Booking
     API->>BookingService: validateCrossBranchBooking()
     BookingService->>BranchService: checkBranchAvailability()
     BranchService->>Database: getBranchConfig()
     Database-->>BranchService: Branch Config
     BranchService-->>BookingService: Availability Status
-    
+
     alt Branch Available
         BookingService->>Database: createBooking()
         Database-->>BookingService: Booking Created
@@ -283,11 +283,11 @@ flowchart TD
     D --> E[Generate Summary Reports]
     E --> F[Update Cache]
     F --> G[API Response]
-    
+
     H[Real-time Events] --> I[Event Listener]
     I --> J[Update Analytics]
     J --> K[Trigger Notifications]
-    
+
     L[Scheduled Jobs] --> M[Generate Period Analytics]
     M --> N[Cross-Branch Comparison]
     N --> O[Performance Insights]
@@ -305,7 +305,7 @@ graph TB
         D[Staff]
         E[Customer]
     end
-    
+
     subgraph "Permissions"
         F[Manage All Branches]
         G[Manage Own Branch]
@@ -315,28 +315,28 @@ graph TB
         K[View Analytics]
         L[Place Orders]
     end
-    
+
     A --> F
     A --> G
     A --> H
     A --> I
     A --> J
     A --> K
-    
+
     B --> G
     B --> H
     B --> I
     B --> J
     B --> K
-    
+
     C --> H
     C --> I
     C --> J
     C --> K
-    
+
     D --> H
     D --> J
-    
+
     E --> L
 ```
 
@@ -347,53 +347,53 @@ graph TB
     subgraph "Load Balancer"
         A[Nginx Load Balancer]
     end
-    
+
     subgraph "Application Servers"
         B[Laravel App Server 1]
         C[Laravel App Server 2]
         D[Laravel App Server 3]
     end
-    
+
     subgraph "Database Cluster"
         E[MySQL Master]
         F[MySQL Slave 1]
         G[MySQL Slave 2]
     end
-    
+
     subgraph "Cache Layer"
         H[Redis Cluster]
     end
-    
+
     subgraph "File Storage"
         I[AWS S3 / Local Storage]
     end
-    
+
     subgraph "Monitoring"
         J[Application Monitoring]
         K[Database Monitoring]
         L[Server Monitoring]
     end
-    
+
     A --> B
     A --> C
     A --> D
-    
+
     B --> E
     C --> E
     D --> E
-    
+
     B --> F
     C --> G
     D --> F
-    
+
     B --> H
     C --> H
     D --> H
-    
+
     B --> I
     C --> I
     D --> I
-    
+
     J --> B
     J --> C
     J --> D
@@ -408,6 +408,7 @@ graph TB
 ## 📊 Key Features Summary
 
 ### ✅ Implemented Features
+
 - **Branch Management**: CRUD operations untuk cabang
 - **Staff Management**: Penugasan dan manajemen staff per cabang
 - **Pool Management**: Manajemen kolam renang per cabang
@@ -416,6 +417,7 @@ graph TB
 - **Analytics**: Analitik performa per cabang
 
 ### 🔧 Technical Features
+
 - **Database Design**: Schema yang terstruktur dengan relasi yang jelas
 - **API Design**: RESTful API dengan validasi dan error handling
 - **Security**: Role-based access control dan permission management
@@ -424,6 +426,7 @@ graph TB
 - **Documentation**: Dokumentasi API yang lengkap
 
 ### 📈 Scalability Features
+
 - **Horizontal Scaling**: Load balancer dan multiple app servers
 - **Database Scaling**: Master-slave replication
 - **Cache Scaling**: Redis cluster untuk high availability

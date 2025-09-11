@@ -133,6 +133,19 @@ graph TB
             UC91[Manage Data Retention]
             UC92[Data Compliance]
         end
+
+        subgraph "Multicabang Management"
+            UC93[Manage Branches]
+            UC94[Assign Branch Staff]
+            UC95[Configure Branch Settings]
+            UC96[Manage Branch Pools]
+            UC97[Manage Branch Menus]
+            UC98[View Branch Analytics]
+            UC99[Cross-Branch Reporting]
+            UC100[Branch Performance Comparison]
+            UC101[Branch Inventory Management]
+            UC102[Branch Notification Management]
+        end
     end
 
     linkStyle 0 stroke:#ff6b6b,stroke-width:2px
@@ -228,6 +241,16 @@ graph TB
     A1 -.> UC90
     A1 -.> UC91
     A1 -.> UC92
+    A1 -.> UC93
+    A1 -.> UC94
+    A1 -.> UC95
+    A1 -.> UC96
+    A1 -.> UC97
+    A1 -.> UC98
+    A1 -.> UC99
+    A1 -.> UC100
+    A1 -.> UC101
+    A1 -.> UC102
 ```
 
 ### 1.2 Use Case Diagram - Staff Front Desk
@@ -1400,7 +1423,138 @@ classDiagram
     Report o-- ReportSchedule : schedules
 ```
 
-### 2.12 Class Diagram System Integration
+### 2.12 Class Diagram Multicabang System
+
+```mermaid
+classDiagram
+    class Branch {
+        -int id
+        -string code
+        -string name
+        -string address
+        -string phone
+        -string email
+        -decimal latitude
+        -decimal longitude
+        -json operating_hours
+        -int max_capacity
+        -boolean is_active
+        -timestamp created_at
+        -timestamp updated_at
+        +createBranch()
+        +updateBranch()
+        +deactivateBranch()
+        +getOperatingHours()
+        +checkCapacity()
+    }
+
+    class BranchStaff {
+        -int id
+        -int branch_id
+        -int user_id
+        -string role
+        -json permissions
+        -boolean is_active
+        -timestamp assigned_at
+        -int assigned_by
+        +assignStaff()
+        +updateRole()
+        +deactivateStaff()
+        +getPermissions()
+    }
+
+    class BranchPool {
+        -int id
+        -int branch_id
+        -int pool_id
+        -decimal branch_price
+        -int max_capacity
+        -boolean is_available
+        -json operating_hours
+        +updateBranchPrice()
+        +checkAvailability()
+        +getCapacity()
+    }
+
+    class BranchMenu {
+        -int id
+        -int branch_id
+        -int menu_id
+        -decimal branch_price
+        -int stock_quantity
+        -int min_stock_level
+        -boolean is_available
+        +updateBranchPrice()
+        +updateStock()
+        +checkLowStock()
+        +getAvailability()
+    }
+
+    class BranchBooking {
+        -int id
+        -int branch_id
+        -int booking_id
+        -string booking_type
+        -decimal branch_total
+        -string status
+        +createBranchBooking()
+        +updateStatus()
+        +calculateBranchTotal()
+    }
+
+    class BranchAnalytics {
+        -int id
+        -int branch_id
+        -date analytics_date
+        -decimal revenue
+        -int total_bookings
+        -int total_orders
+        -decimal average_rating
+        -int customer_count
+        +generateDailyReport()
+        +calculateMetrics()
+        +getPerformanceData()
+    }
+
+    class BranchSettings {
+        -int id
+        -int branch_id
+        -string setting_key
+        -text setting_value
+        -string setting_type
+        -boolean is_active
+        +updateSetting()
+        +getSetting()
+        +getAllSettings()
+    }
+
+    class BranchNotification {
+        -int id
+        -int branch_id
+        -string notification_type
+        -string title
+        -text message
+        -string status
+        -timestamp sent_at
+        +sendNotification()
+        +updateStatus()
+        +getNotificationHistory()
+    }
+
+    Branch ||--o{ BranchStaff : manages
+    Branch ||--o{ BranchPool : has_pools
+    Branch ||--o{ BranchMenu : has_menus
+    Branch ||--o{ BranchBooking : receives_bookings
+    Branch ||--o{ BranchAnalytics : generates_analytics
+    Branch ||--o{ BranchSettings : has_settings
+    Branch ||--o{ BranchNotification : sends_notifications
+    BranchStaff }o--|| User : assigned_to
+    BranchPool }o--|| Pool : references
+    BranchMenu }o--|| MenuItem : references
+    BranchBooking }o--|| Booking : references
+```
+
+### 2.13 Class Diagram System Integration
 
 ```mermaid
 classDiagram
@@ -2040,7 +2194,133 @@ flowchart TD
     X --> Y[End]
 ```
 
-### 3.17 Activity Diagram Comprehensive Reporting
+### 3.17 Activity Diagram Branch Management
+
+```mermaid
+flowchart TD
+    A[Start] --> B[Admin Access Branch Management]
+    B --> C[Select Branch Action]
+    C --> D{Action Type?}
+    D -->|Create| E[Create New Branch]
+    D -->|Update| F[Select Existing Branch]
+    D -->|Delete| G[Select Branch to Delete]
+    
+    E --> H[Fill Branch Details]
+    H --> I[Branch Name & Code]
+    I --> J[Set Address & Contact]
+    J --> K[Set Location Coordinates]
+    K --> L[Configure Operating Hours]
+    L --> M[Set Max Capacity]
+    M --> N[Configure Branch Settings]
+    N --> O[Save Branch]
+    
+    F --> P[Load Branch Details]
+    P --> Q[Update Branch Information]
+    Q --> H
+    
+    G --> R[Confirm Deletion]
+    R --> S{Confirm Deletion?}
+    S -->|Yes| T[Delete Branch]
+    S -->|No| U[Cancel Deletion]
+    
+    O --> V[Assign Branch Staff]
+    V --> W[Configure Branch Pools]
+    W --> X[Setup Branch Menus]
+    X --> Y[End]
+    T --> Z[Update Related Records]
+    Z --> Y
+    U --> B
+```
+
+### 3.18 Activity Diagram Cross-Branch Booking
+
+```mermaid
+flowchart TD
+    A[Start] --> B[Customer Access Booking]
+    B --> C[Select Branch Location]
+    C --> D[View Available Sessions]
+    D --> E{Session Available?}
+    E -->|Yes| F[Select Session]
+    E -->|No| G[Check Other Branches]
+    
+    F --> H[Choose User Type]
+    H --> I{Member or Guest?}
+    I -->|Member| J[Login to Account]
+    I -->|Guest| K[Fill Guest Form]
+    
+    J --> L[Load Member Profile]
+    K --> L
+    L --> M[Calculate Branch-Specific Pricing]
+    M --> N[Display Booking Summary]
+    N --> O{Details Correct?}
+    O -->|Yes| P[Proceed to Payment]
+    O -->|No| Q[Edit Booking Details]
+    
+    P --> R[Process Payment]
+    R --> S{Payment Successful?}
+    S -->|Yes| T[Confirm Cross-Branch Booking]
+    S -->|No| U[Show Payment Error]
+    
+    T --> V[Send Branch-Specific Confirmation]
+    V --> W[Update Branch Analytics]
+    W --> X[End]
+    
+    G --> Y[Show Alternative Branches]
+    Y --> Z[Select Different Branch]
+    Z --> D
+    Q --> M
+    U --> P
+```
+
+### 3.19 Activity Diagram Branch Analytics
+
+```mermaid
+flowchart TD
+    A[Start] --> B[Admin Access Branch Analytics]
+    B --> C[Select Analytics Type]
+    C --> D{Analytics Type?}
+    D -->|Single Branch| E[Select Branch]
+    D -->|Cross-Branch| F[Select Multiple Branches]
+    D -->|All Branches| G[Generate Overall Report]
+    
+    E --> H[Choose Report Period]
+    F --> H
+    G --> H
+    
+    H --> I[Select Metrics]
+    I --> J{Report Type?}
+    J -->|Revenue| K[Generate Revenue Analytics]
+    J -->|Bookings| L[Generate Booking Analytics]
+    J -->|Inventory| M[Generate Inventory Analytics]
+    J -->|Staff| N[Generate Staff Analytics]
+    J -->|Customer| O[Generate Customer Analytics]
+    
+    K --> P[Calculate Revenue Metrics]
+    L --> Q[Calculate Booking Metrics]
+    M --> R[Calculate Inventory Metrics]
+    N --> S[Calculate Staff Metrics]
+    O --> T[Calculate Customer Metrics]
+    
+    P --> U[Generate Charts & Graphs]
+    Q --> U
+    R --> U
+    S --> U
+    T --> U
+    
+    U --> V[Export Report]
+    V --> W{Export Format?}
+    W -->|PDF| X[Generate PDF Report]
+    W -->|Excel| Y[Generate Excel Report]
+    W -->|Dashboard| Z[Display Interactive Dashboard]
+    
+    X --> AA[Download Report]
+    Y --> AA
+    Z --> BB[View Real-time Dashboard]
+    AA --> CC[End]
+    BB --> CC
+```
+
+### 3.20 Activity Diagram Comprehensive Reporting
 
 ```mermaid
 flowchart TD
@@ -2606,7 +2886,119 @@ sequenceDiagram
     S->>A: Configuration Updated Successfully
 ```
 
-### 4.11 Sequence Diagram Comprehensive Reporting System
+### 4.11 Sequence Diagram Branch Management
+
+```mermaid
+sequenceDiagram
+    participant A as Admin
+    participant S as System
+    participant B as BranchService
+    participant DB as Database
+    participant N as Notification
+
+    A->>S: Access Branch Management
+    S->>B: Load Branch Interface
+    B->>DB: Get Existing Branches
+    DB->>B: Branch Data
+    B->>A: Display Branch List
+
+    A->>B: Create New Branch
+    B->>A: Display Branch Form
+    A->>B: Fill Branch Details
+    B->>S: Validate Branch Data
+    S->>B: Validation Results
+
+    A->>B: Save Branch
+    B->>DB: Create Branch Record
+    DB->>B: Branch Created
+    B->>DB: Create Branch Settings
+    DB->>B: Settings Created
+
+    B->>N: Send Branch Creation Notification
+    N->>A: Notify Branch Created
+    B->>A: Confirm Branch Created
+```
+
+### 4.12 Sequence Diagram Cross-Branch Booking
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant S as System
+    participant B as BranchService
+    participant P as PoolService
+    participant DB as Database
+    participant E as Email/SMS
+
+    U->>S: Access Booking Page
+    S->>B: Get Available Branches
+    B->>DB: Query Active Branches
+    DB->>B: Branch List
+    B->>S: Branch Data
+    S->>U: Display Branch Selection
+
+    U->>S: Select Branch
+    S->>P: Get Branch Pools
+    P->>DB: Query Branch Pools
+    DB->>P: Pool Data
+    P->>S: Available Pools
+    S->>U: Display Pool Options
+
+    U->>S: Select Pool & Session
+    S->>B: Calculate Branch Pricing
+    B->>DB: Get Branch Pricing Rules
+    DB->>B: Pricing Data
+    B->>S: Calculated Price
+    S->>U: Display Pricing
+
+    U->>S: Confirm Booking
+    S->>DB: Create Branch Booking
+    DB->>S: Booking Created
+    S->>B: Update Branch Analytics
+    B->>DB: Update Analytics
+    DB->>B: Analytics Updated
+
+    S->>E: Send Branch-Specific Confirmation
+    E->>U: Booking Confirmation
+    S->>U: Display Booking Details
+```
+
+### 4.13 Sequence Diagram Branch Analytics
+
+```mermaid
+sequenceDiagram
+    participant A as Admin
+    participant S as System
+    participant BA as BranchAnalytics
+    participant DB as Database
+    participant R as ReportGenerator
+
+    A->>S: Access Branch Analytics
+    S->>BA: Load Analytics Interface
+    BA->>A: Display Analytics Options
+
+    A->>BA: Select Branch & Metrics
+    BA->>DB: Query Branch Data
+    DB->>BA: Branch Analytics Data
+
+    A->>BA: Choose Report Type
+    BA->>R: Generate Report
+    R->>DB: Aggregate Data
+    DB->>R: Aggregated Data
+    R->>BA: Report Data
+
+    A->>BA: Request Export
+    BA->>R: Export Report
+    R->>S: Generate Export File
+    S->>A: Provide Download Link
+
+    A->>BA: Schedule Report
+    BA->>DB: Save Schedule
+    DB->>BA: Schedule Saved
+    BA->>A: Confirm Actions
+```
+
+### 4.14 Sequence Diagram Comprehensive Reporting System
 
 ```mermaid
 sequenceDiagram
@@ -2909,7 +3301,125 @@ erDiagram
     }
 ```
 
-### 5.5 Member Schema Revision v2 - API Endpoint Flow
+### 5.5 Multicabang System - Database Relationship Diagram
+
+```mermaid
+erDiagram
+    branches ||--o{ branch_staff : manages
+    branches ||--o{ branch_pools : has_pools
+    branches ||--o{ branch_menus : has_menus
+    branches ||--o{ branch_bookings : receives_bookings
+    branches ||--o{ branch_analytics : generates_analytics
+    branches ||--o{ branch_settings : has_settings
+    branches ||--o{ branch_notifications : sends_notifications
+    
+    users ||--o{ branch_staff : assigned_to
+    pools ||--o{ branch_pools : referenced_by
+    menu_items ||--o{ branch_menus : referenced_by
+    bookings ||--o{ branch_bookings : referenced_by
+    
+    branches {
+        bigint id PK
+        string code UK
+        string name
+        text address
+        string phone
+        string email
+        decimal latitude
+        decimal longitude
+        json operating_hours
+        int max_capacity
+        boolean is_active
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    branch_staff {
+        bigint id PK
+        bigint branch_id FK
+        bigint user_id FK
+        string role
+        json permissions
+        boolean is_active
+        timestamp assigned_at
+        bigint assigned_by FK
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    branch_pools {
+        bigint id PK
+        bigint branch_id FK
+        bigint pool_id FK
+        decimal branch_price
+        int max_capacity
+        boolean is_available
+        json operating_hours
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    branch_menus {
+        bigint id PK
+        bigint branch_id FK
+        bigint menu_id FK
+        decimal branch_price
+        int stock_quantity
+        int min_stock_level
+        boolean is_available
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    branch_bookings {
+        bigint id PK
+        bigint branch_id FK
+        bigint booking_id FK
+        string booking_type
+        decimal branch_total
+        string status
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    branch_analytics {
+        bigint id PK
+        bigint branch_id FK
+        date analytics_date
+        decimal revenue
+        int total_bookings
+        int total_orders
+        decimal average_rating
+        int customer_count
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    branch_settings {
+        bigint id PK
+        bigint branch_id FK
+        string setting_key
+        text setting_value
+        string setting_type
+        boolean is_active
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    branch_notifications {
+        bigint id PK
+        bigint branch_id FK
+        string notification_type
+        string title
+        text message
+        string status
+        timestamp sent_at
+        timestamp created_at
+        timestamp updated_at
+    }
+```
+
+### 5.6 Member Schema Revision v2 - API Endpoint Flow
 
 ```mermaid
 flowchart TD
@@ -2968,7 +3478,7 @@ flowchart TD
 
 ---
 
-**Version**: 2.0  
-**Date**: September 10, 2025  
-**Status**: Updated with Member Schema Revision v2  
+**Version**: 2.1  
+**Date**: January 15, 2025  
+**Status**: Updated with Member Schema Revision v2 and Multicabang System  
 **Author**: Development Team

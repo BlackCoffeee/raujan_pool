@@ -35,10 +35,10 @@ CREATE TABLE pool_branch_configs (
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP NULL DEFAULT NULL,
     updated_at TIMESTAMP NULL DEFAULT NULL,
-    
+
     FOREIGN KEY (pool_id) REFERENCES pools(id) ON DELETE CASCADE,
     FOREIGN KEY (branch_id) REFERENCES branches(id) ON DELETE CASCADE,
-    
+
     UNIQUE KEY unique_pool_branch (pool_id, branch_id),
     INDEX idx_pool_branch_config_pool (pool_id),
     INDEX idx_pool_branch_config_branch (branch_id)
@@ -143,7 +143,7 @@ class Pool extends Model
             ->where('branch_id', $branch->id)
             ->where('is_active', true)
             ->first();
-        
+
         return $config ? $config->price_per_hour : $this->price_per_hour;
     }
 
@@ -153,7 +153,7 @@ class Pool extends Model
             ->where('branch_id', $branch->id)
             ->where('is_active', true)
             ->first();
-        
+
         return $config ? $config->max_capacity : $this->capacity;
     }
 }
@@ -177,11 +177,11 @@ class BranchPoolService
     public function getBranchPools(Branch $branch, array $filters = []): Collection
     {
         $query = $branch->pools();
-        
+
         if (isset($filters['is_active'])) {
             $query->where('is_active', $filters['is_active']);
         }
-        
+
         return $query->with(['branchConfigs' => function ($q) use ($branch) {
             $q->where('branch_id', $branch->id);
         }])->get();
@@ -217,10 +217,10 @@ class BranchPoolService
             ->where('time_slot', $timeSlot)
             ->where('status', 'confirmed')
             ->count();
-        
+
         $capacity = $pool->getCapacityForBranch($pool->branch);
         $available = $capacity - $bookings;
-        
+
         return [
             'pool_id' => $pool->id,
             'date' => $date,
@@ -235,15 +235,15 @@ class BranchPoolService
     public function getBranchPoolAvailability(Branch $branch, string $date): Collection
     {
         $pools = $this->getBranchPools($branch, ['is_active' => true]);
-        
+
         return $pools->map(function ($pool) use ($date) {
             $timeSlots = ['08:00-10:00', '10:00-12:00', '12:00-14:00', '14:00-16:00', '16:00-18:00', '18:00-20:00'];
-            
+
             $availability = [];
             foreach ($timeSlots as $timeSlot) {
                 $availability[] = $this->getPoolAvailability($pool, $date, $timeSlot);
             }
-            
+
             return [
                 'pool' => $pool,
                 'availability' => $availability
@@ -279,7 +279,7 @@ class BranchPoolController extends Controller
     {
         $filters = $request->only(['is_active']);
         $pools = $this->branchPoolService->getBranchPools($branch, $filters);
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Branch pools retrieved successfully',
@@ -296,9 +296,9 @@ class BranchPoolController extends Controller
             'price_per_hour' => 'required|numeric|min:0',
             'is_active' => 'boolean'
         ]);
-        
+
         $pool = $this->branchPoolService->createBranchPool($branch, $request->validated());
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Pool created successfully',
@@ -324,9 +324,9 @@ class BranchPoolController extends Controller
             'price_per_hour' => 'sometimes|numeric|min:0',
             'is_active' => 'sometimes|boolean'
         ]);
-        
+
         $pool = $this->branchPoolService->updateBranchPool($pool, $request->validated());
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Pool updated successfully',
@@ -340,13 +340,13 @@ class BranchPoolController extends Controller
             'date' => 'required|date|after_or_equal:today',
             'time_slot' => 'required|string'
         ]);
-        
+
         $availability = $this->branchPoolService->getPoolAvailability(
             $pool,
             $request->date,
             $request->time_slot
         );
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Pool availability retrieved successfully',
@@ -359,12 +359,12 @@ class BranchPoolController extends Controller
         $request->validate([
             'date' => 'required|date|after_or_equal:today'
         ]);
-        
+
         $availability = $this->branchPoolService->getBranchPoolAvailability(
             $branch,
             $request->date
         );
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Branch pool availability retrieved successfully',
@@ -406,9 +406,9 @@ class BranchPoolServiceTest extends TestCase
     {
         $branch = Branch::factory()->create();
         Pool::factory()->count(3)->create(['branch_id' => $branch->id]);
-        
+
         $pools = $this->branchPoolService->getBranchPools($branch);
-        
+
         $this->assertCount(3, $pools);
         $this->assertTrue($pools->every(fn($pool) => $pool->branch_id === $branch->id));
     }
@@ -423,9 +423,9 @@ class BranchPoolServiceTest extends TestCase
             'price_per_hour' => 25.00,
             'is_active' => true
         ];
-        
+
         $pool = $this->branchPoolService->createBranchPool($branch, $poolData);
-        
+
         $this->assertInstanceOf(Pool::class, $pool);
         $this->assertEquals($branch->id, $pool->branch_id);
         $this->assertEquals('Test Pool', $pool->name);
@@ -435,13 +435,13 @@ class BranchPoolServiceTest extends TestCase
     {
         $branch = Branch::factory()->create();
         $pool = Pool::factory()->create(['branch_id' => $branch->id, 'capacity' => 50]);
-        
+
         $availability = $this->branchPoolService->getPoolAvailability(
             $pool,
             '2024-12-25',
             '10:00-12:00'
         );
-        
+
         $this->assertArrayHasKey('pool_id', $availability);
         $this->assertArrayHasKey('total_capacity', $availability);
         $this->assertArrayHasKey('available_slots', $availability);

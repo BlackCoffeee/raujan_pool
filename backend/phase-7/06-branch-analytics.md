@@ -30,9 +30,9 @@ CREATE TABLE branch_analytics (
     customer_satisfaction DECIMAL(3,2) NOT NULL DEFAULT 0.00,
     created_at TIMESTAMP NULL DEFAULT NULL,
     updated_at TIMESTAMP NULL DEFAULT NULL,
-    
+
     FOREIGN KEY (branch_id) REFERENCES branches(id) ON DELETE CASCADE,
-    
+
     UNIQUE KEY unique_branch_date (branch_id, date),
     INDEX idx_branch_analytics_branch (branch_id),
     INDEX idx_branch_analytics_date (date)
@@ -58,9 +58,9 @@ CREATE TABLE branch_analytics_summary (
     growth_rate DECIMAL(5,2) NOT NULL DEFAULT 0.00,
     created_at TIMESTAMP NULL DEFAULT NULL,
     updated_at TIMESTAMP NULL DEFAULT NULL,
-    
+
     FOREIGN KEY (branch_id) REFERENCES branches(id) ON DELETE CASCADE,
-    
+
     UNIQUE KEY unique_branch_period (branch_id, period_type, period_start),
     INDEX idx_branch_analytics_summary_branch (branch_id),
     INDEX idx_branch_analytics_summary_period (period_type, period_start)
@@ -89,23 +89,23 @@ class BranchAnalyticsService
     {
         $bookings = $branch->bookings()->where('date', $date)->get();
         $orders = $branch->orders()->whereDate('created_at', $date)->get();
-        
+
         $totalBookings = $bookings->count();
-        $totalRevenue = $bookings->where('status', 'confirmed')->sum('total_amount') + 
+        $totalRevenue = $bookings->where('status', 'confirmed')->sum('total_amount') +
                        $orders->where('status', 'completed')->sum('total_amount');
         $totalOrders = $orders->count();
         $totalCustomers = $bookings->pluck('user_id')->unique()->count();
-        
+
         $averageBookingValue = $totalBookings > 0 ? $totalRevenue / $totalBookings : 0;
-        
+
         // Calculate occupancy rate
         $totalCapacity = $branch->pools()->sum('capacity');
         $occupiedSlots = $bookings->where('status', 'confirmed')->count();
         $occupancyRate = $totalCapacity > 0 ? ($occupiedSlots / $totalCapacity) * 100 : 0;
-        
+
         // Calculate customer satisfaction (from ratings)
         $customerSatisfaction = $this->calculateCustomerSatisfaction($branch, $date);
-        
+
         return BranchAnalytics::updateOrCreate(
             [
                 'branch_id' => $branch->id,
@@ -128,20 +128,20 @@ class BranchAnalyticsService
         $analytics = $branch->analytics()
             ->whereBetween('date', [$startDate, $endDate])
             ->get();
-        
+
         $totalBookings = $analytics->sum('total_bookings');
         $totalRevenue = $analytics->sum('total_revenue');
         $totalOrders = $analytics->sum('total_orders');
         $totalCustomers = $analytics->sum('total_customers');
-        
+
         $averageBookingValue = $totalBookings > 0 ? $totalRevenue / $totalBookings : 0;
         $averageOccupancyRate = $analytics->avg('occupancy_rate') ?? 0;
         $averageCustomerSatisfaction = $analytics->avg('customer_satisfaction') ?? 0;
-        
+
         // Calculate growth rate
         $previousPeriod = $this->getPreviousPeriodAnalytics($branch, $startDate, $endDate, $periodType);
         $growthRate = $this->calculateGrowthRate($totalRevenue, $previousPeriod['total_revenue'] ?? 0);
-        
+
         return BranchAnalyticsSummary::updateOrCreate(
             [
                 'branch_id' => $branch->id,
@@ -197,7 +197,7 @@ class BranchAnalyticsService
             ->where('period_end', '<=', $endDate)
             ->orderBy($metric, 'desc')
             ->get();
-        
+
         return $analytics->map(function ($item, $index) {
             $item->rank = $index + 1;
             return $item;
@@ -207,7 +207,7 @@ class BranchAnalyticsService
     public function getBranchTrends(Branch $branch, string $startDate, string $endDate): array
     {
         $analytics = $this->getBranchAnalytics($branch, $startDate, $endDate);
-        
+
         return [
             'revenue_trend' => $this->calculateTrend($analytics->pluck('total_revenue')->toArray()),
             'booking_trend' => $this->calculateTrend($analytics->pluck('total_bookings')->toArray()),
@@ -220,30 +220,30 @@ class BranchAnalyticsService
     {
         $analytics = $this->getBranchAnalytics($branch, $startDate, $endDate);
         $summary = $this->generatePeriodAnalytics($branch, $startDate, $endDate, 'monthly');
-        
+
         $insights = [];
-        
+
         // Revenue insights
         if ($summary->growth_rate > 10) {
             $insights[] = "Revenue growth is strong at {$summary->growth_rate}%";
         } elseif ($summary->growth_rate < -10) {
             $insights[] = "Revenue decline needs attention at {$summary->growth_rate}%";
         }
-        
+
         // Occupancy insights
         if ($summary->average_occupancy_rate > 80) {
             $insights[] = "High occupancy rate indicates good demand";
         } elseif ($summary->average_occupancy_rate < 50) {
             $insights[] = "Low occupancy rate suggests need for marketing";
         }
-        
+
         // Customer satisfaction insights
         if ($summary->average_customer_satisfaction > 4.5) {
             $insights[] = "Excellent customer satisfaction";
         } elseif ($summary->average_customer_satisfaction < 3.5) {
             $insights[] = "Customer satisfaction needs improvement";
         }
-        
+
         return $insights;
     }
 
@@ -258,7 +258,7 @@ class BranchAnalyticsService
     {
         $start = \Carbon\Carbon::parse($startDate);
         $end = \Carbon\Carbon::parse($endDate);
-        
+
         switch ($periodType) {
             case 'daily':
                 $prevStart = $start->subDay();
@@ -279,11 +279,11 @@ class BranchAnalyticsService
             default:
                 return ['total_revenue' => 0];
         }
-        
+
         $analytics = $branch->analytics()
             ->whereBetween('date', [$prevStart->format('Y-m-d'), $prevEnd->format('Y-m-d')])
             ->get();
-        
+
         return [
             'total_revenue' => $analytics->sum('total_revenue'),
             'total_bookings' => $analytics->sum('total_bookings')
@@ -295,7 +295,7 @@ class BranchAnalyticsService
         if ($previous == 0) {
             return $current > 0 ? 100 : 0;
         }
-        
+
         return (($current - $previous) / $previous) * 100;
     }
 
@@ -304,10 +304,10 @@ class BranchAnalyticsService
         if (count($values) < 2) {
             return 'stable';
         }
-        
+
         $first = $values[0];
         $last = end($values);
-        
+
         if ($last > $first * 1.1) {
             return 'increasing';
         } elseif ($last < $first * 0.9) {
@@ -347,13 +347,13 @@ class BranchAnalyticsController extends Controller
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date'
         ]);
-        
+
         $analytics = $this->branchAnalyticsService->getBranchAnalytics(
             $branch,
             $request->start_date,
             $request->end_date
         );
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Branch analytics retrieved successfully',
@@ -367,13 +367,13 @@ class BranchAnalyticsController extends Controller
             'period_type' => 'required|in:daily,weekly,monthly,yearly',
             'limit' => 'integer|min:1|max:24'
         ]);
-        
+
         $summary = $this->branchAnalyticsService->getBranchAnalyticsSummary(
             $branch,
             $request->period_type,
             $request->get('limit', 12)
         );
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Branch analytics summary retrieved successfully',
@@ -388,13 +388,13 @@ class BranchAnalyticsController extends Controller
             'end_date' => 'required|date|after_or_equal:start_date',
             'period_type' => 'required|in:daily,weekly,monthly,yearly'
         ]);
-        
+
         $comparison = $this->branchAnalyticsService->getCrossBranchComparison(
             $request->start_date,
             $request->end_date,
             $request->period_type
         );
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Cross-branch comparison retrieved successfully',
@@ -409,13 +409,13 @@ class BranchAnalyticsController extends Controller
             'end_date' => 'required|date|after_or_equal:start_date',
             'metric' => 'in:total_revenue,total_bookings,total_orders,average_occupancy_rate,average_customer_satisfaction'
         ]);
-        
+
         $ranking = $this->branchAnalyticsService->getBranchRanking(
             $request->start_date,
             $request->end_date,
             $request->get('metric', 'total_revenue')
         );
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Branch ranking retrieved successfully',
@@ -429,13 +429,13 @@ class BranchAnalyticsController extends Controller
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date'
         ]);
-        
+
         $trends = $this->branchAnalyticsService->getBranchTrends(
             $branch,
             $request->start_date,
             $request->end_date
         );
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Branch trends retrieved successfully',
@@ -449,13 +449,13 @@ class BranchAnalyticsController extends Controller
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date'
         ]);
-        
+
         $insights = $this->branchAnalyticsService->getBranchInsights(
             $branch,
             $request->start_date,
             $request->end_date
         );
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Branch insights retrieved successfully',
@@ -469,13 +469,13 @@ class BranchAnalyticsController extends Controller
             'date' => 'required|date',
             'period_type' => 'sometimes|in:daily,weekly,monthly,yearly'
         ]);
-        
+
         $analytics = $this->branchAnalyticsService->generateDailyAnalytics($branch, $request->date);
-        
+
         if ($request->has('period_type')) {
             $startDate = $request->date;
             $endDate = $request->date;
-            
+
             // Adjust dates based on period type
             switch ($request->period_type) {
                 case 'weekly':
@@ -491,7 +491,7 @@ class BranchAnalyticsController extends Controller
                     $endDate = \Carbon\Carbon::parse($request->date)->endOfYear()->format('Y-m-d');
                     break;
             }
-            
+
             $this->branchAnalyticsService->generatePeriodAnalytics(
                 $branch,
                 $startDate,
@@ -499,7 +499,7 @@ class BranchAnalyticsController extends Controller
                 $request->period_type
             );
         }
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Analytics generated successfully',
@@ -541,9 +541,9 @@ class BranchAnalyticsServiceTest extends TestCase
     {
         $branch = Branch::factory()->create();
         $date = now()->format('Y-m-d');
-        
+
         $analytics = $this->branchAnalyticsService->generateDailyAnalytics($branch, $date);
-        
+
         $this->assertInstanceOf(BranchAnalytics::class, $analytics);
         $this->assertEquals($branch->id, $analytics->branch_id);
         $this->assertEquals($date, $analytics->date);
@@ -555,13 +555,13 @@ class BranchAnalyticsServiceTest extends TestCase
     {
         $branch = Branch::factory()->create();
         BranchAnalytics::factory()->count(5)->create(['branch_id' => $branch->id]);
-        
+
         $analytics = $this->branchAnalyticsService->getBranchAnalytics(
             $branch,
             now()->subDays(7)->format('Y-m-d'),
             now()->format('Y-m-d')
         );
-        
+
         $this->assertCount(5, $analytics);
         $this->assertTrue($analytics->every(fn($item) => $item->branch_id === $branch->id));
     }
@@ -570,26 +570,26 @@ class BranchAnalyticsServiceTest extends TestCase
     {
         $branch1 = Branch::factory()->create();
         $branch2 = Branch::factory()->create();
-        
+
         $comparison = $this->branchAnalyticsService->getCrossBranchComparison(
             now()->subMonth()->format('Y-m-d'),
             now()->format('Y-m-d'),
             'monthly'
         );
-        
+
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Collection::class, $comparison);
     }
 
     public function test_can_get_branch_insights(): void
     {
         $branch = Branch::factory()->create();
-        
+
         $insights = $this->branchAnalyticsService->getBranchInsights(
             $branch,
             now()->subMonth()->format('Y-m-d'),
             now()->format('Y-m-d')
         );
-        
+
         $this->assertIsArray($insights);
     }
 }

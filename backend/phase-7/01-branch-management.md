@@ -31,7 +31,7 @@ CREATE TABLE branches (
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP NULL DEFAULT NULL,
     updated_at TIMESTAMP NULL DEFAULT NULL,
-    
+
     INDEX idx_branches_code (code),
     INDEX idx_branches_active (is_active),
     INDEX idx_branches_location (latitude, longitude)
@@ -42,41 +42,41 @@ CREATE TABLE branches (
 
 ```json
 {
-    "monday": {
-        "open": "06:00",
-        "close": "22:00",
-        "is_open": true
-    },
-    "tuesday": {
-        "open": "06:00",
-        "close": "22:00",
-        "is_open": true
-    },
-    "wednesday": {
-        "open": "06:00",
-        "close": "22:00",
-        "is_open": true
-    },
-    "thursday": {
-        "open": "06:00",
-        "close": "22:00",
-        "is_open": true
-    },
-    "friday": {
-        "open": "06:00",
-        "close": "22:00",
-        "is_open": true
-    },
-    "saturday": {
-        "open": "08:00",
-        "close": "20:00",
-        "is_open": true
-    },
-    "sunday": {
-        "open": "08:00",
-        "close": "20:00",
-        "is_open": true
-    }
+  "monday": {
+    "open": "06:00",
+    "close": "22:00",
+    "is_open": true
+  },
+  "tuesday": {
+    "open": "06:00",
+    "close": "22:00",
+    "is_open": true
+  },
+  "wednesday": {
+    "open": "06:00",
+    "close": "22:00",
+    "is_open": true
+  },
+  "thursday": {
+    "open": "06:00",
+    "close": "22:00",
+    "is_open": true
+  },
+  "friday": {
+    "open": "06:00",
+    "close": "22:00",
+    "is_open": true
+  },
+  "saturday": {
+    "open": "08:00",
+    "close": "20:00",
+    "is_open": true
+  },
+  "sunday": {
+    "open": "08:00",
+    "close": "20:00",
+    "is_open": true
+  }
 }
 ```
 
@@ -109,7 +109,7 @@ return new class extends Migration
             $table->integer('max_capacity')->default(100);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
-            
+
             $table->index('code');
             $table->index('is_active');
             $table->index(['latitude', 'longitude']);
@@ -226,13 +226,13 @@ class Branch extends Model
         $now = now();
         $day = strtolower($now->format('l'));
         $time = $now->format('H:i');
-        
+
         $dayHours = $this->getOperatingHoursForDay($day);
-        
+
         if (!$dayHours || !$dayHours['is_open']) {
             return false;
         }
-        
+
         return $time >= $dayHours['open'] && $time <= $dayHours['close'];
     }
 }
@@ -392,7 +392,7 @@ class UpdateBranchRequest extends FormRequest
     public function rules(): array
     {
         $branchId = $this->route('branch')->id;
-        
+
         return [
             'code' => [
                 'sometimes',
@@ -491,12 +491,12 @@ class BranchService
     {
         // Validate operating hours
         $this->validateOperatingHours($data['operating_hours']);
-        
+
         // Generate code if not provided
         if (!isset($data['code'])) {
             $data['code'] = $this->generateBranchCode();
         }
-        
+
         return $this->branchRepository->create($data);
     }
 
@@ -506,7 +506,7 @@ class BranchService
         if (isset($data['operating_hours'])) {
             $this->validateOperatingHours($data['operating_hours']);
         }
-        
+
         return $this->branchRepository->update($branch, $data);
     }
 
@@ -516,7 +516,7 @@ class BranchService
         if ($this->hasRelatedData($branch)) {
             throw new \Exception('Cannot delete branch with existing data');
         }
-        
+
         return $this->branchRepository->delete($branch);
     }
 
@@ -543,18 +543,18 @@ class BranchService
     private function validateOperatingHours(array $operatingHours): void
     {
         $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-        
+
         foreach ($days as $day) {
             if (!isset($operatingHours[$day])) {
                 throw new \InvalidArgumentException("Operating hours for {$day} is required");
             }
-            
+
             $dayHours = $operatingHours[$day];
-            
+
             if (!isset($dayHours['open']) || !isset($dayHours['close']) || !isset($dayHours['is_open'])) {
                 throw new \InvalidArgumentException("Invalid operating hours format for {$day}");
             }
-            
+
             if ($dayHours['is_open'] && $dayHours['open'] >= $dayHours['close']) {
                 throw new \InvalidArgumentException("Open time must be before close time for {$day}");
             }
@@ -566,7 +566,7 @@ class BranchService
         $lastBranch = Branch::orderBy('id', 'desc')->first();
         $lastNumber = $lastBranch ? (int) substr($lastBranch->code, 2) : 0;
         $newNumber = $lastNumber + 1;
-        
+
         return 'BR' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
     }
 
@@ -598,7 +598,7 @@ class BranchRepository
     public function getAll(array $filters = []): LengthAwarePaginator
     {
         $query = Branch::query();
-        
+
         // Apply filters
         if (isset($filters['search'])) {
             $query->where(function ($q) use ($filters) {
@@ -607,18 +607,18 @@ class BranchRepository
                   ->orWhere('address', 'like', '%' . $filters['search'] . '%');
             });
         }
-        
+
         if (isset($filters['is_active'])) {
             $query->where('is_active', $filters['is_active']);
         }
-        
+
         if (isset($filters['sort_by'])) {
             $sortDirection = $filters['sort_direction'] ?? 'asc';
             $query->orderBy($filters['sort_by'], $sortDirection);
         } else {
             $query->orderBy('name');
         }
-        
+
         return $query->paginate($filters['per_page'] ?? 15);
     }
 
@@ -656,7 +656,7 @@ class BranchRepository
     public function search(string $query, array $filters = []): Collection
     {
         $searchQuery = Branch::query();
-        
+
         $searchQuery->where(function ($q) use ($query) {
             $q->where('name', 'like', '%' . $query . '%')
               ->orWhere('code', 'like', '%' . $query . '%')
@@ -664,18 +664,18 @@ class BranchRepository
               ->orWhere('phone', 'like', '%' . $query . '%')
               ->orWhere('email', 'like', '%' . $query . '%');
         });
-        
+
         if (isset($filters['is_active'])) {
             $searchQuery->where('is_active', $filters['is_active']);
         }
-        
+
         return $searchQuery->orderBy('name')->get();
     }
 
     public function getNearLocation(float $latitude, float $longitude, float $radius = 10): Collection
     {
         return Branch::selectRaw("
-            *, 
+            *,
             (6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) AS distance
         ", [$latitude, $longitude, $latitude])
         ->having('distance', '<', $radius)
@@ -712,7 +712,7 @@ class BranchController extends Controller
     {
         $filters = $request->only(['search', 'is_active', 'sort_by', 'sort_direction', 'per_page']);
         $branches = $this->branchService->getAllBranches($filters);
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Branches retrieved successfully',
@@ -729,7 +729,7 @@ class BranchController extends Controller
     public function store(StoreBranchRequest $request): JsonResponse
     {
         $branch = $this->branchService->createBranch($request->validated());
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Branch created successfully',
@@ -749,7 +749,7 @@ class BranchController extends Controller
     public function update(UpdateBranchRequest $request, Branch $branch): JsonResponse
     {
         $branch = $this->branchService->updateBranch($branch, $request->validated());
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Branch updated successfully',
@@ -760,7 +760,7 @@ class BranchController extends Controller
     public function destroy(Branch $branch): JsonResponse
     {
         $this->branchService->deleteBranch($branch);
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Branch deleted successfully'
@@ -770,7 +770,7 @@ class BranchController extends Controller
     public function activate(Branch $branch): JsonResponse
     {
         $branch = $this->branchService->activateBranch($branch);
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Branch activated successfully',
@@ -781,7 +781,7 @@ class BranchController extends Controller
     public function deactivate(Branch $branch): JsonResponse
     {
         $branch = $this->branchService->deactivateBranch($branch);
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Branch deactivated successfully',
@@ -793,16 +793,16 @@ class BranchController extends Controller
     {
         $query = $request->get('q');
         $filters = $request->only(['is_active']);
-        
+
         if (!$query) {
             return response()->json([
                 'success' => false,
                 'message' => 'Search query is required'
             ], 400);
         }
-        
+
         $branches = $this->branchService->searchBranches($query, $filters);
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Search results retrieved successfully',
@@ -817,13 +817,13 @@ class BranchController extends Controller
             'longitude' => 'required|numeric|between:-180,180',
             'radius' => 'numeric|min:0.1|max:100'
         ]);
-        
+
         $branches = $this->branchService->getBranchesNearLocation(
             $request->latitude,
             $request->longitude,
             $request->get('radius', 10)
         );
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Nearby branches retrieved successfully',
@@ -932,29 +932,29 @@ class BranchServiceTest extends TestCase
     public function test_can_activate_branch(): void
     {
         $branch = Branch::factory()->inactive()->create();
-        
+
         $this->assertFalse($branch->is_active);
-        
+
         $activatedBranch = $this->branchService->activateBranch($branch);
-        
+
         $this->assertTrue($activatedBranch->is_active);
     }
 
     public function test_can_deactivate_branch(): void
     {
         $branch = Branch::factory()->active()->create();
-        
+
         $this->assertTrue($branch->is_active);
-        
+
         $deactivatedBranch = $this->branchService->deactivateBranch($branch);
-        
+
         $this->assertFalse($deactivatedBranch->is_active);
     }
 
     public function test_throws_exception_when_deleting_branch_with_related_data(): void
     {
         $branch = Branch::factory()->create();
-        
+
         // Create related data
         $branch->users()->create([
             'name' => 'Test User',
@@ -962,10 +962,10 @@ class BranchServiceTest extends TestCase
             'password' => bcrypt('password'),
             'phone' => '081234567890'
         ]);
-        
+
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Cannot delete branch with existing data');
-        
+
         $this->branchService->deleteBranch($branch);
     }
 }
@@ -1023,7 +1023,7 @@ class BranchApiTest extends TestCase
     public function test_can_create_branch_as_admin(): void
     {
         $admin = User::factory()->admin()->create();
-        
+
         $branchData = [
             'code' => 'BR0001',
             'name' => 'Test Branch',
@@ -1074,7 +1074,7 @@ class BranchApiTest extends TestCase
     public function test_cannot_create_branch_as_regular_user(): void
     {
         $user = User::factory()->create();
-        
+
         $branchData = [
             'code' => 'BR0001',
             'name' => 'Test Branch',
@@ -1114,7 +1114,7 @@ class BranchApiTest extends TestCase
             'latitude' => -6.2,
             'longitude' => 106.816666
         ]);
-        
+
         Branch::factory()->create([
             'name' => 'Far Branch',
             'latitude' => -7.0,

@@ -1,5 +1,114 @@
 # Analisa Fitur dan Modul - Sistem Kolam Renang Syariah
 
+## 0. Modul Multicabang System
+
+### 0.1 Fitur Manajemen Cabang
+
+```mermaid
+graph TD
+    A[Branch Management] --> B[Create New Branch]
+    A --> C[Update Branch Info]
+    A --> D[Manage Branch Staff]
+    A --> E[Configure Branch Settings]
+    A --> F[View Branch Analytics]
+
+    subgraph "Branch Configuration"
+        B1[Branch Details]
+        B2[Location & Contact]
+        B3[Operating Hours]
+        B4[Capacity Settings]
+        B5[Branch-Specific Pricing]
+    end
+
+    subgraph "Staff Management"
+        S1[Assign Staff to Branch]
+        S2[Set Branch Roles]
+        S3[Manage Permissions]
+        S4[Track Performance]
+    end
+
+    subgraph "Branch Analytics"
+        A1[Revenue Analytics]
+        A2[Booking Analytics]
+        A3[Staff Performance]
+        A4[Cross-Branch Comparison]
+    end
+```
+
+#### 0.1.1 Branch Management Features
+
+- **Multi-Location Support**: Sistem mendukung multiple lokasi kolam renang
+- **Branch-Specific Configuration**: Setiap cabang dapat memiliki konfigurasi yang berbeda
+- **Centralized Control**: Kontrol terpusat untuk semua cabang dari admin panel
+- **Branch Isolation**: Data dan operasi cabang terpisah namun terintegrasi
+- **Location-Based Services**: Layanan berdasarkan lokasi cabang
+
+### 0.2 Fitur Cross-Branch Booking
+
+```mermaid
+graph TD
+    A[Cross-Branch Booking] --> B[Select Branch Location]
+    B --> C[View Available Sessions]
+    C --> D[Choose Branch-Specific Pool]
+    D --> E[Calculate Branch Pricing]
+    E --> F[Complete Booking]
+
+    subgraph "Branch Selection"
+        BS1[Location Search]
+        BS2[Distance Calculation]
+        BS3[Availability Check]
+        BS4[Branch Comparison]
+    end
+
+    subgraph "Branch-Specific Features"
+        BF1[Branch Pricing]
+        BF2[Branch Capacity]
+        BF3[Branch Amenities]
+        BF4[Branch Operating Hours]
+    end
+```
+
+#### 0.2.1 Cross-Branch Features
+
+- **Location-Based Search**: Pencarian berdasarkan lokasi geografis
+- **Branch Availability**: Cek ketersediaan session di cabang tertentu
+- **Branch-Specific Pricing**: Harga yang berbeda untuk setiap cabang
+- **Cross-Branch Analytics**: Analitik lintas cabang untuk perbandingan
+- **Branch Performance Tracking**: Tracking performa setiap cabang
+
+### 0.3 Fitur Branch Analytics
+
+```mermaid
+graph TD
+    A[Branch Analytics] --> B[Single Branch Report]
+    A --> C[Cross-Branch Comparison]
+    A --> D[Overall Performance]
+    A --> E[Branch Ranking]
+
+    subgraph "Analytics Types"
+        AT1[Revenue Analytics]
+        AT2[Booking Analytics]
+        AT3[Staff Performance]
+        AT4[Customer Satisfaction]
+        AT5[Inventory Analytics]
+    end
+
+    subgraph "Report Formats"
+        RF1[Real-time Dashboard]
+        RF2[PDF Reports]
+        RF3[Excel Export]
+        RF4[Scheduled Reports]
+    end
+```
+
+#### 0.3.1 Analytics Features
+
+- **Real-time Branch Monitoring**: Monitoring real-time performa cabang
+- **Cross-Branch Comparison**: Perbandingan performa antar cabang
+- **Branch Performance Metrics**: Metrik performa khusus cabang
+- **Predictive Analytics**: Analitik prediktif untuk perencanaan cabang
+- **Custom Report Generation**: Generasi laporan kustom per cabang
+
 ## 1. Modul Manajemen Member
 
 ### 1.1 Fitur Pendaftaran Member

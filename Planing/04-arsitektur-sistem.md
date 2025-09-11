@@ -2,6 +2,74 @@
 
 ## 1. Arsitektur Umum
 
+### 1.0 Arsitektur Multicabang System
+
+```mermaid
+graph TB
+    subgraph "Frontend Layer"
+        F1[Branch Selection Interface]
+        F2[Cross-Branch Booking]
+        F3[Branch Analytics Dashboard]
+        F4[Branch Management Panel]
+    end
+
+    subgraph "API Gateway Layer"
+        AG1[Branch API Gateway]
+        AG2[Cross-Branch Router]
+        AG3[Branch Authentication]
+        AG4[Location-Based Routing]
+    end
+
+    subgraph "Business Logic Layer"
+        BL1[Branch Management Service]
+        BL2[Branch Staff Service]
+        BL3[Branch Pool Service]
+        BL4[Branch Menu Service]
+        BL5[Branch Booking Service]
+        BL6[Branch Analytics Service]
+        BL7[Cross-Branch Service]
+    end
+
+    subgraph "Data Layer"
+        DL1[Branch Database]
+        DL2[Branch Cache]
+        DL3[Branch File Storage]
+        DL4[Branch Session Storage]
+    end
+
+    subgraph "External Services"
+        ES1[Geolocation API]
+        ES2[Branch Notification Service]
+        ES3[Branch Payment Gateway]
+        ES4[Branch Analytics API]
+    end
+
+    F1 --> AG1
+    F2 --> AG2
+    F3 --> AG1
+    F4 --> AG1
+
+    AG1 --> BL1
+    AG2 --> BL7
+    AG3 --> BL1
+    AG4 --> BL7
+
+    BL1 --> DL1
+    BL2 --> DL1
+    BL3 --> DL1
+    BL4 --> DL1
+    BL5 --> DL1
+    BL6 --> DL1
+    BL7 --> DL1
+
+    BL1 --> ES1
+    BL6 --> ES4
+    BL5 --> ES3
+    BL1 --> ES2
+```
+
+## 1. Arsitektur Umum
+
 ### 1.1 3-Tier Architecture (Mobile-First Web Application)
 
 ```mermaid
@@ -29,6 +97,9 @@ graph TB
         BL5[Cafe Management Service]
         BL6[Notification Service]
         BL7[Pricing Engine]
+        BL8[Branch Management Service]
+        BL9[Cross-Branch Service]
+        BL10[Branch Analytics Service]
     end
 
     subgraph "Data Layer"

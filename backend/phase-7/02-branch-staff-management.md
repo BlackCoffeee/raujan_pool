@@ -28,11 +28,11 @@ CREATE TABLE branch_staff (
     assigned_by BIGINT UNSIGNED,
     created_at TIMESTAMP NULL DEFAULT NULL,
     updated_at TIMESTAMP NULL DEFAULT NULL,
-    
+
     FOREIGN KEY (branch_id) REFERENCES branches(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (assigned_by) REFERENCES users(id) ON DELETE SET NULL,
-    
+
     UNIQUE KEY unique_branch_user (branch_id, user_id),
     INDEX idx_branch_staff_branch (branch_id),
     INDEX idx_branch_staff_user (user_id),
@@ -52,9 +52,9 @@ CREATE TABLE staff_schedules (
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP NULL DEFAULT NULL,
     updated_at TIMESTAMP NULL DEFAULT NULL,
-    
+
     FOREIGN KEY (branch_staff_id) REFERENCES branch_staff(id) ON DELETE CASCADE,
-    
+
     INDEX idx_staff_schedule_branch_staff (branch_staff_id),
     INDEX idx_staff_schedule_day (day_of_week),
     INDEX idx_staff_schedule_active (is_active)
@@ -74,9 +74,9 @@ CREATE TABLE staff_performance (
     notes TEXT,
     created_at TIMESTAMP NULL DEFAULT NULL,
     updated_at TIMESTAMP NULL DEFAULT NULL,
-    
+
     FOREIGN KEY (branch_staff_id) REFERENCES branch_staff(id) ON DELETE CASCADE,
-    
+
     UNIQUE KEY unique_staff_date (branch_staff_id, date),
     INDEX idx_staff_performance_branch_staff (branch_staff_id),
     INDEX idx_staff_performance_date (date)
@@ -109,7 +109,7 @@ return new class extends Migration
             $table->timestamp('assigned_at')->useCurrent();
             $table->foreignId('assigned_by')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();
-            
+
             $table->unique(['branch_id', 'user_id']);
             $table->index('branch_id');
             $table->index('user_id');
@@ -144,7 +144,7 @@ return new class extends Migration
             $table->time('end_time');
             $table->boolean('is_active')->default(true);
             $table->timestamps();
-            
+
             $table->index('branch_staff_id');
             $table->index('day_of_week');
             $table->index('is_active');
@@ -179,7 +179,7 @@ return new class extends Migration
             $table->decimal('customer_rating', 3, 2)->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();
-            
+
             $table->unique(['branch_staff_id', 'date']);
             $table->index('branch_staff_id');
             $table->index('date');
@@ -381,7 +381,7 @@ class StaffSchedule extends Model
     {
         $start = \Carbon\Carbon::createFromTimeString($this->start_time);
         $end = \Carbon\Carbon::createFromTimeString($this->end_time);
-        
+
         return $start->diffInHours($end);
     }
 }
@@ -444,7 +444,7 @@ class StaffPerformance extends Model
     {
         $totalTasks = $this->getTotalTasks();
         $rating = $this->customer_rating ?? 0;
-        
+
         // Simple efficiency calculation
         return ($totalTasks * 0.7) + ($rating * 0.3);
     }
@@ -575,13 +575,13 @@ class BranchStaffService
         return DB::transaction(function () use ($branchStaff) {
             // Remove all schedules
             $branchStaff->schedules()->delete();
-            
+
             // Remove all performance records
             $branchStaff->performance()->delete();
-            
+
             // Update user's branch_id to null
             $branchStaff->user->update(['branch_id' => null]);
-            
+
             // Delete branch staff record
             return $branchStaff->delete();
         });
@@ -592,15 +592,15 @@ class BranchStaffService
         return DB::transaction(function () use ($branchStaff, $newBranch, $data) {
             // Update branch_id
             $branchStaff->update(['branch_id' => $newBranch->id]);
-            
+
             // Update user's branch_id
             $branchStaff->user->update(['branch_id' => $newBranch->id]);
-            
+
             // Update role and permissions if provided
             if (!empty($data)) {
                 $branchStaff->update($data);
             }
-            
+
             return $branchStaff->fresh();
         });
     }
@@ -608,15 +608,15 @@ class BranchStaffService
     public function getBranchStaff(Branch $branch, array $filters = []): Collection
     {
         $query = $branch->staff();
-        
+
         if (isset($filters['role'])) {
             $query->where('role', $filters['role']);
         }
-        
+
         if (isset($filters['is_active'])) {
             $query->where('is_active', $filters['is_active']);
         }
-        
+
         return $query->with(['user', 'schedules', 'performance'])->get();
     }
 
@@ -630,7 +630,7 @@ class BranchStaffService
         return DB::transaction(function () use ($branchStaff, $schedules) {
             // Delete existing schedules
             $branchStaff->schedules()->delete();
-            
+
             // Create new schedules
             $createdSchedules = collect();
             foreach ($schedules as $schedule) {
@@ -638,7 +638,7 @@ class BranchStaffService
                     $branchStaff->schedules()->create($schedule)
                 );
             }
-            
+
             return $createdSchedules;
         });
     }
@@ -683,7 +683,7 @@ class BranchStaffService
     {
         $today = now();
         $dayOfWeek = $today->dayOfWeek === 0 ? 7 : $today->dayOfWeek; // Convert Sunday from 0 to 7
-        
+
         return $branch->staff()
             ->whereHas('schedules', function ($query) use ($dayOfWeek, $today) {
                 $query->where('day_of_week', $dayOfWeek)
@@ -747,7 +747,7 @@ class BranchStaffController extends Controller
     {
         $filters = $request->only(['role', 'is_active']);
         $staff = $this->branchStaffService->getBranchStaff($branch, $filters);
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Branch staff retrieved successfully',
@@ -759,7 +759,7 @@ class BranchStaffController extends Controller
     {
         $user = \App\Models\User::findOrFail($request->user_id);
         $branchStaff = $this->branchStaffService->assignStaffToBranch($branch, $user, $request->validated());
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Staff assigned to branch successfully',
@@ -779,7 +779,7 @@ class BranchStaffController extends Controller
     public function destroy(BranchStaff $branchStaff): JsonResponse
     {
         $this->branchStaffService->removeStaffFromBranch($branchStaff);
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Staff removed from branch successfully'
@@ -794,12 +794,12 @@ class BranchStaffController extends Controller
             'permissions' => 'sometimes|array',
             'permissions.*' => 'string|in:booking_management,order_management,inventory_management,payment_verification,user_management,analytics_view'
         ]);
-        
+
         $newBranch = Branch::findOrFail($request->new_branch_id);
         $data = $request->only(['role', 'permissions']);
-        
+
         $branchStaff = $this->branchStaffService->transferStaff($branchStaff, $newBranch, $data);
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Staff transferred successfully',
@@ -810,7 +810,7 @@ class BranchStaffController extends Controller
     public function getSchedule(BranchStaff $branchStaff): JsonResponse
     {
         $schedules = $this->branchStaffService->getStaffSchedule($branchStaff);
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Staff schedule retrieved successfully',
@@ -821,7 +821,7 @@ class BranchStaffController extends Controller
     public function createSchedule(CreateStaffScheduleRequest $request, BranchStaff $branchStaff): JsonResponse
     {
         $schedules = $this->branchStaffService->createStaffSchedule($branchStaff, $request->schedules);
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Staff schedule created successfully',
@@ -835,13 +835,13 @@ class BranchStaffController extends Controller
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date'
         ]);
-        
+
         $performance = $this->branchStaffService->getStaffPerformance(
             $branchStaff,
             $request->start_date,
             $request->end_date
         );
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Staff performance retrieved successfully',
@@ -858,9 +858,9 @@ class BranchStaffController extends Controller
             'customer_rating' => 'numeric|min:0|max:5',
             'notes' => 'string|max:1000'
         ]);
-        
+
         $performance = $this->branchStaffService->recordStaffPerformance($branchStaff, $request->validated());
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Staff performance recorded successfully',
@@ -871,7 +871,7 @@ class BranchStaffController extends Controller
     public function getWorkingToday(Branch $branch): JsonResponse
     {
         $staff = $this->branchStaffService->getStaffWorkingToday($branch);
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Staff working today retrieved successfully',
@@ -885,9 +885,9 @@ class BranchStaffController extends Controller
             'permissions' => 'required|array',
             'permissions.*' => 'string|in:booking_management,order_management,inventory_management,payment_verification,user_management,analytics_view'
         ]);
-        
+
         $branchStaff = $this->branchStaffService->updateStaffPermissions($branchStaff, $request->permissions);
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Staff permissions updated successfully',
@@ -898,7 +898,7 @@ class BranchStaffController extends Controller
     public function activate(BranchStaff $branchStaff): JsonResponse
     {
         $branchStaff = $this->branchStaffService->activateStaff($branchStaff);
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Staff activated successfully',
@@ -909,7 +909,7 @@ class BranchStaffController extends Controller
     public function deactivate(BranchStaff $branchStaff): JsonResponse
     {
         $branchStaff = $this->branchStaffService->deactivateStaff($branchStaff);
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Staff deactivated successfully',
@@ -945,7 +945,7 @@ class BranchStaffResource extends JsonResource
             'assigned_by' => $this->assigned_by,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            
+
             // Relationships
             'user' => new UserResource($this->whenLoaded('user')),
             'branch' => new BranchResource($this->whenLoaded('branch')),
@@ -1049,21 +1049,21 @@ class BranchStaffServiceTest extends TestCase
     {
         $branch = Branch::factory()->create();
         $user = User::factory()->create();
-        
+
         $data = [
             'role' => 'staff',
             'permissions' => ['booking_management'],
             'is_active' => true
         ];
-        
+
         $branchStaff = $this->branchStaffService->assignStaffToBranch($branch, $user, $data);
-        
+
         $this->assertInstanceOf(BranchStaff::class, $branchStaff);
         $this->assertEquals($branch->id, $branchStaff->branch_id);
         $this->assertEquals($user->id, $branchStaff->user_id);
         $this->assertEquals('staff', $branchStaff->role);
         $this->assertTrue($branchStaff->is_active);
-        
+
         // Check user's branch_id is updated
         $this->assertEquals($branch->id, $user->fresh()->branch_id);
     }
@@ -1072,9 +1072,9 @@ class BranchStaffServiceTest extends TestCase
     {
         $branchStaff = BranchStaff::factory()->create();
         $user = $branchStaff->user;
-        
+
         $result = $this->branchStaffService->removeStaffFromBranch($branchStaff);
-        
+
         $this->assertTrue($result);
         $this->assertDatabaseMissing('branch_staff', ['id' => $branchStaff->id]);
         $this->assertNull($user->fresh()->branch_id);
@@ -1084,10 +1084,10 @@ class BranchStaffServiceTest extends TestCase
     {
         $branchStaff = BranchStaff::factory()->create();
         $newBranch = Branch::factory()->create();
-        
+
         $data = ['role' => 'manager'];
         $transferredStaff = $this->branchStaffService->transferStaff($branchStaff, $newBranch, $data);
-        
+
         $this->assertEquals($newBranch->id, $transferredStaff->branch_id);
         $this->assertEquals('manager', $transferredStaff->role);
         $this->assertEquals($newBranch->id, $transferredStaff->user->fresh()->branch_id);
@@ -1097,20 +1097,20 @@ class BranchStaffServiceTest extends TestCase
     {
         $branch = Branch::factory()->create();
         $branchStaff = BranchStaff::factory()->create(['branch_id' => $branch->id]);
-        
+
         // Create schedule for today
         $today = now();
         $dayOfWeek = $today->dayOfWeek === 0 ? 7 : $today->dayOfWeek;
-        
+
         $branchStaff->schedules()->create([
             'day_of_week' => $dayOfWeek,
             'start_time' => '08:00',
             'end_time' => '17:00',
             'is_active' => true
         ]);
-        
+
         $workingStaff = $this->branchStaffService->getStaffWorkingToday($branch);
-        
+
         $this->assertCount(1, $workingStaff);
         $this->assertEquals($branchStaff->id, $workingStaff->first()->id);
     }
@@ -1140,17 +1140,17 @@ class BranchStaffApiTest extends TestCase
         $admin = User::factory()->admin()->create();
         $branch = Branch::factory()->create();
         $user = User::factory()->create();
-        
+
         $data = [
             'user_id' => $user->id,
             'role' => 'staff',
             'permissions' => ['booking_management'],
             'is_active' => true
         ];
-        
+
         $response = $this->actingAs($admin)
             ->postJson("/api/v1/branches/{$branch->id}/staff", $data);
-        
+
         $response->assertStatus(201)
             ->assertJsonStructure([
                 'success',
@@ -1173,15 +1173,15 @@ class BranchStaffApiTest extends TestCase
         $user = User::factory()->create();
         $branch = Branch::factory()->create();
         $staffUser = User::factory()->create();
-        
+
         $data = [
             'user_id' => $staffUser->id,
             'role' => 'staff'
         ];
-        
+
         $response = $this->actingAs($user)
             ->postJson("/api/v1/branches/{$branch->id}/staff", $data);
-        
+
         $response->assertStatus(403);
     }
 
@@ -1189,9 +1189,9 @@ class BranchStaffApiTest extends TestCase
     {
         $branch = Branch::factory()->create();
         BranchStaff::factory()->count(3)->create(['branch_id' => $branch->id]);
-        
+
         $response = $this->getJson("/api/v1/branches/{$branch->id}/staff");
-        
+
         $response->assertStatus(200)
             ->assertJsonCount(3, 'data')
             ->assertJsonStructure([
@@ -1215,7 +1215,7 @@ class BranchStaffApiTest extends TestCase
     {
         $admin = User::factory()->admin()->create();
         $branchStaff = BranchStaff::factory()->create();
-        
+
         $schedules = [
             [
                 'day_of_week' => 1,
@@ -1230,12 +1230,12 @@ class BranchStaffApiTest extends TestCase
                 'is_active' => true
             ]
         ];
-        
+
         $response = $this->actingAs($admin)
             ->postJson("/api/v1/branch-staff/{$branchStaff->id}/schedule", [
                 'schedules' => $schedules
             ]);
-        
+
         $response->assertStatus(201)
             ->assertJsonCount(2, 'data')
             ->assertJsonStructure([
@@ -1260,7 +1260,7 @@ class BranchStaffApiTest extends TestCase
     {
         $admin = User::factory()->admin()->create();
         $branchStaff = BranchStaff::factory()->create();
-        
+
         $data = [
             'date' => now()->format('Y-m-d'),
             'bookings_handled' => 10,
@@ -1268,10 +1268,10 @@ class BranchStaffApiTest extends TestCase
             'customer_rating' => 4.5,
             'notes' => 'Good performance today'
         ];
-        
+
         $response = $this->actingAs($admin)
             ->postJson("/api/v1/branch-staff/{$branchStaff->id}/performance", $data);
-        
+
         $response->assertStatus(201)
             ->assertJsonStructure([
                 'success',

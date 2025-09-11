@@ -34,7 +34,7 @@ CREATE TABLE branch_booking_configs (
     is_cross_branch_enabled BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP NULL DEFAULT NULL,
     updated_at TIMESTAMP NULL DEFAULT NULL,
-    
+
     FOREIGN KEY (branch_id) REFERENCES branches(id) ON DELETE CASCADE,
     UNIQUE KEY unique_branch_booking_config (branch_id)
 );
@@ -93,19 +93,19 @@ class BranchBookingService
     public function getBranchBookings(Branch $branch, array $filters = []): Collection
     {
         $query = $branch->bookings();
-        
+
         if (isset($filters['date'])) {
             $query->where('date', $filters['date']);
         }
-        
+
         if (isset($filters['status'])) {
             $query->where('status', $filters['status']);
         }
-        
+
         if (isset($filters['user_id'])) {
             $query->where('user_id', $filters['user_id']);
         }
-        
+
         return $query->with(['user', 'pool', 'payment'])->get();
     }
 
@@ -116,10 +116,10 @@ class BranchBookingService
             $pool = Pool::where('id', $data['pool_id'])
                 ->where('branch_id', $branch->id)
                 ->firstOrFail();
-            
+
             // Check availability
             $this->validateBookingAvailability($branch, $pool, $data['date'], $data['time_slot']);
-            
+
             // Create booking
             $booking = Booking::create([
                 'user_id' => $user->id,
@@ -131,7 +131,7 @@ class BranchBookingService
                 'total_amount' => $pool->getPriceForBranch($branch),
                 'notes' => $data['notes'] ?? null
             ]);
-            
+
             return $booking;
         });
     }
@@ -141,16 +141,16 @@ class BranchBookingService
         return DB::transaction(function () use ($user, $data) {
             $pool = Pool::findOrFail($data['pool_id']);
             $branch = $pool->branch;
-            
+
             // Check if cross-branch booking is enabled
             $config = $branch->bookingConfig;
             if (!$config || !$config->is_cross_branch_enabled) {
                 throw new \Exception('Cross-branch booking is not enabled for this branch');
             }
-            
+
             // Check availability
             $this->validateBookingAvailability($branch, $pool, $data['date'], $data['time_slot']);
-            
+
             // Create booking
             $booking = Booking::create([
                 'user_id' => $user->id,
@@ -162,7 +162,7 @@ class BranchBookingService
                 'total_amount' => $pool->getPriceForBranch($branch),
                 'notes' => $data['notes'] ?? null
             ]);
-            
+
             return $booking;
         });
     }
@@ -171,7 +171,7 @@ class BranchBookingService
     {
         $pools = $branch->pools()->active()->get();
         $timeSlots = $this->getAvailableTimeSlots($branch);
-        
+
         $availability = [];
         foreach ($pools as $pool) {
             $poolAvailability = [];
@@ -183,7 +183,7 @@ class BranchBookingService
                 'time_slots' => $poolAvailability
             ];
         }
-        
+
         return $availability;
     }
 
@@ -192,7 +192,7 @@ class BranchBookingService
         $bookings = $branch->bookings()
             ->whereBetween('date', [$startDate, $endDate])
             ->get();
-        
+
         return [
             'total_bookings' => $bookings->count(),
             'confirmed_bookings' => $bookings->where('status', 'confirmed')->count(),
@@ -212,29 +212,29 @@ class BranchBookingService
         if ($config) {
             $maxAdvanceDays = $config->max_advance_booking_days;
             $maxDate = now()->addDays($maxAdvanceDays)->format('Y-m-d');
-            
+
             if ($date > $maxDate) {
                 throw new \Exception("Booking date cannot be more than {$maxAdvanceDays} days in advance");
             }
         }
-        
+
         // Check daily booking limit
         $dailyBookings = $branch->bookings()
             ->where('date', $date)
             ->where('status', 'confirmed')
             ->count();
-        
+
         if ($config && $dailyBookings >= $config->max_daily_bookings) {
             throw new \Exception('Daily booking limit reached for this branch');
         }
-        
+
         // Check pool availability
         $poolBookings = $pool->bookings()
             ->where('date', $date)
             ->where('time_slot', $timeSlot)
             ->where('status', 'confirmed')
             ->count();
-        
+
         $capacity = $pool->getCapacityForBranch($branch);
         if ($poolBookings >= $capacity) {
             throw new \Exception('Pool is fully booked for this time slot');
@@ -247,7 +247,7 @@ class BranchBookingService
         if ($config && $config->booking_time_slots) {
             return $config->booking_time_slots;
         }
-        
+
         // Default time slots
         return [
             '08:00-10:00',
@@ -266,10 +266,10 @@ class BranchBookingService
             ->where('time_slot', $timeSlot)
             ->where('status', 'confirmed')
             ->count();
-        
+
         $capacity = $pool->getCapacityForBranch($pool->branch);
         $available = $capacity - $bookings;
-        
+
         return [
             'time_slot' => $timeSlot,
             'total_capacity' => $capacity,
@@ -308,7 +308,7 @@ class BranchBookingController extends Controller
     {
         $filters = $request->only(['date', 'status', 'user_id']);
         $bookings = $this->branchBookingService->getBranchBookings($branch, $filters);
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Branch bookings retrieved successfully',
@@ -324,10 +324,10 @@ class BranchBookingController extends Controller
             'time_slot' => 'required|string',
             'notes' => 'string|max:1000'
         ]);
-        
+
         $user = auth()->user();
         $booking = $this->branchBookingService->createBranchBooking($branch, $user, $request->validated());
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Booking created successfully',
@@ -340,9 +340,9 @@ class BranchBookingController extends Controller
         $request->validate([
             'date' => 'required|date|after_or_equal:today'
         ]);
-        
+
         $availability = $this->branchBookingService->getBranchBookingAvailability($branch, $request->date);
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Branch booking availability retrieved successfully',
@@ -356,13 +356,13 @@ class BranchBookingController extends Controller
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date'
         ]);
-        
+
         $stats = $this->branchBookingService->getBranchBookingStats(
             $branch,
             $request->start_date,
             $request->end_date
         );
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Branch booking stats retrieved successfully',
@@ -378,10 +378,10 @@ class BranchBookingController extends Controller
             'time_slot' => 'required|string',
             'notes' => 'string|max:1000'
         ]);
-        
+
         $user = auth()->user();
         $booking = $this->branchBookingService->createCrossBranchBooking($user, $request->validated());
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Cross-branch booking created successfully',
@@ -426,16 +426,16 @@ class BranchBookingServiceTest extends TestCase
         $branch = Branch::factory()->create();
         $pool = Pool::factory()->create(['branch_id' => $branch->id]);
         $user = User::factory()->create();
-        
+
         $bookingData = [
             'pool_id' => $pool->id,
             'date' => now()->addDay()->format('Y-m-d'),
             'time_slot' => '10:00-12:00',
             'notes' => 'Test booking'
         ];
-        
+
         $booking = $this->branchBookingService->createBranchBooking($branch, $user, $bookingData);
-        
+
         $this->assertInstanceOf(Booking::class, $booking);
         $this->assertEquals($branch->id, $booking->branch_id);
         $this->assertEquals($user->id, $booking->user_id);
@@ -446,12 +446,12 @@ class BranchBookingServiceTest extends TestCase
     {
         $branch = Branch::factory()->create();
         Pool::factory()->count(2)->create(['branch_id' => $branch->id]);
-        
+
         $availability = $this->branchBookingService->getBranchBookingAvailability(
             $branch,
             now()->addDay()->format('Y-m-d')
         );
-        
+
         $this->assertIsArray($availability);
         $this->assertCount(2, $availability);
     }
@@ -460,13 +460,13 @@ class BranchBookingServiceTest extends TestCase
     {
         $branch = Branch::factory()->create();
         Booking::factory()->count(5)->create(['branch_id' => $branch->id]);
-        
+
         $stats = $this->branchBookingService->getBranchBookingStats(
             $branch,
             now()->subDays(7)->format('Y-m-d'),
             now()->format('Y-m-d')
         );
-        
+
         $this->assertArrayHasKey('total_bookings', $stats);
         $this->assertArrayHasKey('confirmed_bookings', $stats);
         $this->assertArrayHasKey('total_revenue', $stats);

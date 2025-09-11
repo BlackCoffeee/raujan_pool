@@ -8,6 +8,7 @@ Dokumen ini merupakan revisi dari desain database untuk mengakomodasi perubahan 
 2. **Status member** yang berubah dari Active → Inactive → Non-Member
 3. **Grace period** yang dapat dikonfigurasi admin (default 3 bulan)
 4. **Biaya pendaftaran ulang** untuk reaktivasi member
+5. **Sistem multicabang** untuk mendukung multiple lokasi kolam renang
 
 ## 🔄 Perubahan dari Versi Sebelumnya
 
@@ -17,10 +18,61 @@ Dokumen ini merupakan revisi dari desain database untuk mengakomodasi perubahan 
 2. **Member Status Management**: Status member dengan lifecycle yang jelas
 3. **Grace Period Configuration**: Periode tenggang yang dapat disesuaikan
 4. **Reactivation Fee**: Biaya untuk mengaktifkan kembali member non-aktif
+5. **Multicabang System**: Dukungan untuk multiple lokasi kolam renang
 
 ## 🗄️ Database Schema Changes
 
-### 1. **System Configuration Table (New)**
+### 1. **Branches Table (New - Multicabang)**
+
+```sql
+CREATE TABLE branches (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    code VARCHAR(10) NOT NULL UNIQUE,
+    name VARCHAR(255) NOT NULL,
+    address TEXT NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    latitude DECIMAL(10, 8) NOT NULL,
+    longitude DECIMAL(11, 8) NOT NULL,
+    operating_hours JSON NOT NULL,
+    max_capacity INT NOT NULL DEFAULT 100,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP NULL DEFAULT NULL,
+    updated_at TIMESTAMP NULL DEFAULT NULL,
+    
+    INDEX idx_branches_code (code),
+    INDEX idx_branches_active (is_active),
+    INDEX idx_branches_location (latitude, longitude)
+);
+```
+
+### 2. **Branch Staff Table (New - Multicabang)**
+
+```sql
+CREATE TABLE branch_staff (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    branch_id BIGINT UNSIGNED NOT NULL,
+    user_id BIGINT UNSIGNED NOT NULL,
+    role VARCHAR(50) NOT NULL,
+    permissions JSON,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    assigned_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    assigned_by BIGINT UNSIGNED,
+    created_at TIMESTAMP NULL DEFAULT NULL,
+    updated_at TIMESTAMP NULL DEFAULT NULL,
+    
+    FOREIGN KEY (branch_id) REFERENCES branches(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (assigned_by) REFERENCES users(id) ON DELETE SET NULL,
+    
+    UNIQUE KEY unique_branch_user (branch_id, user_id),
+    INDEX idx_branch_staff_branch (branch_id),
+    INDEX idx_branch_staff_user (user_id),
+    INDEX idx_branch_staff_active (is_active)
+);
+```
+
+### 3. **System Configuration Table (New)**
 
 ```sql
 CREATE TABLE system_configurations (
@@ -41,7 +93,44 @@ CREATE TABLE system_configurations (
 );
 ```
 
-### 2. **Members Table (Updated)**
+### 4. **Existing Tables Modification (Multicabang Support)**
+
+#### **Pools Table (Updated)**
+```sql
+ALTER TABLE pools ADD COLUMN branch_id BIGINT UNSIGNED NOT NULL AFTER id;
+ALTER TABLE pools ADD FOREIGN KEY (branch_id) REFERENCES branches(id) ON DELETE CASCADE;
+ALTER TABLE pools ADD INDEX idx_pools_branch (branch_id);
+```
+
+#### **Menu Items Table (Updated)**
+```sql
+ALTER TABLE menu_items ADD COLUMN branch_id BIGINT UNSIGNED NOT NULL AFTER id;
+ALTER TABLE menu_items ADD FOREIGN KEY (branch_id) REFERENCES branches(id) ON DELETE CASCADE;
+ALTER TABLE menu_items ADD INDEX idx_menu_items_branch (branch_id);
+```
+
+#### **Bookings Table (Updated)**
+```sql
+ALTER TABLE bookings ADD COLUMN branch_id BIGINT UNSIGNED NOT NULL AFTER id;
+ALTER TABLE bookings ADD FOREIGN KEY (branch_id) REFERENCES branches(id) ON DELETE CASCADE;
+ALTER TABLE bookings ADD INDEX idx_bookings_branch (branch_id);
+```
+
+#### **Orders Table (Updated)**
+```sql
+ALTER TABLE orders ADD COLUMN branch_id BIGINT UNSIGNED NOT NULL AFTER id;
+ALTER TABLE orders ADD FOREIGN KEY (branch_id) REFERENCES branches(id) ON DELETE CASCADE;
+ALTER TABLE orders ADD INDEX idx_orders_branch (branch_id);
+```
+
+#### **Users Table (Updated)**
+```sql
+ALTER TABLE users ADD COLUMN branch_id BIGINT UNSIGNED NULL AFTER id;
+ALTER TABLE users ADD FOREIGN KEY (branch_id) REFERENCES branches(id) ON DELETE SET NULL;
+ALTER TABLE users ADD INDEX idx_users_branch (branch_id);
+```
+
+### 5. **Members Table (Updated)**
 
 ```sql
 -- Drop existing members table and recreate with new schema
