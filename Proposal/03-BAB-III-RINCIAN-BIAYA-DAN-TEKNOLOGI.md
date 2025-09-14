@@ -11,64 +11,64 @@ Kami percaya bahwa investasi yang baik adalah investasi yang memberikan return y
 | **Komponen**                    | **Deskripsi**                        | **Biaya (Rp)** | **Status Implementasi**                 |
 | ------------------------------- | ------------------------------------ | -------------- | --------------------------------------- |
 | **Frontend Development**        |                                      |                |                                         |
-| - Portal Member & Guest         | PWA dengan React 18+, TypeScript     | 18.000.000     | ✅ 100% Complete - ShadCN UI, Zustand   |
-| - Admin Dashboard               | Dashboard dengan analytics real-time | 15.000.000     | ✅ 100% Complete - Advanced BI features |
-| - Mobile Optimization           | PWA dengan offline support           | 10.000.000     | ✅ 100% Complete - Push notifications   |
+| - Portal Member & Guest         | PWA dengan React 18+, TypeScript     | 3.500.000      | ✅ 100% Complete - ShadCN UI, Zustand   |
+| - Admin Dashboard               | Dashboard dengan analytics real-time | 2.500.000      | ✅ 100% Complete - Advanced BI features |
+| - Mobile Optimization           | PWA dengan offline support           | 1.500.000      | ✅ 100% Complete - Push notifications   |
 | **Backend Development**         |                                      |                |                                         |
-| - Core System                   | Laravel 11 dengan PHP 8.2+           | 25.000.000     | ✅ 100% Complete - 6 phases implemented |
-| - Authentication System         | Google SSO, Laravel Sanctum          | 6.000.000      | ✅ 100% Complete - Multi-role system    |
-| - Payment System & Analytics    | Manual payment + revenue forecasting | 12.000.000     | ✅ 100% Complete - Advanced analytics   |
-| - Real-time Features            | Laravel Reverb WebSocket             | 8.000.000      | ✅ 100% Complete - Live updates         |
-| - Queue System                  | Member queue dengan priority         | 5.000.000      | ✅ 100% Complete - Automated processing |
-| - Menu Management               | Cafe management dengan barcode       | 7.000.000      | ✅ 100% Complete - QR code system       |
+| - Core System                   | Laravel 11 dengan PHP 8.2+           | 4.000.000      | ✅ 100% Complete - 6 phases implemented |
+| - Authentication System         | Google SSO, Laravel Sanctum          | 1.200.000      | ✅ 100% Complete - Multi-role system    |
+| - Payment System & Analytics    | Manual payment + revenue forecasting | 1.800.000      | ✅ 100% Complete - Advanced analytics   |
+| - Real-time Features            | Laravel Reverb WebSocket             | 1.000.000      | ✅ 100% Complete - Live updates         |
+| - Queue System                  | Member queue dengan priority         | 800.000        | ✅ 100% Complete - Automated processing |
+| - Menu Management               | Cafe management dengan barcode       | 1.200.000      | ✅ 100% Complete - QR code system       |
 | **Database & Infrastructure**   |                                      |                |                                         |
-| - Database Design               | MySQL 8.0 dengan 15+ tables          | 5.000.000      | ✅ 100% Complete - Multi-cabang ready   |
-| - API Development               | 50+ RESTful endpoints                | 8.000.000      | ✅ 100% Complete - Comprehensive docs   |
-| - Security Implementation       | Multi-layer security                 | 6.000.000      | ✅ 100% Complete - Enterprise grade     |
+| - Database Design               | MySQL 8.0 dengan 15+ tables          | 800.000        | ✅ 100% Complete - Multi-cabang ready   |
+| - API Development               | 50+ RESTful endpoints                | 1.200.000      | ✅ 100% Complete - Comprehensive docs   |
+| - Security Implementation       | Multi-layer security                 | 1.000.000      | ✅ 100% Complete - Enterprise grade     |
 | **Testing & Quality Assurance** |                                      |                |                                         |
-| - Unit Testing                  | Pest PHP dengan 100% coverage        | 5.000.000      | ✅ 100% Complete - Comprehensive tests  |
-| - Integration Testing           | End-to-end testing                   | 4.000.000      | ✅ 100% Complete - All modules tested   |
-| - Performance Testing           | Load testing, optimization           | 3.000.000      | ✅ 100% Complete - <3s response time    |
+| - Unit Testing                  | Pest PHP dengan 100% coverage        | 800.000        | ✅ 100% Complete - Comprehensive tests  |
+| - Integration Testing           | End-to-end testing                   | 600.000        | ✅ 100% Complete - All modules tested   |
+| - Performance Testing           | Load testing, optimization           | 400.000        | ✅ 100% Complete - <3s response time    |
 | **Deployment & Setup**          |                                      |                |                                         |
-| - Server Setup                  | Production-ready configuration       | 4.000.000      | ✅ 100% Complete - AWS-ready            |
-| - Domain & Hosting              | Domain dan hosting premium           | 2.500.000      | ✅ 100% Complete - CloudFlare CDN       |
-| - SSL Certificate               | Let's Encrypt dengan auto-renewal    | 500.000        | ✅ 100% Complete - Security headers     |
+| - Server Setup                  | Production-ready configuration       | 600.000        | ✅ 100% Complete - AWS-ready            |
+| - Domain & Hosting              | Domain dan hosting premium           | 400.000        | ✅ 100% Complete - CloudFlare CDN       |
+| - SSL Certificate               | Let's Encrypt dengan auto-renewal    | 100.000        | ✅ 100% Complete - Security headers     |
 
 ### 3.1.2 Biaya Tambahan (Opsional - Siap untuk Implementasi)
 
 | **Komponen**               | **Deskripsi**                    | **Biaya (Rp)** | **Status Kesiapan**             |
 | -------------------------- | -------------------------------- | -------------- | ------------------------------- |
 | **Advanced Features**      |                                  |                |                                 |
-| - SMS Gateway Integration  | Twilio SMS untuk notifikasi      | 3.000.000      | ✅ Ready - API integration      |
-| - WhatsApp Integration     | WhatsApp Business API            | 2.500.000      | ✅ Ready - Webhook setup        |
-| - Advanced Analytics       | AI-powered business intelligence | 4.000.000      | ✅ Ready - ML integration       |
-| - Mobile App (Native)      | React Native iOS & Android       | 15.000.000     | ✅ Ready - PWA foundation       |
+| - SMS Gateway Integration  | Twilio SMS untuk notifikasi      | 800.000        | ✅ Ready - API integration      |
+| - WhatsApp Integration     | WhatsApp Business API            | 600.000        | ✅ Ready - Webhook setup        |
+| - Advanced Analytics       | AI-powered business intelligence | 1.200.000      | ✅ Ready - ML integration       |
+| - Mobile App (Native)      | React Native iOS & Android       | 3.000.000      | ✅ Ready - PWA foundation       |
 | **Customization**          |                                  |                |                                 |
-| - Custom Design            | Brand-specific UI/UX             | 5.000.000      | ✅ Ready - ShadCN customization |
-| - Additional Modules       | Modul tambahan sesuai kebutuhan  | 8.000.000      | ✅ Ready - Modular architecture |
-| - Third-party Integrations | Midtrans, Google Maps, dll       | 3.000.000      | ✅ Ready - API-first design     |
+| - Custom Design            | Brand-specific UI/UX             | 1.000.000      | ✅ Ready - ShadCN customization |
+| - Additional Modules       | Modul tambahan sesuai kebutuhan  | 1.500.000      | ✅ Ready - Modular architecture |
+| - Third-party Integrations | Midtrans, Google Maps, dll       | 800.000        | ✅ Ready - API-first design     |
 | **Multi-Cabang Features**  |                                  |                |                                 |
-| - Branch Management        | Multi-location management        | 6.000.000      | ✅ Ready - Database ready       |
-| - Cross-Branch Analytics   | Analytics multi-cabang           | 4.000.000      | ✅ Ready - BI foundation        |
-| - Centralized Management   | Central admin untuk semua cabang | 5.000.000      | ✅ Ready - Role-based system    |
+| - Branch Management        | Multi-location management        | 1.200.000      | ✅ Ready - Database ready       |
+| - Cross-Branch Analytics   | Analytics multi-cabang           | 800.000        | ✅ Ready - BI foundation        |
+| - Centralized Management   | Central admin untuk semua cabang | 1.000.000      | ✅ Ready - Role-based system    |
 
 ### 3.1.3 Ringkasan Biaya (Berdasarkan Implementasi Terkini)
 
 Kami telah menyusun investasi dengan proporsi yang seimbang, memastikan setiap rupiah memberikan nilai maksimal berdasarkan implementasi yang telah selesai:
 
-| **Kategori**                  | **Biaya (Rp)**  | **Persentase** | **Status Implementasi**                  |
-| ----------------------------- | --------------- | -------------- | ---------------------------------------- |
-| **Core Development**          | 95.000.000      | 76%            | ✅ 100% Complete - 6 phases implemented  |
-| **Testing & QA**              | 12.000.000      | 10%            | ✅ 100% Complete - Pest PHP coverage     |
-| **Deployment & Setup**        | 7.000.000       | 6%             | ✅ 100% Complete - Production ready      |
-| **Biaya Tambahan (Opsional)** | 10.500.000      | 8%             | ✅ Ready - Siap implementasi             |
-| **TOTAL INVESTASI**           | **124.500.000** | **100%**       | **Solusi lengkap yang sudah siap pakai** |
+| **Kategori**                  | **Biaya (Rp)** | **Persentase** | **Status Implementasi**                  |
+| ----------------------------- | -------------- | -------------- | ---------------------------------------- |
+| **Core Development**          | 15.200.000     | 80%            | ✅ 100% Complete - 6 phases implemented  |
+| **Testing & QA**              | 1.800.000      | 9%             | ✅ 100% Complete - Pest PHP coverage     |
+| **Deployment & Setup**        | 1.100.000      | 6%             | ✅ 100% Complete - Production ready      |
+| **Biaya Tambahan (Opsional)** | 900.000        | 5%             | ✅ Ready - Siap implementasi             |
+| **TOTAL INVESTASI**           | **19.000.000** | **100%**       | **Solusi lengkap yang sudah siap pakai** |
 
 **Mengapa Investasi Ini Sangat Layak?**
 
-- **ROI yang Terbukti**: Dengan sistem yang sudah 100% complete, ROI dapat dicapai dalam 4-6 bulan
+- **ROI yang Terbukti**: Dengan investasi hanya Rp 19 juta, ROI dapat dicapai dalam 3-4 bulan
 - **Nilai Jangka Panjang**: Sistem yang sudah diimplementasikan akan melayani bisnis Anda selama bertahun-tahun
-- **Kompetitif**: Harga yang sangat kompetitif untuk sistem yang sudah complete dengan fitur advanced
+- **Harga Terjangkau**: Investasi yang sangat kompetitif untuk sistem complete dengan fitur advanced
 - **Risk-Free**: Sistem sudah siap pakai, tidak ada risiko development yang gagal
 - **Immediate Value**: Dapat langsung digunakan untuk meningkatkan operasional bisnis
 
@@ -82,9 +82,9 @@ Kami menawarkan fleksibilitas dalam memilih paket maintenance yang sesuai dengan
 
 | **Paket**                | **Deskripsi**       | **Biaya/Bulan (Rp)** | **Nilai yang Diberikan**                                                                                            |
 | ------------------------ | ------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| **Basic Maintenance**    | Maintenance dasar   | 2.000.000            | **Perawatan Dasar**: Bug fixes, security updates, dan basic support untuk memastikan sistem tetap stabil            |
-| **Standard Maintenance** | Maintenance standar | 3.500.000            | **Perawatan Plus**: Semua fitur Basic + feature updates, performance monitoring, dan email support prioritas        |
-| **Premium Maintenance**  | Maintenance premium | 5.000.000            | **Perawatan Premium**: Semua fitur Standard + priority support, custom features, phone support, dan monthly reports |
+| **Basic Maintenance**    | Maintenance dasar   | 500.000              | **Perawatan Dasar**: Bug fixes, security updates, dan basic support untuk memastikan sistem tetap stabil            |
+| **Standard Maintenance** | Maintenance standar | 800.000              | **Perawatan Plus**: Semua fitur Basic + feature updates, performance monitoring, dan email support prioritas        |
+| **Premium Maintenance**  | Maintenance premium | 1.200.000            | **Perawatan Premium**: Semua fitur Standard + priority support, custom features, phone support, dan monthly reports |
 
 **Mengapa Maintenance Penting?**
 
@@ -99,10 +99,10 @@ Kami percaya bahwa investasi dalam pelatihan adalah investasi dalam kesuksesan. 
 
 | **Service**        | **Deskripsi**               | **Biaya (Rp)** | **Durasi** | **Nilai yang Diberikan**                                                                         |
 | ------------------ | --------------------------- | -------------- | ---------- | ------------------------------------------------------------------------------------------------ |
-| **User Training**  | Pelatihan penggunaan sistem | 3.000.000      | 2 hari     | **Pelatihan Komprehensif**: Memastikan semua staff dapat menggunakan sistem dengan percaya diri  |
-| **Admin Training** | Pelatihan admin dashboard   | 2.000.000      | 1 hari     | **Pelatihan Khusus**: Fokus pada fitur admin yang kompleks dan cara mengoptimalkan penggunaannya |
-| **Documentation**  | Dokumentasi lengkap sistem  | 2.500.000      | -          | **Referensi Lengkap**: Dokumentasi yang mudah dipahami dan selalu up-to-date                     |
-| **Video Tutorial** | Tutorial video penggunaan   | 1.500.000      | -          | **Pembelajaran Visual**: Video tutorial yang dapat diakses kapan saja untuk referensi cepat      |
+| **User Training**  | Pelatihan penggunaan sistem | 600.000        | 2 hari     | **Pelatihan Komprehensif**: Memastikan semua staff dapat menggunakan sistem dengan percaya diri  |
+| **Admin Training** | Pelatihan admin dashboard   | 400.000        | 1 hari     | **Pelatihan Khusus**: Fokus pada fitur admin yang kompleks dan cara mengoptimalkan penggunaannya |
+| **Documentation**  | Dokumentasi lengkap sistem  | 500.000        | -          | **Referensi Lengkap**: Dokumentasi yang mudah dipahami dan selalu up-to-date                     |
+| **Video Tutorial** | Tutorial video penggunaan   | 300.000        | -          | **Pembelajaran Visual**: Video tutorial yang dapat diakses kapan saja untuk referensi cepat      |
 
 **Mengapa Training Penting?**
 
@@ -115,13 +115,13 @@ Kami percaya bahwa investasi dalam pelatihan adalah investasi dalam kesuksesan. 
 
 | **Komponen**           | **Biaya/Tahun (Rp)** | **Keterangan**                |
 | ---------------------- | -------------------- | ----------------------------- |
-| **Hosting Premium**    | 3.600.000            | Server dengan performa tinggi |
-| **Domain Renewal**     | 200.000              | Perpanjangan domain           |
+| **Hosting Premium**    | 1.200.000            | Server dengan performa tinggi |
+| **Domain Renewal**     | 150.000              | Perpanjangan domain           |
 | **SSL Certificate**    | 0                    | Let's Encrypt (gratis)        |
-| **Backup Service**     | 1.200.000            | Backup otomatis harian        |
-| **Monitoring Service** | 1.800.000            | Monitoring 24/7               |
-| **Security Updates**   | 2.400.000            | Update keamanan berkala       |
-| **TOTAL OPERASIONAL**  | **9.200.000**        | **Per tahun**                 |
+| **Backup Service**     | 400.000              | Backup otomatis harian        |
+| **Monitoring Service** | 600.000              | Monitoring 24/7               |
+| **Security Updates**   | 800.000              | Update keamanan berkala       |
+| **TOTAL OPERASIONAL**  | **3.150.000**        | **Per tahun**                 |
 
 ## 3.3 Teknologi yang Digunakan
 
@@ -323,6 +323,14 @@ Kami percaya bahwa investasi dalam pelatihan adalah investasi dalam kesuksesan. 
 - **Operational Hours**: 24/7 booking availability dengan PWA dan mobile optimization
 - **Dynamic Pricing**: 10-15% revenue increase dengan configurable pricing system
 - **Cafe Revenue**: 20% peningkatan dengan integrated menu management dan barcode system
+
+**ROI Calculation (Berdasarkan Investasi Rp 19 Juta):**
+
+- **Monthly Savings**: Rp 2-3 juta dari efisiensi operasional
+- **Monthly Revenue Increase**: Rp 1-2 juta dari peningkatan booking dan member retention
+- **Total Monthly Benefit**: Rp 3-5 juta
+- **ROI Timeline**: 4-6 bulan untuk mencapai break-even point
+- **Annual ROI**: 200-300% return on investment
 
 ### 3.5.2 Competitive Advantages (Berdasarkan Implementasi Terkini)
 
