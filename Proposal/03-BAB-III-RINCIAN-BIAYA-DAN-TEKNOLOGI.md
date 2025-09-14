@@ -56,11 +56,11 @@ Kami percaya bahwa investasi yang baik adalah investasi yang memberikan return y
 | **Database Migration** | 15+ tables dengan relationships   | 600.000        | ✅ Complete |
 | **Model Development**  | Eloquent models dan relationships | 500.000        | ✅ Complete |
 | **Middleware System**  | Authentication dan authorization  | 400.000        | ✅ Complete |
-| **Service Layer**      | Business logic services           | 600.000        | ✅ Complete |
+| **Service Layer**      | Business logic services           | 700.000        | ✅ Complete |
 | **Repository Pattern** | Data access layer                 | 400.000        | ✅ Complete |
 | **Queue System**       | Background job processing         | 400.000        | ✅ Complete |
 | **WebSocket Server**   | Laravel Reverb real-time features | 400.000        | ✅ Complete |
-| **File Storage**       | AWS S3 integration                | 200.000        | ✅ Complete |
+| **File Storage**       | Local file storage system         | 200.000        | ✅ Complete |
 
 #### **Backend Development - Authentication System (Rp 1.200.000)**
 
@@ -79,7 +79,7 @@ Kami percaya bahwa investasi yang baik adalah investasi yang memberikan return y
 | **Payment Processing**   | Manual payment workflow           | 400.000        | ✅ Complete |
 | **Payment Verification** | Admin verification system         | 300.000        | ✅ Complete |
 | **Refund Management**    | Automated refund processing       | 300.000        | ✅ Complete |
-| **Payment Analytics**    | Revenue tracking dan forecasting  | 400.000        | ✅ Complete |
+| **Payment Analytics**    | Revenue tracking dan forecasting  | 500.000        | ✅ Complete |
 | **Invoice Generation**   | Automated invoice system          | 200.000        | ✅ Complete |
 | **Payment History**      | Transaction history dan reporting | 200.000        | ✅ Complete |
 
@@ -138,7 +138,7 @@ Kami percaya bahwa investasi yang baik adalah investasi yang memberikan return y
 
 | **Komponen**                 | **Detail Implementasi**           | **Biaya (Rp)** | **Status**  |
 | ---------------------------- | --------------------------------- | -------------- | ----------- |
-| **Data Encryption**          | AES-256 encryption implementation | 300.000        | ✅ Complete |
+| **Data Encryption**          | AES-256 encryption implementation | 350.000        | ✅ Complete |
 | **Input Validation**         | Laravel Form Requests             | 200.000        | ✅ Complete |
 | **SQL Injection Prevention** | Eloquent ORM security             | 150.000        | ✅ Complete |
 | **XSS Protection**           | Output encoding dan sanitization  | 150.000        | ✅ Complete |
@@ -215,15 +215,15 @@ Kami telah menyusun investasi dengan proporsi yang seimbang, memastikan setiap r
 
 | **Kategori**                  | **Biaya (Rp)** | **Persentase** | **Status Implementasi**                  |
 | ----------------------------- | -------------- | -------------- | ---------------------------------------- |
-| **Core Development**          | 15.200.000     | 80%            | ✅ 100% Complete - 6 phases implemented  |
+| **Core Development**          | 16.050.000     | 81%            | ✅ 100% Complete - 6 phases implemented  |
 | **Testing & QA**              | 1.800.000      | 9%             | ✅ 100% Complete - Pest PHP coverage     |
 | **Deployment & Setup**        | 1.100.000      | 6%             | ✅ 100% Complete - Production ready      |
 | **Biaya Tambahan (Opsional)** | 900.000        | 5%             | ✅ Ready - Siap implementasi             |
-| **TOTAL INVESTASI**           | **19.000.000** | **100%**       | **Solusi lengkap yang sudah siap pakai** |
+| **TOTAL INVESTASI**           | **19.850.000** | **100%**       | **Solusi lengkap yang sudah siap pakai** |
 
 **Mengapa Investasi Ini Sangat Layak?**
 
-- **ROI yang Terbukti**: Dengan investasi hanya Rp 19 juta, ROI dapat dicapai dalam 3-4 bulan
+- **ROI yang Terbukti**: Dengan investasi hanya Rp 19,85 juta, ROI dapat dicapai dalam 3-4 bulan
 - **Nilai Jangka Panjang**: Sistem yang sudah diimplementasikan akan melayani bisnis Anda selama bertahun-tahun
 - **Harga Terjangkau**: Investasi yang sangat kompetitif untuk sistem complete dengan fitur advanced
 - **Risk-Free**: Sistem sudah siap pakai, tidak ada risiko development yang gagal
@@ -481,7 +481,7 @@ Kami percaya bahwa investasi dalam pelatihan adalah investasi dalam kesuksesan. 
 - **Dynamic Pricing**: 10-15% revenue increase dengan configurable pricing system
 - **Cafe Revenue**: 20% peningkatan dengan integrated menu management dan barcode system
 
-**ROI Calculation (Berdasarkan Investasi Rp 19 Juta):**
+**ROI Calculation (Berdasarkan Investasi Rp 19,85 Juta):**
 
 - **Monthly Savings**: Rp 2-3 juta dari efisiensi operasional
 - **Monthly Revenue Increase**: Rp 1-2 juta dari peningkatan booking dan member retention
