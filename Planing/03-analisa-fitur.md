@@ -1807,7 +1807,7 @@ graph TD
 - **File Type Validation**: Hanya terima format yang diizinkan
 - **Size Limitation**: Batasi ukuran file untuk keamanan
 - **Virus Scanning**: Scan file untuk virus/malware
-- **Secure Storage**: Simpan file di secure storage (S3)
+- **Secure Storage**: Simpan file di Laravel storage (local)
 
 #### 13.7.2 Data Protection
 

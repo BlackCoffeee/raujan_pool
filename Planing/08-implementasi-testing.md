@@ -42,7 +42,7 @@ gantt
 - Configure MySQL database dan Redis cache
 - Setup Laravel Sanctum untuk API authentication
 - Configure Google OAuth integration
-- Setup file storage dengan AWS S3
+- Setup file storage dengan Laravel Storage
 
 **React/Next.js Frontend Setup**
 
@@ -140,8 +140,7 @@ gantt
     },
     "storage": {
       "local": "Laravel Storage",
-      "cloud": "AWS S3",
-      "cdn": "CloudFront"
+      "file_management": "Laravel File Management"
     },
     "testing": {
       "framework": "Laravel Pest",

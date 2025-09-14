@@ -105,7 +105,7 @@ graph TB
     subgraph "Data Layer"
         DL1[MySQL Database]
         DL2[Redis Cache]
-        DL3[File Storage S3]
+        DL3[Laravel File Storage]
         DL4[Session Storage]
     end
 
@@ -171,7 +171,7 @@ graph TB
         DS2[MySQL Replica]
         DS3[Redis Cache]
         DS4[Session Redis]
-        DS5[S3 File Storage]
+        DS5[Laravel File Storage]
     end
 
     subgraph "External Integrations"
@@ -242,7 +242,7 @@ graph TB
     "cache": "Redis 7.0",
     "queue": "Laravel Queue + Redis",
     "authentication": "Laravel Sanctum + JWT",
-    "file_upload": "Laravel Storage + AWS S3",
+    "file_upload": "Laravel Storage (Local)",
     "validation": "Laravel Form Requests",
     "api": "Laravel API Resources",
     "testing": "Laravel Pest / PHPUnit",
@@ -259,7 +259,7 @@ graph TB
     "hosting": "AWS EC2 / DigitalOcean",
     "database": "AWS RDS MySQL",
     "cache": "AWS ElastiCache Redis",
-    "storage": "AWS S3 + CloudFront",
+    "storage": "Laravel Storage (Local)",
     "cdn": "CloudFlare",
     "ssl": "Let's Encrypt / AWS Certificate Manager",
     "monitoring": "Laravel Telescope + New Relic",
@@ -287,8 +287,8 @@ graph TB
       "sms": "Twilio SMS API"
     },
     "file_storage": {
-      "aws_s3": "AWS S3 Bucket",
-      "cloudfront": "AWS CloudFront Distribution"
+      "laravel_storage": "Laravel Storage (Local)",
+      "file_management": "Laravel File Management"
     }
   }
 }

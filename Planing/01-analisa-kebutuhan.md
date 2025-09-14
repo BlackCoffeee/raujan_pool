@@ -142,7 +142,7 @@ Sistem manajemen kolam renang syariah adalah aplikasi yang dirancang untuk menge
 
 - Payment gateway
 - SMS/Email notification
-- File storage untuk dokumen
+- Laravel storage untuk dokumen
 - Reporting system
 
 ## 7. Kebutuhan Operasional

@@ -163,7 +163,7 @@ Dokumen ini berisi analisa komprehensif untuk pengembangan sistem manajemen kola
 - **Frontend**: React.js / Next.js, TypeScript, Tailwind CSS, Progressive Web App (PWA)
 - **Backend**: Laravel 11, PHP 8.2+, MySQL 8.0, Redis 7.0
 - **Authentication**: Laravel Sanctum, Google OAuth 2.0, Laravel Socialite
-- **Infrastructure**: AWS (EC2, RDS, S3, CloudFront), CloudFlare
+- **Infrastructure**: AWS (EC2, RDS), Laravel Storage, CloudFlare
 - **Payment**: Manual transfer system dengan admin verification
 - **Notifications**: Firebase Cloud Messaging (FCM), Laravel Mail, Twilio SMS
 - **Monitoring**: Laravel Telescope, New Relic, Sentry
@@ -405,6 +405,7 @@ Setelah dokumen analisa komprehensif ini selesai dengan semua sistem terintegras
 8. **Testing Strategy**: Implementasi testing untuk semua fitur (unit, integration, E2E)
 9. **Deployment Preparation**: Setup CI/CD pipeline dan deployment strategy
 10. **Documentation**: Dokumentasi lengkap untuk maintenance dan future development
+11. **File Storage**: Laravel Storage implementation untuk file management
 
 ## Dynamic Pricing Implementation Priority
 
