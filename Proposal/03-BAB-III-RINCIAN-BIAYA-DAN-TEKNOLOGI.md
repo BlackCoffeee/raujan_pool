@@ -8,31 +8,188 @@ Kami percaya bahwa investasi yang baik adalah investasi yang memberikan return y
 
 ### 3.1.1 Biaya Pengembangan Sistem (Berdasarkan Implementasi Terkini)
 
-| **Komponen**                    | **Deskripsi**                        | **Biaya (Rp)** | **Status Implementasi**                 |
-| ------------------------------- | ------------------------------------ | -------------- | --------------------------------------- |
-| **Frontend Development**        |                                      |                |                                         |
-| - Portal Member & Guest         | PWA dengan React 18+, TypeScript     | 3.500.000      | ✅ 100% Complete - ShadCN UI, Zustand   |
-| - Admin Dashboard               | Dashboard dengan analytics real-time | 2.500.000      | ✅ 100% Complete - Advanced BI features |
-| - Mobile Optimization           | PWA dengan offline support           | 1.500.000      | ✅ 100% Complete - Push notifications   |
-| **Backend Development**         |                                      |                |                                         |
-| - Core System                   | Laravel 11 dengan PHP 8.2+           | 4.000.000      | ✅ 100% Complete - 6 phases implemented |
-| - Authentication System         | Google SSO, Laravel Sanctum          | 1.200.000      | ✅ 100% Complete - Multi-role system    |
-| - Payment System & Analytics    | Manual payment + revenue forecasting | 1.800.000      | ✅ 100% Complete - Advanced analytics   |
-| - Real-time Features            | Laravel Reverb WebSocket             | 1.000.000      | ✅ 100% Complete - Live updates         |
-| - Queue System                  | Member queue dengan priority         | 800.000        | ✅ 100% Complete - Automated processing |
-| - Menu Management               | Cafe management dengan barcode       | 1.200.000      | ✅ 100% Complete - QR code system       |
-| **Database & Infrastructure**   |                                      |                |                                         |
-| - Database Design               | MySQL 8.0 dengan 15+ tables          | 800.000        | ✅ 100% Complete - Multi-cabang ready   |
-| - API Development               | 50+ RESTful endpoints                | 1.200.000      | ✅ 100% Complete - Comprehensive docs   |
-| - Security Implementation       | Multi-layer security                 | 1.000.000      | ✅ 100% Complete - Enterprise grade     |
-| **Testing & Quality Assurance** |                                      |                |                                         |
-| - Unit Testing                  | Pest PHP dengan 100% coverage        | 800.000        | ✅ 100% Complete - Comprehensive tests  |
-| - Integration Testing           | End-to-end testing                   | 600.000        | ✅ 100% Complete - All modules tested   |
-| - Performance Testing           | Load testing, optimization           | 400.000        | ✅ 100% Complete - <3s response time    |
-| **Deployment & Setup**          |                                      |                |                                         |
-| - Server Setup                  | Production-ready configuration       | 600.000        | ✅ 100% Complete - AWS-ready            |
-| - Domain & Hosting              | Domain dan hosting premium           | 400.000        | ✅ 100% Complete - CloudFlare CDN       |
-| - SSL Certificate               | Let's Encrypt dengan auto-renewal    | 100.000        | ✅ 100% Complete - Security headers     |
+#### **Frontend Development - Portal Member & Guest (Rp 3.500.000)**
+
+| **Komponen**              | **Detail Implementasi**            | **Biaya (Rp)** | **Status**  |
+| ------------------------- | ---------------------------------- | -------------- | ----------- |
+| **Landing Page**          | Homepage dengan hero section       | 300.000        | ✅ Complete |
+| **Authentication Pages**  | Login, Register, Forgot Password   | 400.000        | ✅ Complete |
+| **Member Dashboard**      | Dashboard utama member             | 500.000        | ✅ Complete |
+| **Booking Interface**     | Form booking dengan calendar       | 600.000        | ✅ Complete |
+| **Session Management**    | Lihat jadwal dan kapasitas         | 400.000        | ✅ Complete |
+| **Payment Interface**     | Form pembayaran dan history        | 500.000        | ✅ Complete |
+| **Profile Management**    | Edit profil dan pengaturan         | 300.000        | ✅ Complete |
+| **Queue Interface**       | Tracking antrian membership        | 400.000        | ✅ Complete |
+| **Menu & Cafe Interface** | Menu cafe dan pemesanan            | 300.000        | ✅ Complete |
+| **Notification System**   | Push notifications dan alerts      | 200.000        | ✅ Complete |
+| **PWA Implementation**    | Service worker dan offline support | 200.000        | ✅ Complete |
+
+#### **Frontend Development - Admin Dashboard (Rp 2.500.000)**
+
+| **Komponen**            | **Detail Implementasi**          | **Biaya (Rp)** | **Status**  |
+| ----------------------- | -------------------------------- | -------------- | ----------- |
+| **Overview Dashboard**  | Dashboard utama dengan metrics   | 400.000        | ✅ Complete |
+| **Member Management**   | CRUD member dan status tracking  | 500.000        | ✅ Complete |
+| **Session Management**  | Kelola jadwal dan kapasitas      | 400.000        | ✅ Complete |
+| **Booking Management**  | Kelola booking dan konfirmasi    | 400.000        | ✅ Complete |
+| **Payment Management**  | Verifikasi pembayaran dan refund | 400.000        | ✅ Complete |
+| **Queue Management**    | Kelola antrian member            | 300.000        | ✅ Complete |
+| **Menu Management**     | Kelola menu cafe dan inventory   | 300.000        | ✅ Complete |
+| **Analytics Dashboard** | Laporan dan analytics            | 200.000        | ✅ Complete |
+
+#### **Frontend Development - Mobile Optimization (Rp 1.500.000)**
+
+| **Komponen**                 | **Detail Implementasi**         | **Biaya (Rp)** | **Status**  |
+| ---------------------------- | ------------------------------- | -------------- | ----------- |
+| **Responsive Design**        | Mobile-first design system      | 400.000        | ✅ Complete |
+| **Touch Optimization**       | Touch gestures dan interactions | 300.000        | ✅ Complete |
+| **Offline Support**          | Service worker dan caching      | 300.000        | ✅ Complete |
+| **Push Notifications**       | Firebase FCM integration        | 200.000        | ✅ Complete |
+| **App-like Experience**      | PWA manifest dan install prompt | 200.000        | ✅ Complete |
+| **Performance Optimization** | Code splitting dan lazy loading | 100.000        | ✅ Complete |
+
+#### **Backend Development - Core System (Rp 4.000.000)**
+
+| **Komponen**           | **Detail Implementasi**           | **Biaya (Rp)** | **Status**  |
+| ---------------------- | --------------------------------- | -------------- | ----------- |
+| **Laravel 11 Setup**   | Framework setup dan konfigurasi   | 500.000        | ✅ Complete |
+| **Database Migration** | 15+ tables dengan relationships   | 600.000        | ✅ Complete |
+| **Model Development**  | Eloquent models dan relationships | 500.000        | ✅ Complete |
+| **Middleware System**  | Authentication dan authorization  | 400.000        | ✅ Complete |
+| **Service Layer**      | Business logic services           | 600.000        | ✅ Complete |
+| **Repository Pattern** | Data access layer                 | 400.000        | ✅ Complete |
+| **Queue System**       | Background job processing         | 400.000        | ✅ Complete |
+| **WebSocket Server**   | Laravel Reverb real-time features | 400.000        | ✅ Complete |
+| **File Storage**       | AWS S3 integration                | 200.000        | ✅ Complete |
+
+#### **Backend Development - Authentication System (Rp 1.200.000)**
+
+| **Komponen**           | **Detail Implementasi**                         | **Biaya (Rp)** | **Status**  |
+| ---------------------- | ----------------------------------------------- | -------------- | ----------- |
+| **Laravel Sanctum**    | Token-based authentication                      | 300.000        | ✅ Complete |
+| **Google OAuth 2.0**   | Single Sign-On integration                      | 300.000        | ✅ Complete |
+| **Role-based Access**  | Multi-role system (admin, staff, member, guest) | 300.000        | ✅ Complete |
+| **Password Security**  | Bcrypt hashing dan validation                   | 150.000        | ✅ Complete |
+| **Session Management** | Secure session handling                         | 150.000        | ✅ Complete |
+
+#### **Backend Development - Payment System & Analytics (Rp 1.800.000)**
+
+| **Komponen**             | **Detail Implementasi**           | **Biaya (Rp)** | **Status**  |
+| ------------------------ | --------------------------------- | -------------- | ----------- |
+| **Payment Processing**   | Manual payment workflow           | 400.000        | ✅ Complete |
+| **Payment Verification** | Admin verification system         | 300.000        | ✅ Complete |
+| **Refund Management**    | Automated refund processing       | 300.000        | ✅ Complete |
+| **Payment Analytics**    | Revenue tracking dan forecasting  | 400.000        | ✅ Complete |
+| **Invoice Generation**   | Automated invoice system          | 200.000        | ✅ Complete |
+| **Payment History**      | Transaction history dan reporting | 200.000        | ✅ Complete |
+
+#### **Backend Development - Real-time Features (Rp 1.000.000)**
+
+| **Komponen**            | **Detail Implementasi**      | **Biaya (Rp)** | **Status**  |
+| ----------------------- | ---------------------------- | -------------- | ----------- |
+| **WebSocket Server**    | Laravel Reverb setup         | 300.000        | ✅ Complete |
+| **Real-time Booking**   | Live availability updates    | 200.000        | ✅ Complete |
+| **Live Notifications**  | Real-time push notifications | 200.000        | ✅ Complete |
+| **Queue Updates**       | Real-time queue position     | 200.000        | ✅ Complete |
+| **Capacity Monitoring** | Live capacity tracking       | 100.000        | ✅ Complete |
+
+#### **Backend Development - Queue System (Rp 800.000)**
+
+| **Komponen**             | **Detail Implementasi**     | **Biaya (Rp)** | **Status**  |
+| ------------------------ | --------------------------- | -------------- | ----------- |
+| **Queue Management**     | Priority-based queue system | 300.000        | ✅ Complete |
+| **Position Tracking**    | Real-time position updates  | 200.000        | ✅ Complete |
+| **Expiry Management**    | Queue expiry dan cleanup    | 150.000        | ✅ Complete |
+| **Automated Processing** | Background queue processing | 150.000        | ✅ Complete |
+
+#### **Backend Development - Menu Management (Rp 1.200.000)**
+
+| **Komponen**            | **Detail Implementasi**           | **Biaya (Rp)** | **Status**  |
+| ----------------------- | --------------------------------- | -------------- | ----------- |
+| **Menu CRUD**           | Create, read, update, delete menu | 300.000        | ✅ Complete |
+| **Category Management** | Menu category system              | 200.000        | ✅ Complete |
+| **Inventory Tracking**  | Stock management system           | 300.000        | ✅ Complete |
+| **Barcode Generation**  | QR code generation untuk menu     | 200.000        | ✅ Complete |
+| **Menu Analytics**      | Popular items dan sales tracking  | 200.000        | ✅ Complete |
+
+#### **Database & Infrastructure - Database Design (Rp 800.000)**
+
+| **Komponen**            | **Detail Implementasi**          | **Biaya (Rp)** | **Status**  |
+| ----------------------- | -------------------------------- | -------------- | ----------- |
+| **Schema Design**       | 15+ tables dengan relationships  | 300.000        | ✅ Complete |
+| **Index Optimization**  | Database indexing untuk performa | 200.000        | ✅ Complete |
+| **Migration System**    | Database migration scripts       | 150.000        | ✅ Complete |
+| **Seeders & Factories** | Test data generation             | 150.000        | ✅ Complete |
+
+#### **Database & Infrastructure - API Development (Rp 1.200.000)**
+
+| **Komponen**                | **Detail Implementasi**             | **Biaya (Rp)** | **Status**  |
+| --------------------------- | ----------------------------------- | -------------- | ----------- |
+| **Authentication APIs**     | 6 endpoints (login, register, etc.) | 200.000        | ✅ Complete |
+| **Member Management APIs**  | 8 endpoints (CRUD member)           | 200.000        | ✅ Complete |
+| **Booking Management APIs** | 8 endpoints (CRUD booking)          | 200.000        | ✅ Complete |
+| **Payment Management APIs** | 8 endpoints (payment processing)    | 200.000        | ✅ Complete |
+| **Session Management APIs** | 6 endpoints (session CRUD)          | 150.000        | ✅ Complete |
+| **Queue Management APIs**   | 7 endpoints (queue operations)      | 150.000        | ✅ Complete |
+| **Menu Management APIs**    | 6 endpoints (menu CRUD)             | 100.000        | ✅ Complete |
+| **Analytics APIs**          | 5 endpoints (reports & analytics)   | 100.000        | ✅ Complete |
+
+#### **Database & Infrastructure - Security Implementation (Rp 1.000.000)**
+
+| **Komponen**                 | **Detail Implementasi**           | **Biaya (Rp)** | **Status**  |
+| ---------------------------- | --------------------------------- | -------------- | ----------- |
+| **Data Encryption**          | AES-256 encryption implementation | 300.000        | ✅ Complete |
+| **Input Validation**         | Laravel Form Requests             | 200.000        | ✅ Complete |
+| **SQL Injection Prevention** | Eloquent ORM security             | 150.000        | ✅ Complete |
+| **XSS Protection**           | Output encoding dan sanitization  | 150.000        | ✅ Complete |
+| **CSRF Protection**          | Token-based CSRF protection       | 100.000        | ✅ Complete |
+| **Rate Limiting**            | API rate limiting implementation  | 100.000        | ✅ Complete |
+
+#### **Testing & Quality Assurance - Unit Testing (Rp 800.000)**
+
+| **Komponen**            | **Detail Implementasi**           | **Biaya (Rp)** | **Status**  |
+| ----------------------- | --------------------------------- | -------------- | ----------- |
+| **Backend Unit Tests**  | Pest PHP tests untuk semua models | 400.000        | ✅ Complete |
+| **Frontend Unit Tests** | Jest tests untuk React components | 200.000        | ✅ Complete |
+| **API Unit Tests**      | Tests untuk semua API endpoints   | 200.000        | ✅ Complete |
+
+#### **Testing & Quality Assurance - Integration Testing (Rp 600.000)**
+
+| **Komponen**                   | **Detail Implementasi**            | **Biaya (Rp)** | **Status**  |
+| ------------------------------ | ---------------------------------- | -------------- | ----------- |
+| **API Integration Tests**      | End-to-end API testing             | 300.000        | ✅ Complete |
+| **Database Integration Tests** | Database operation testing         | 200.000        | ✅ Complete |
+| **Third-party Integration**    | Google OAuth, Firebase FCM testing | 100.000        | ✅ Complete |
+
+#### **Testing & Quality Assurance - Performance Testing (Rp 400.000)**
+
+| **Komponen**                 | **Detail Implementasi**        | **Biaya (Rp)** | **Status**  |
+| ---------------------------- | ------------------------------ | -------------- | ----------- |
+| **Load Testing**             | Testing dengan beban normal    | 150.000        | ✅ Complete |
+| **Stress Testing**           | Testing dengan beban tinggi    | 150.000        | ✅ Complete |
+| **Performance Optimization** | Query optimization dan caching | 100.000        | ✅ Complete |
+
+#### **Deployment & Setup - Server Setup (Rp 600.000)**
+
+| **Komponen**          | **Detail Implementasi**       | **Biaya (Rp)** | **Status**  |
+| --------------------- | ----------------------------- | -------------- | ----------- |
+| **Production Server** | Nginx + PHP-FPM configuration | 300.000        | ✅ Complete |
+| **Database Server**   | MySQL 8.0 optimization        | 200.000        | ✅ Complete |
+| **Cache Server**      | Redis 7.0 configuration       | 100.000        | ✅ Complete |
+
+#### **Deployment & Setup - Domain & Hosting (Rp 400.000)**
+
+| **Komponen**            | **Detail Implementasi**        | **Biaya (Rp)** | **Status**  |
+| ----------------------- | ------------------------------ | -------------- | ----------- |
+| **Domain Registration** | Domain setup dan configuration | 100.000        | ✅ Complete |
+| **Hosting Setup**       | Premium hosting configuration  | 200.000        | ✅ Complete |
+| **CDN Integration**     | CloudFlare CDN setup           | 100.000        | ✅ Complete |
+
+#### **Deployment & Setup - SSL Certificate (Rp 100.000)**
+
+| **Komponen**        | **Detail Implementasi**           | **Biaya (Rp)** | **Status**  |
+| ------------------- | --------------------------------- | -------------- | ----------- |
+| **SSL Certificate** | Let's Encrypt dengan auto-renewal | 100.000        | ✅ Complete |
 
 ### 3.1.2 Biaya Tambahan (Opsional - Siap untuk Implementasi)
 
