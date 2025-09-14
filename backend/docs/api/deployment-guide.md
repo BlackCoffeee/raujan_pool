@@ -46,6 +46,9 @@ DB_PASSWORD=your_secure_password
 BROADCAST_DRIVER=pusher
 CACHE_DRIVER=redis
 FILESYSTEM_DISK=local
+
+# File Storage Configuration
+# Laravel Storage (Local) - No additional configuration needed
 QUEUE_CONNECTION=redis
 SESSION_DRIVER=redis
 SESSION_LIFETIME=120

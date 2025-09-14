@@ -23,6 +23,7 @@ Dokumentasi lengkap untuk Raujan Pool Backend API - Sistem manajemen kolam renan
 -   [Order Processing](order-processing.md) - Order tracking dan processing
 -   [Inventory Management](inventory-management.md) - Stock management dan tracking
 -   [Barcode System](barcode-system.md) - Barcode generation dan scanning
+-   [File Storage](file-storage-api.md) - Laravel Storage implementation
 -   [Notification System](notification-system.md) - Push notifications dan alerts
 -   [Queue System](queue-system.md) - Background job processing
 -   [Refund System](refund-system.md) - Refund processing dan management

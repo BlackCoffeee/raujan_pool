@@ -26,6 +26,7 @@ Dokumentasi lengkap untuk semua API endpoints:
 -   **[Member Schema Revision v2](api/member-schema-revision-api.md)** - Member schema revision dengan dynamic pricing
 -   **[Menu Management](api/menu-management-api.md)** - Cafe menu dan pricing
 -   **[Barcode System](api/barcode-system.md)** - Barcode generation dan scanning
+-   **[File Storage](api/file-storage-api.md)** - Laravel Storage implementation
 -   **[Order Processing](api/order-processing-api.md)** - Order workflow
 -   **[Inventory Management](api/inventory-management.md)** - Stock management
 -   **[Order Tracking](api/order-tracking-api.md)** - Order status tracking

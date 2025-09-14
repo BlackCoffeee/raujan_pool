@@ -365,7 +365,7 @@ graph TB
     end
 
     subgraph "File Storage"
-        I[AWS S3 / Local Storage]
+        I[Laravel Storage]
     end
 
     subgraph "Monitoring"
